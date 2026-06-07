@@ -159,7 +159,45 @@ Max 200 words. Be specific and useful."""
                 continue
             continue
 
-    return "Summary unavailable."
+    # Fallback to Groq
+    groq = get_groq()
+    if groq:
+        for model in GROQ_MODELS:
+            try:
+                response = groq.chat.completions.create(
+                    model=model,
+                    messages=[
+                        {"role": "system", "content": SYSTEM_INSTRUCTION},
+                        {"role": "user", "content": prompt},
+                    ],
+                    max_tokens=500,
+                    temperature=0.2,
+                )
+                return response.choices[0].message.content
+            except Exception as e:
+                logger.warning(f"Groq {model} summary error: {e}")
+                continue
+
+    # Build summary from existing analysis data
+    risk_counts = {"safe": 0, "minor": 0, "risky": 0}
+    for a in analyses:
+        if "🔴" in a:
+            risk_counts["risky"] += 1
+        elif "🟡" in a:
+            risk_counts["minor"] += 1
+        else:
+            risk_counts["safe"] += 1
+
+    total = len(analyses)
+    health = "🟢 Healthy" if risk_counts["risky"] == 0 else "🟡 Moderate" if risk_counts["risky"] <= 1 else "🔴 Needs attention"
+
+    return f"""**Activity Summary**: {total} recent commits analyzed from {repo_info['full_name']}.
+
+**Development Pattern**: Primary language is {repo_info.get('language') or 'unknown'}. Repository has {repo_info['stars']} stars and {repo_info['forks']} forks.
+
+**Risk Assessment**: {risk_counts['safe']} safe commits, {risk_counts['minor']} minor risk, {risk_counts['risky']} risky commits detected.
+
+**Overall Health**: {health}"""
 
 
 def stream_commit_analysis(commit: Dict[str, Any]) -> Generator[str, None, None]:
