@@ -1,71 +1,330 @@
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap");
+
 @import "tailwindcss";
 
 @theme {
   --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
-  --font-mono: "JetBrains Mono", ui-monospace, monospace;
+  --font-mono: "JetBrains Mono", "Fira Code", ui-monospace, monospace;
 }
 
 @layer base {
   :root {
-    --background: 0 0% 100%;
-    --foreground: 224 71.4% 4.1%;
-    --card: 0 0% 100%;
-    --card-foreground: 224 71.4% 4.1%;
-    --primary: 234 89% 60%;
-    --primary-foreground: 0 0% 100%;
-    --secondary: 220 14.3% 95.9%;
-    --secondary-foreground: 220.9 39.3% 11%;
-    --muted: 220 14.3% 95.9%;
-    --muted-foreground: 220 8.9% 46.1%;
-    --border: 220 13% 91%;
-    --input: 220 13% 91%;
-    --radius: 0.625rem;
-    --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 0 0% 98%;
+    /* GitMind — Deep Slate + Cyan identity */
+    /* Nothing from DevMind */
+    --background:          222 20% 7%;
+    --background-subtle:   222 18% 9%;
+    --surface:             222 18% 10%;
+    --surface-raised:      222 16% 13%;
+    --surface-overlay:     222 16% 16%;
+
+    --foreground:          210 20% 94%;
+    --foreground-muted:    215 12% 58%;
+    --foreground-subtle:   215 10% 38%;
+
+    /* Cyan accent — unique to GitMind */
+    --accent:              188 94% 48%;
+    --accent-dim:          188 94% 40%;
+    --accent-muted:        188 94% 48% / 0.12;
+    --accent-border:       188 94% 48% / 0.25;
+
+    /* Semantic */
+    --success:             152 68% 42%;
+    --success-muted:       152 68% 42% / 0.12;
+    --success-border:      152 68% 42% / 0.3;
+
+    --warning:             38 95% 54%;
+    --warning-muted:       38 95% 54% / 0.12;
+    --warning-border:      38 95% 54% / 0.3;
+
+    --danger:              0 70% 56%;
+    --danger-muted:        0 70% 56% / 0.12;
+    --danger-border:       0 70% 56% / 0.3;
+
+    /* shadcn compat */
+    --card:                222 18% 10%;
+    --card-foreground:     210 20% 94%;
+    --popover:             222 16% 13%;
+    --popover-foreground:  210 20% 94%;
+    --primary:             188 94% 48%;
+    --primary-foreground:  222 20% 7%;
+    --secondary:           222 16% 13%;
+    --secondary-foreground: 210 20% 94%;
+    --muted:               222 16% 13%;
+    --muted-foreground:    215 12% 58%;
+    --accent-shadcn:       222 16% 16%;
+    --accent-foreground:   210 20% 94%;
+    --destructive:         0 70% 56%;
+    --destructive-foreground: 210 20% 94%;
+    --border:              222 14% 15%;
+    --input:               222 14% 15%;
+    --ring:                188 94% 48%;
+    --radius:              0.5rem;
   }
 
-  .dark {
-    --background: 224 71.4% 4.1%;
-    --foreground: 210 20% 98%;
-    --card: 224 71.4% 6%;
-    --card-foreground: 210 20% 98%;
-    --primary: 234 89% 65%;
-    --primary-foreground: 0 0% 100%;
-    --secondary: 215 27.9% 16.9%;
-    --secondary-foreground: 210 20% 98%;
-    --muted: 215 27.9% 16.9%;
-    --muted-foreground: 217.9 10.6% 64.9%;
-    --border: 215 27.9% 16.9%;
-    --input: 215 27.9% 16.9%;
+  * {
+    border-color: hsl(var(--border));
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
   }
 
-  * { border-color: hsl(var(--border)); }
+  html {
+    scroll-behavior: smooth;
+    -webkit-text-size-adjust: 100%;
+  }
 
   body {
-    background-color: hsl(var(--background));
+    background: hsl(var(--background));
     color: hsl(var(--foreground));
     font-family: var(--font-sans);
     -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    font-size: 14px;
+    line-height: 1.6;
+    overflow-x: hidden;
+  }
+
+  ::selection {
+    background: hsl(188 94% 48% / 0.2);
+    color: hsl(var(--foreground));
   }
 
   ::-webkit-scrollbar { width: 5px; height: 5px; }
   ::-webkit-scrollbar-track { background: transparent; }
-  ::-webkit-scrollbar-thumb { background: hsl(var(--border)); border-radius: 3px; }
-  html { scroll-behavior: smooth; }
+  ::-webkit-scrollbar-thumb {
+    background: hsl(222 14% 20%);
+    border-radius: 3px;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background: hsl(222 14% 28%);
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    letter-spacing: -0.025em;
+    line-height: 1.2;
+    font-weight: 600;
+    color: hsl(var(--foreground));
+  }
+
+  a { color: inherit; text-decoration: none; }
+  button { font-family: var(--font-sans); cursor: pointer; }
+  input, textarea, select { font-family: var(--font-sans); }
+  code, pre { font-family: var(--font-mono); }
 }
 
 @layer utilities {
-  .glass {
-    background: hsl(var(--background) / 0.85);
-    backdrop-filter: blur(12px);
-    -webkit-backdrop-filter: blur(12px);
-    border: 1px solid hsl(var(--border));
-  }
-  .gradient-text {
-    background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 50%, #06b6d4 100%);
+  .font-mono { font-family: var(--font-mono); }
+
+  /* === GitMind Cyan gradient === */
+  .gradient-cyan {
+    background: linear-gradient(135deg, hsl(188 94% 52%) 0%, hsl(200 90% 58%) 100%);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
   }
-  .glow { box-shadow: 0 0 40px hsl(234 89% 60% / 0.15); }
+
+  /* === Surfaces === */
+  .bg-surface        { background: hsl(var(--surface)); }
+  .bg-surface-raised { background: hsl(var(--surface-raised)); }
+  .bg-surface-overlay { background: hsl(var(--surface-overlay)); }
+  .bg-subtle         { background: hsl(var(--background-subtle)); }
+
+  /* === Borders === */
+  .border-subtle  { border-color: hsl(222 14% 15%); }
+  .border-strong  { border-color: hsl(222 14% 22%); }
+  .border-accent  { border-color: hsl(var(--accent-border)); }
+
+  /* === Shadows === */
+  .shadow-sm-dark {
+    box-shadow: 0 1px 3px hsl(0 0% 0% / 0.4),
+                0 0 0 1px hsl(222 14% 15%);
+  }
+  .shadow-md-dark {
+    box-shadow: 0 4px 16px hsl(0 0% 0% / 0.5),
+                0 0 0 1px hsl(222 14% 16%);
+  }
+  .shadow-lg-dark {
+    box-shadow: 0 8px 32px hsl(0 0% 0% / 0.6),
+                0 0 0 1px hsl(222 14% 18%);
+  }
+  .shadow-accent {
+    box-shadow: 0 0 32px hsl(188 94% 48% / 0.12),
+                0 0 0 1px hsl(188 94% 48% / 0.2);
+  }
+
+  /* === Glow === */
+  .glow-cyan {
+    box-shadow: 0 0 24px hsl(188 94% 48% / 0.2),
+                0 0 48px hsl(188 94% 48% / 0.08);
+  }
+
+  /* === Engineering grid pattern === */
+  .bg-grid-subtle {
+    background-image:
+      linear-gradient(hsl(210 20% 94% / 0.03) 1px, transparent 1px),
+      linear-gradient(90deg, hsl(210 20% 94% / 0.03) 1px, transparent 1px);
+    background-size: 32px 32px;
+  }
+
+  /* === Dot grid === */
+  .bg-dots {
+    background-image: radial-gradient(
+      hsl(210 20% 94% / 0.06) 1px,
+      transparent 1px
+    );
+    background-size: 20px 20px;
+  }
+
+  /* === Timeline track === */
+  .timeline-track {
+    position: relative;
+    padding-left: 24px;
+  }
+  .timeline-track::before {
+    content: "";
+    position: absolute;
+    left: 7px;
+    top: 12px;
+    bottom: 0;
+    width: 1px;
+    background: linear-gradient(
+      to bottom,
+      hsl(188 94% 48% / 0.5),
+      hsl(188 94% 48% / 0.05)
+    );
+  }
+
+  /* === Risk styles === */
+  .risk-safe   {
+    color: hsl(152 68% 48%);
+    background: hsl(var(--success-muted));
+    border-color: hsl(var(--success-border));
+  }
+  .risk-warn   {
+    color: hsl(38 95% 60%);
+    background: hsl(var(--warning-muted));
+    border-color: hsl(var(--warning-border));
+  }
+  .risk-danger {
+    color: hsl(0 70% 64%);
+    background: hsl(var(--danger-muted));
+    border-color: hsl(var(--danger-border));
+  }
+
+  /* === Commit categories === */
+  .cat-feat     { color: hsl(199 89% 58%); background: hsl(199 89% 48% / 0.1); border-color: hsl(199 89% 48% / 0.25); }
+  .cat-fix      { color: hsl(0 70% 64%);   background: hsl(0 70% 56% / 0.1);   border-color: hsl(0 70% 56% / 0.25); }
+  .cat-refactor { color: hsl(258 80% 72%); background: hsl(258 80% 65% / 0.1); border-color: hsl(258 80% 65% / 0.25); }
+  .cat-perf     { color: hsl(38 95% 60%);  background: hsl(38 95% 54% / 0.1);  border-color: hsl(38 95% 54% / 0.25); }
+  .cat-security { color: hsl(328 75% 68%); background: hsl(328 75% 60% / 0.1); border-color: hsl(328 75% 60% / 0.25); }
+  .cat-docs     { color: hsl(155 68% 52%); background: hsl(155 68% 42% / 0.1); border-color: hsl(155 68% 42% / 0.25); }
+  .cat-chore    { color: hsl(215 12% 58%); background: hsl(215 12% 50% / 0.1); border-color: hsl(215 12% 50% / 0.25); }
+  .cat-commit   { color: hsl(215 12% 52%); background: hsl(215 12% 45% / 0.1); border-color: hsl(215 12% 45% / 0.25); }
+
+  /* === Animations === */
+  @keyframes shimmer {
+    0%   { transform: translateX(-100%); }
+    100% { transform: translateX(100%); }
+  }
+  .shimmer {
+    position: relative;
+    overflow: hidden;
+  }
+  .shimmer::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+      90deg,
+      transparent,
+      hsl(210 20% 94% / 0.04),
+      transparent
+    );
+    animation: shimmer 1.8s infinite;
+  }
+
+  @keyframes spin { to { transform: rotate(360deg); } }
+  .spin { animation: spin 1s linear infinite; }
+
+  @keyframes pulse-glow {
+    0%, 100% { box-shadow: 0 0 0 0 hsl(188 94% 48% / 0.3); }
+    50%       { box-shadow: 0 0 0 8px hsl(188 94% 48% / 0); }
+  }
+  .pulse-glow { animation: pulse-glow 2s infinite; }
+
+  @keyframes fade-up {
+    from { opacity: 0; transform: translateY(12px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+  .fade-up { animation: fade-up 0.35s ease forwards; }
+
+  @keyframes blink {
+    0%, 100% { opacity: 1; }
+    50%       { opacity: 0; }
+  }
+  .blink { animation: blink 1s step-end infinite; }
+
+  /* === Input focus === */
+  .input-focus {
+    transition: border-color 0.15s, box-shadow 0.15s;
+  }
+  .input-focus:focus {
+    outline: none;
+    border-color: hsl(188 94% 48% / 0.6);
+    box-shadow: 0 0 0 3px hsl(188 94% 48% / 0.12);
+  }
+
+  /* === Button base === */
+  .btn-primary {
+    background: hsl(188 94% 48%);
+    color: hsl(222 20% 7%);
+    font-weight: 600;
+    transition: opacity 0.15s, transform 0.1s;
+  }
+  .btn-primary:hover:not(:disabled) {
+    opacity: 0.9;
+  }
+  .btn-primary:active:not(:disabled) {
+    transform: scale(0.98);
+  }
+  .btn-primary:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+
+  .btn-secondary {
+    background: hsl(222 16% 13%);
+    color: hsl(210 20% 94%);
+    border: 1px solid hsl(222 14% 20%);
+    transition: background 0.15s, border-color 0.15s;
+  }
+  .btn-secondary:hover:not(:disabled) {
+    background: hsl(222 16% 16%);
+    border-color: hsl(222 14% 26%);
+  }
+  .btn-secondary:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+
+  /* === Card base === */
+  .card {
+    background: hsl(var(--surface));
+    border: 1px solid hsl(222 14% 15%);
+    border-radius: 10px;
+  }
+  .card-hover {
+    transition: border-color 0.15s, background 0.15s;
+  }
+  .card-hover:hover {
+    border-color: hsl(222 14% 22%);
+    background: hsl(var(--surface-raised));
+  }
+
+  /* === Scrollbar hidden === */
+  .scrollbar-none {
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+  }
+  .scrollbar-none::-webkit-scrollbar { display: none; }
 }

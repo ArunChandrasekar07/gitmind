@@ -50,6 +50,9 @@ export interface BatchAnalysisResponse {
   total: number;
 }
 
+export const pingBackend = () =>
+  fetch(`${API_URL}/health`).catch(() => {});
+
 export const githubAPI = {
   fetchRepo: async (url: string, limit = 20) => {
     const response = await fetch(
