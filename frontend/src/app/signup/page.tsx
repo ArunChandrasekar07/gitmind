@@ -122,7 +122,7 @@ export default function SignupPage() {
           },
           data.session.access_token
         );
-        router.push("/analyze");
+        router.push("/dashboard");
       } else {
         setError("Check your email to confirm your account.");
       }

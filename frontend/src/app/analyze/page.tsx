@@ -31,9 +31,9 @@ const ANALYSIS_STAGES = [
 ];
 
 const EXAMPLE_REPOS = [
-  "https://github.com/tiangolo/fastapi",
-  "https://github.com/vercel/next.js",
-  "https://github.com/ArunChandrasekar07/devmind",
+  "https://github.com/vercel/ai",
+  "https://github.com/langchain-ai/langchain",
+  "https://github.com/supabase/supabase",
 ];
 
 function AnalyzeContent() {

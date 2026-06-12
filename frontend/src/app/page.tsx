@@ -154,7 +154,7 @@ const FAQS = [
   },
   {
     q: "Who built GitMind?",
-    a: "GitMind was built by Arun C, a software engineer from VIT Vellore specializing in AI, LLMs, and developer tools.",
+    a: "GitMind was built by Arun C, focused on AI-powered developer tools and engineering intelligence.",
   },
 ];
 
@@ -276,7 +276,7 @@ export default function LandingPage() {
         >
           <div
             style={{
-              maxWidth: "1100px",
+              maxWidth: "1180px",
               width: "100%",
               margin: "0 auto",
               padding: "0 24px",
@@ -300,7 +300,7 @@ export default function LandingPage() {
                 { label: "Pricing", href: "#pricing" },
                 { label: "FAQ", href: "#faq" },
               ].map((item) => (
-               <a 
+                <a
                   key={item.label}
                   href={item.href}
                   style={{
@@ -406,7 +406,7 @@ export default function LandingPage() {
             paddingRight: "24px",
           }}
         >
-          <div style={{ maxWidth: "1100px", margin: "0 auto" }}>
+          <div style={{ maxWidth: "1180px", margin: "0 auto" }}>
             <div
               style={{
                 display: "grid",
@@ -578,9 +578,9 @@ export default function LandingPage() {
                     Try:
                   </span>
                   {[
-                    "facebook/react",
                     "vercel/next.js",
-                    "ArunChandrasekar07/devmind",
+                    "fastapi/fastapi",
+                    "microsoft/vscode",
                   ].map((r) => (
                     <button
                       key={r}
@@ -605,8 +605,7 @@ export default function LandingPage() {
                       }}
                       onMouseLeave={(e) => {
                         e.currentTarget.style.color = "hsl(215 12% 52%)";
-                        e.currentTarget.style.borderColor =
-                          "hsl(222 14% 19%)";
+                        e.currentTarget.style.borderColor = "hsl(222 14% 19%)";
                       }}
                     >
                       {r}
@@ -643,20 +642,22 @@ export default function LandingPage() {
                     }}
                   >
                     <div style={{ display: "flex", gap: "5px" }}>
-                      {["hsl(0 70% 56%)", "hsl(38 95% 54%)", "hsl(152 68% 42%)"].map(
-                        (c) => (
-                          <div
-                            key={c}
-                            style={{
-                              width: "10px",
-                              height: "10px",
-                              borderRadius: "50%",
-                              background: c,
-                              opacity: 0.7,
-                            }}
-                          />
-                        )
-                      )}
+                      {[
+                        "hsl(0 70% 56%)",
+                        "hsl(38 95% 54%)",
+                        "hsl(152 68% 42%)",
+                      ].map((c) => (
+                        <div
+                          key={c}
+                          style={{
+                            width: "10px",
+                            height: "10px",
+                            borderRadius: "50%",
+                            background: c,
+                            opacity: 0.7,
+                          }}
+                        />
+                      ))}
                     </div>
                     <div
                       style={{
@@ -714,15 +715,33 @@ export default function LandingPage() {
                         color: "hsl(215 12% 45%)",
                       }}
                     >
-                      <span style={{ display: "flex", alignItems: "center", gap: "4px" }}>
+                      <span
+                        style={{
+                          display: "flex",
+                          alignItems: "center",
+                          gap: "4px",
+                        }}
+                      >
                         <Star size={10} style={{ color: "hsl(38 95% 56%)" }} />
                         124k
                       </span>
-                      <span style={{ display: "flex", alignItems: "center", gap: "4px" }}>
+                      <span
+                        style={{
+                          display: "flex",
+                          alignItems: "center",
+                          gap: "4px",
+                        }}
+                      >
                         <Eye size={10} />
                         2.1k
                       </span>
-                      <span style={{ display: "flex", alignItems: "center", gap: "4px" }}>
+                      <span
+                        style={{
+                          display: "flex",
+                          alignItems: "center",
+                          gap: "4px",
+                        }}
+                      >
                         <GitBranch size={10} />
                         main
                       </span>
@@ -744,7 +763,8 @@ export default function LandingPage() {
                   {/* Commit list */}
                   <div>
                     {DEMO_COMMITS.map((c, i) => {
-                      const risk = RISK_COLORS[c.risk as keyof typeof RISK_COLORS];
+                      const risk =
+                        RISK_COLORS[c.risk as keyof typeof RISK_COLORS];
                       const cat = CAT_COLORS[c.cat] || CAT_COLORS.docs;
                       const isActive = i === activeCommit;
                       return (
@@ -874,7 +894,13 @@ export default function LandingPage() {
                     }}
                   >
                     <span>6 of 24 commits shown</span>
-                    <span style={{ display: "flex", alignItems: "center", gap: "4px" }}>
+                    <span
+                      style={{
+                        display: "flex",
+                        alignItems: "center",
+                        gap: "4px",
+                      }}
+                    >
                       <Brain size={9} style={{ color: "hsl(38 92% 54%)" }} />
                       GitMind Intelligence
                     </span>
@@ -886,176 +912,704 @@ export default function LandingPage() {
         </section>
 
         {/* ── STATS ─────────────────────────────────────────────────── */}
+        {/* ── INTELLIGENCE STRIP ──────────────────────────────────── */}
         <section
           style={{
             position: "relative",
             zIndex: 1,
-            padding: "40px 24px",
-            borderTop: "1px solid hsl(222 14% 12%)",
-            borderBottom: "1px solid hsl(222 14% 12%)",
+            padding: "0 24px",
+            borderTop: "1px solid hsl(220 12% 11%)",
           }}
         >
-          <div style={{ maxWidth: "900px", margin: "0 auto" }}>
-            <div
-              style={{
-                display: "grid",
-                gridTemplateColumns: "repeat(4, 1fr)",
-                gap: "24px",
-                textAlign: "center",
-              }}
-            >
-              {[
-                { value: "< 30s", label: "Full analysis" },
-                { value: "3-tier", label: "AI fallback" },
-                { value: "100%", label: "Free forever" },
-                { value: "Any", label: "Public repo" },
-              ].map((s, i) => (
-                <FadeUp key={s.label} delay={i * 0.07}>
+          <div
+            style={{
+              maxWidth: "1180px",
+              margin: "0 auto",
+              display: "grid",
+              gridTemplateColumns: "repeat(4, 1fr)",
+            }}
+          >
+            {[
+              {
+                value: "Commit-level",
+                label: "AI granularity",
+                sub: "Every diff analyzed individually",
+              },
+              {
+                value: "3-model",
+                label: "Fallback chain",
+                sub: "Gemini → Groq → fallback",
+              },
+              {
+                value: "< 30s",
+                label: "Full repo analysis",
+                sub: "From URL to insights",
+              },
+              {
+                value: "Zero",
+                label: "Configuration",
+                sub: "Paste URL. That's it.",
+              },
+            ].map((s, i) => (
+              <FadeUp key={s.label} delay={i * 0.06}>
+                <div
+                  style={{
+                    padding: "28px 24px",
+                    borderRight: i < 3 ? "1px solid hsl(220 12% 11%)" : "none",
+                  }}
+                >
                   <div
                     style={{
-                      fontSize: "28px",
+                      fontSize: "20px",
                       fontWeight: 800,
-                      letterSpacing: "-0.04em",
-                      background:
-                        "linear-gradient(135deg, hsl(38 92% 58%) 0%, hsl(32 96% 65%) 100%)",
-                      WebkitBackgroundClip: "text",
-                      WebkitTextFillColor: "transparent",
-                      backgroundClip: "text",
-                      marginBottom: "4px",
+                      letterSpacing: "-0.035em",
+                      color: "hsl(45 95% 68%)",
+                      marginBottom: "3px",
+                      fontFamily: "JetBrains Mono, monospace",
                     }}
                   >
                     {s.value}
                   </div>
                   <div
                     style={{
-                      fontSize: "12px",
-                      color: "hsl(215 12% 48%)",
+                      fontSize: "13px",
+                      fontWeight: 600,
+                      color: "hsl(38 10% 82%)",
+                      marginBottom: "2px",
                     }}
                   >
                     {s.label}
                   </div>
-                </FadeUp>
-              ))}
-            </div>
+                  <div
+                    style={{
+                      fontSize: "11px",
+                      color: "hsl(220 8% 42%)",
+                      lineHeight: 1.4,
+                    }}
+                  >
+                    {s.sub}
+                  </div>
+                </div>
+              </FadeUp>
+            ))}
           </div>
         </section>
 
-        {/* ── FEATURES ─────────────────────────────────────────────── */}
+        {/* ── RISK INTELLIGENCE ────────────────────────────────────── */}
         <section
           id="features"
           style={{
             position: "relative",
             zIndex: 1,
-            padding: "100px 24px",
+            padding: "96px 24px",
+            borderTop: "1px solid hsl(220 12% 11%)",
           }}
         >
-          <div style={{ maxWidth: "1100px", margin: "0 auto" }}>
-            <FadeUp className="text-center" style={{ marginBottom: "56px" }}>
-              <div style={{ textAlign: "center", marginBottom: "56px" }}>
+          <div
+            style={{
+              maxWidth: "1180px",
+              margin: "0 auto",
+              display: "grid",
+              gridTemplateColumns: "1fr 1fr",
+              gap: "72px",
+              alignItems: "center",
+            }}
+          >
+            {/* Left — Risk visualization */}
+            <FadeUp>
+              <div>
+                {/* Section label */}
+                <div
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                    gap: "8px",
+                    marginBottom: "16px",
+                  }}
+                >
+                  <div
+                    style={{
+                      width: "20px",
+                      height: "1px",
+                      background: "hsl(38 92% 54%)",
+                    }}
+                  />
+                  <span
+                    style={{
+                      fontSize: "11px",
+                      fontWeight: 700,
+                      color: "hsl(38 92% 58%)",
+                      textTransform: "uppercase",
+                      letterSpacing: "0.1em",
+                    }}
+                  >
+                    Risk Detection
+                  </span>
+                </div>
+
+                <h2
+                  style={{
+                    fontSize: "clamp(24px, 3.5vw, 34px)",
+                    fontWeight: 800,
+                    letterSpacing: "-0.035em",
+                    lineHeight: 1.15,
+                    marginBottom: "14px",
+                    color: "hsl(38 10% 94%)",
+                  }}
+                >
+                  Know which commits
+                  <br />
+                  are dangerous
+                  <br />
+                  <span
+                    style={{
+                      color: "hsl(45 95% 68%)",
+                    }}
+                  >
+                    before they ship.
+                  </span>
+                </h2>
+
+                <p
+                  style={{
+                    fontSize: "14px",
+                    color: "hsl(220 8% 50%)",
+                    lineHeight: 1.75,
+                    marginBottom: "28px",
+                    maxWidth: "400px",
+                  }}
+                >
+                  GitMind classifies every commit as Safe, Warning, or High Risk
+                  based on the actual diff — security patches, memory issues,
+                  breaking changes, and more.
+                </p>
+
+                <div
+                  style={{
+                    display: "flex",
+                    flexDirection: "column",
+                    gap: "10px",
+                  }}
+                >
+                  {[
+                    {
+                      level: "High Risk",
+                      color: "hsl(0 70% 62%)",
+                      bg: "hsl(0 70% 54% / 0.1)",
+                      border: "hsl(0 70% 54% / 0.25)",
+                      dot: "hsl(0 70% 58%)",
+                      desc: "Memory leaks, SQL injection, breaking API changes",
+                    },
+                    {
+                      level: "Warning",
+                      color: "hsl(38 92% 62%)",
+                      bg: "hsl(38 92% 54% / 0.1)",
+                      border: "hsl(38 92% 54% / 0.25)",
+                      dot: "hsl(38 92% 58%)",
+                      desc: "Missing error handling, performance regressions",
+                    },
+                    {
+                      level: "Safe",
+                      color: "hsl(152 60% 48%)",
+                      bg: "hsl(152 60% 40% / 0.1)",
+                      border: "hsl(152 60% 40% / 0.25)",
+                      dot: "hsl(152 60% 44%)",
+                      desc: "Documentation, refactoring, test additions",
+                    },
+                  ].map((r) => (
+                    <div
+                      key={r.level}
+                      style={{
+                        display: "flex",
+                        alignItems: "center",
+                        gap: "12px",
+                        padding: "11px 14px",
+                        background: r.bg,
+                        border: `1px solid ${r.border}`,
+                        borderRadius: "8px",
+                      }}
+                    >
+                      <div
+                        style={{
+                          width: "7px",
+                          height: "7px",
+                          borderRadius: "50%",
+                          background: r.dot,
+                          flexShrink: 0,
+                        }}
+                      />
+                      <span
+                        style={{
+                          fontSize: "12px",
+                          fontWeight: 700,
+                          color: r.color,
+                          flexShrink: 0,
+                          minWidth: "72px",
+                        }}
+                      >
+                        {r.level}
+                      </span>
+                      <span
+                        style={{
+                          fontSize: "12px",
+                          color: "hsl(220 8% 55%)",
+                        }}
+                      >
+                        {r.desc}
+                      </span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </FadeUp>
+
+            {/* Right — Risk breakdown visual */}
+            <FadeUp delay={0.1}>
+              <div
+                style={{
+                  background: "hsl(220 14% 9%)",
+                  border: "1px solid hsl(220 12% 13%)",
+                  borderRadius: "12px",
+                  overflow: "hidden",
+                }}
+              >
+                {/* Header */}
+                <div
+                  style={{
+                    padding: "14px 18px",
+                    borderBottom: "1px solid hsl(220 10% 11%)",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "space-between",
+                  }}
+                >
+                  <span
+                    style={{
+                      fontSize: "12px",
+                      fontWeight: 600,
+                      color: "hsl(220 8% 60%)",
+                      fontFamily: "JetBrains Mono, monospace",
+                    }}
+                  >
+                    tiangolo / fastapi · risk report
+                  </span>
+                  <span
+                    style={{
+                      fontSize: "11px",
+                      color: "hsl(152 60% 46%)",
+                      display: "flex",
+                      alignItems: "center",
+                      gap: "4px",
+                      fontWeight: 600,
+                    }}
+                  >
+                    <CheckCircle2 size={11} />
+                    Healthy
+                  </span>
+                </div>
+
+                {/* Health score bar */}
+                <div style={{ padding: "18px 18px 14px" }}>
+                  <div
+                    style={{
+                      display: "flex",
+                      justifyContent: "space-between",
+                      marginBottom: "8px",
+                    }}
+                  >
+                    <span
+                      style={{
+                        fontSize: "11px",
+                        fontWeight: 600,
+                        color: "hsl(220 8% 48%)",
+                        textTransform: "uppercase",
+                        letterSpacing: "0.07em",
+                      }}
+                    >
+                      Repository Health
+                    </span>
+                    <span
+                      style={{
+                        fontSize: "18px",
+                        fontWeight: 800,
+                        color: "hsl(152 60% 48%)",
+                        letterSpacing: "-0.03em",
+                        fontFamily: "JetBrains Mono, monospace",
+                      }}
+                    >
+                      88
+                      <span
+                        style={{
+                          fontSize: "12px",
+                          color: "hsl(220 8% 42%)",
+                          fontFamily: "Inter, sans-serif",
+                        }}
+                      >
+                        /100
+                      </span>
+                    </span>
+                  </div>
+
+                  {/* Segmented bar */}
+                  <div
+                    style={{
+                      height: "6px",
+                      borderRadius: "3px",
+                      background: "hsl(220 12% 14%)",
+                      overflow: "hidden",
+                      display: "flex",
+                      gap: "2px",
+                      marginBottom: "12px",
+                    }}
+                  >
+                    <motion.div
+                      initial={{ width: 0 }}
+                      animate={{ width: "70%" }}
+                      transition={{
+                        duration: 0.8,
+                        delay: 0.3,
+                        ease: "easeOut",
+                      }}
+                      style={{
+                        height: "100%",
+                        background: "hsl(152 60% 44%)",
+                        borderRadius: "3px",
+                      }}
+                    />
+                    <motion.div
+                      initial={{ width: 0 }}
+                      animate={{ width: "20%" }}
+                      transition={{
+                        duration: 0.8,
+                        delay: 0.5,
+                        ease: "easeOut",
+                      }}
+                      style={{
+                        height: "100%",
+                        background: "hsl(38 92% 54%)",
+                        borderRadius: "3px",
+                      }}
+                    />
+                    <motion.div
+                      initial={{ width: 0 }}
+                      animate={{ width: "10%" }}
+                      transition={{
+                        duration: 0.8,
+                        delay: 0.7,
+                        ease: "easeOut",
+                      }}
+                      style={{
+                        height: "100%",
+                        background: "hsl(0 70% 54%)",
+                        borderRadius: "3px",
+                      }}
+                    />
+                  </div>
+
+                  <div
+                    style={{
+                      display: "flex",
+                      gap: "16px",
+                      fontSize: "11px",
+                    }}
+                  >
+                    {[
+                      { label: "14 safe", color: "hsl(152 60% 46%)" },
+                      { label: "4 warnings", color: "hsl(38 92% 60%)" },
+                      { label: "2 risks", color: "hsl(0 70% 60%)" },
+                    ].map((l) => (
+                      <span
+                        key={l.label}
+                        style={{ color: l.color, fontWeight: 600 }}
+                      >
+                        {l.label}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Risk commits */}
+                <div style={{ borderTop: "1px solid hsl(220 10% 11%)" }}>
+                  {[
+                    {
+                      sha: "c3g1h2i",
+                      msg: "fix: connection pool not releasing on timeout",
+                      risk: "danger",
+                      cat: "fix",
+                    },
+                    {
+                      sha: "d4j5k6l",
+                      msg: "perf: skip validation for internal API calls",
+                      risk: "warn",
+                      cat: "perf",
+                    },
+                    {
+                      sha: "e5k7l8m",
+                      msg: "feat: add OAuth2 bearer token authentication",
+                      risk: "safe",
+                      cat: "feat",
+                    },
+                  ].map((c, i) => {
+                    const riskColor =
+                      c.risk === "danger"
+                        ? "hsl(0 70% 58%)"
+                        : c.risk === "warn"
+                          ? "hsl(38 92% 57%)"
+                          : "hsl(152 60% 44%)";
+                    const catColor =
+                      c.cat === "fix"
+                        ? {
+                            color: "hsl(0 70% 62%)",
+                            bg: "hsl(0 70% 54% / 0.1)",
+                          }
+                        : c.cat === "perf"
+                          ? {
+                              color: "hsl(38 92% 60%)",
+                              bg: "hsl(38 92% 54% / 0.1)",
+                            }
+                          : {
+                              color: "hsl(199 89% 58%)",
+                              bg: "hsl(199 89% 48% / 0.1)",
+                            };
+                    return (
+                      <div
+                        key={c.sha}
+                        style={{
+                          display: "flex",
+                          alignItems: "center",
+                          gap: "10px",
+                          padding: "10px 18px",
+                          borderBottom:
+                            i < 2 ? "1px solid hsl(220 10% 10%)" : "none",
+                          borderLeft: `2px solid ${riskColor}`,
+                        }}
+                      >
+                        <div
+                          style={{
+                            width: "6px",
+                            height: "6px",
+                            borderRadius: "50%",
+                            background: riskColor,
+                            flexShrink: 0,
+                          }}
+                        />
+                        <span
+                          style={{
+                            fontFamily: "JetBrains Mono, monospace",
+                            fontSize: "10px",
+                            padding: "1px 6px",
+                            borderRadius: "4px",
+                            fontWeight: 600,
+                            color: catColor.color,
+                            background: catColor.bg,
+                            flexShrink: 0,
+                          }}
+                        >
+                          {c.cat}
+                        </span>
+                        <span
+                          style={{
+                            fontFamily: "JetBrains Mono, monospace",
+                            fontSize: "10px",
+                            color: "hsl(38 92% 55%)",
+                            flexShrink: 0,
+                          }}
+                        >
+                          {c.sha}
+                        </span>
+                        <span
+                          style={{
+                            flex: 1,
+                            fontSize: "11px",
+                            color: "hsl(220 8% 62%)",
+                            overflow: "hidden",
+                            textOverflow: "ellipsis",
+                            whiteSpace: "nowrap",
+                          }}
+                        >
+                          {c.msg}
+                        </span>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+            </FadeUp>
+          </div>
+        </section>
+
+        {/* ── COMMIT INTELLIGENCE ──────────────────────────────────── */}
+        <section
+          style={{
+            position: "relative",
+            zIndex: 1,
+            padding: "96px 24px",
+            borderTop: "1px solid hsl(220 12% 11%)",
+            background: "hsl(220 14% 8%)",
+          }}
+        >
+          <div style={{ maxWidth: "1180px", margin: "0 auto" }}>
+            <FadeUp>
+              <div
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  gap: "8px",
+                  marginBottom: "16px",
+                  justifyContent: "center",
+                }}
+              >
+                <div
+                  style={{
+                    width: "20px",
+                    height: "1px",
+                    background: "hsl(38 92% 54%)",
+                  }}
+                />
                 <span
                   style={{
                     fontSize: "11px",
                     fontWeight: 700,
                     color: "hsl(38 92% 58%)",
                     textTransform: "uppercase",
-                    letterSpacing: "0.12em",
-                    display: "block",
-                    marginBottom: "12px",
+                    letterSpacing: "0.1em",
                   }}
                 >
-                  Capabilities
+                  Commit Intelligence
                 </span>
-                <h2
+                <div
                   style={{
-                    fontSize: "clamp(28px, 4vw, 40px)",
-                    fontWeight: 800,
-                    letterSpacing: "-0.035em",
-                    marginBottom: "12px",
-                    color: "hsl(210 20% 94%)",
+                    width: "20px",
+                    height: "1px",
+                    background: "hsl(38 92% 54%)",
                   }}
-                >
-                  Engineering intelligence,
-                  <br />
-                  not just AI summaries.
-                </h2>
-                <p
-                  style={{
-                    fontSize: "15px",
-                    color: "hsl(215 12% 50%)",
-                    maxWidth: "520px",
-                    margin: "0 auto",
-                    lineHeight: 1.7,
-                  }}
-                >
-                  Built for developers who need precise answers, not marketing
-                  copy.
-                </p>
+                />
               </div>
+              <h2
+                style={{
+                  textAlign: "center",
+                  fontSize: "clamp(24px, 3.5vw, 36px)",
+                  fontWeight: 800,
+                  letterSpacing: "-0.035em",
+                  color: "hsl(38 10% 94%)",
+                  marginBottom: "12px",
+                  lineHeight: 1.15,
+                }}
+              >
+                Every commit. Explained.
+              </h2>
+              <p
+                style={{
+                  textAlign: "center",
+                  fontSize: "14px",
+                  color: "hsl(220 8% 48%)",
+                  maxWidth: "500px",
+                  margin: "0 auto 56px",
+                  lineHeight: 1.7,
+                }}
+              >
+                GitMind reads the actual diff — not just the commit message. The
+                AI understands context, intent, and impact.
+              </p>
             </FadeUp>
 
+            {/* 3-column capability cards — GitMind style */}
             <div
               style={{
                 display: "grid",
                 gridTemplateColumns: "repeat(3, 1fr)",
-                gap: "16px",
+                gap: "1px",
+                background: "hsl(220 12% 12%)",
+                borderRadius: "12px",
+                overflow: "hidden",
+                border: "1px solid hsl(220 12% 12%)",
               }}
             >
-              {FEATURES.map((f, i) => (
-                <FadeUp key={f.title} delay={i * 0.06}>
+              {[
+                {
+                  number: "01",
+                  title: "Plain-English Explanations",
+                  desc: "What changed, what it means, and what you should know — without reading a single line of diff.",
+                  tag: "AI → Language",
+                },
+                {
+                  number: "02",
+                  title: "Diff-Aware Risk Scoring",
+                  desc: "Analyzes the actual code delta, not just the commit message. Catches risks that messages hide.",
+                  tag: "Diff → Risk",
+                },
+                {
+                  number: "03",
+                  title: "Category Classification",
+                  desc: "Automatically classifies each commit as feat, fix, refactor, perf, security, docs, or chore.",
+                  tag: "Code → Category",
+                },
+              ].map((c, i) => (
+                <FadeUp key={c.number} delay={i * 0.07}>
                   <motion.div
-                    whileHover={{ y: -3, transition: { duration: 0.15 } }}
+                    whileHover={{
+                      background: "hsl(220 14% 11%)",
+                      transition: { duration: 0.15 },
+                    }}
                     style={{
                       background: "hsl(220 14% 9%)",
-                      border: "1px solid hsl(220 12% 13%)",
-                      borderRadius: "10px",
-                      padding: "22px",
+                      padding: "28px 24px",
                       height: "100%",
-                      cursor: "default",
-                      transition: "border-color 0.2s",
                     }}
-                    onMouseEnter={(e) =>
-                      ((e.currentTarget as HTMLElement).style.borderColor =
-                        "hsl(222 14% 22%)")
-                    }
-                    onMouseLeave={(e) =>
-                      ((e.currentTarget as HTMLElement).style.borderColor =
-                        "hsl(220 12% 13%)")
-                    }
                   >
                     <div
                       style={{
-                        width: "36px",
-                        height: "36px",
-                        borderRadius: "9px",
-                        background: f.bg,
-                        border: `1px solid ${f.border}`,
                         display: "flex",
                         alignItems: "center",
-                        justifyContent: "center",
-                        marginBottom: "14px",
+                        justifyContent: "space-between",
+                        marginBottom: "16px",
                       }}
                     >
-                      <f.icon size={17} style={{ color: f.color }} />
+                      <span
+                        style={{
+                          fontFamily: "JetBrains Mono, monospace",
+                          fontSize: "11px",
+                          fontWeight: 700,
+                          color: "hsl(38 92% 54% / 0.5)",
+                        }}
+                      >
+                        {c.number}
+                      </span>
+                      <span
+                        style={{
+                          fontFamily: "JetBrains Mono, monospace",
+                          fontSize: "10px",
+                          padding: "2px 8px",
+                          borderRadius: "4px",
+                          color: "hsl(38 92% 62%)",
+                          background: "hsl(38 92% 54% / 0.08)",
+                          border: "1px solid hsl(38 92% 54% / 0.18)",
+                          fontWeight: 600,
+                        }}
+                      >
+                        {c.tag}
+                      </span>
                     </div>
                     <h3
                       style={{
                         fontSize: "14px",
-                        fontWeight: 600,
-                        color: "hsl(210 20% 92%)",
-                        marginBottom: "7px",
-                        letterSpacing: "-0.01em",
+                        fontWeight: 700,
+                        color: "hsl(38 10% 90%)",
+                        marginBottom: "8px",
+                        letterSpacing: "-0.015em",
+                        lineHeight: 1.3,
                       }}
                     >
-                      {f.title}
+                      {c.title}
                     </h3>
                     <p
                       style={{
-                        fontSize: "13px",
-                        color: "hsl(215 12% 50%)",
-                        lineHeight: 1.65,
+                        fontSize: "12px",
+                        color: "hsl(220 8% 48%)",
+                        lineHeight: 1.7,
                       }}
                     >
-                      {f.desc}
+                      {c.desc}
                     </p>
                   </motion.div>
                 </FadeUp>
@@ -1064,133 +1618,210 @@ export default function LandingPage() {
           </div>
         </section>
 
-        {/* ── WORKFLOW ─────────────────────────────────────────────── */}
+        {/* ── HOW IT WORKS ─────────────────────────────────────────── */}
         <section
           id="workflow"
           style={{
             position: "relative",
             zIndex: 1,
-            padding: "80px 24px",
-            borderTop: "1px solid hsl(222 14% 12%)",
-            background: "hsl(222 18% 8%)",
+            padding: "96px 24px",
+            borderTop: "1px solid hsl(220 12% 11%)",
           }}
         >
-          <div style={{ maxWidth: "900px", margin: "0 auto" }}>
+          <div style={{ maxWidth: "680px", margin: "0 auto" }}>
             <FadeUp>
-              <div style={{ textAlign: "center", marginBottom: "56px" }}>
-                <span
+              <div style={{ textAlign: "center", marginBottom: "52px" }}>
+                <div
                   style={{
-                    fontSize: "11px",
-                    fontWeight: 700,
-                    color: "hsl(38 92% 58%)",
-                    textTransform: "uppercase",
-                    letterSpacing: "0.12em",
-                    display: "block",
-                    marginBottom: "12px",
+                    display: "flex",
+                    alignItems: "center",
+                    gap: "8px",
+                    justifyContent: "center",
+                    marginBottom: "16px",
                   }}
                 >
-                  Workflow
-                </span>
+                  <div
+                    style={{
+                      width: "20px",
+                      height: "1px",
+                      background: "hsl(38 92% 54%)",
+                    }}
+                  />
+                  <span
+                    style={{
+                      fontSize: "11px",
+                      fontWeight: 700,
+                      color: "hsl(38 92% 58%)",
+                      textTransform: "uppercase",
+                      letterSpacing: "0.1em",
+                    }}
+                  >
+                    How it works
+                  </span>
+                  <div
+                    style={{
+                      width: "20px",
+                      height: "1px",
+                      background: "hsl(38 92% 54%)",
+                    }}
+                  />
+                </div>
                 <h2
                   style={{
-                    fontSize: "clamp(26px, 3.5vw, 36px)",
+                    fontSize: "clamp(24px, 3.5vw, 34px)",
                     fontWeight: 800,
                     letterSpacing: "-0.035em",
-                    color: "hsl(210 20% 94%)",
+                    color: "hsl(38 10% 94%)",
+                    lineHeight: 1.15,
                   }}
                 >
-                  From URL to intelligence
+                  URL in. Intelligence out.
                   <br />
-                  in under 30 seconds.
+                  <span style={{ color: "hsl(45 95% 68%)" }}>
+                    In under 30 seconds.
+                  </span>
                 </h2>
               </div>
             </FadeUp>
 
-            <div
-              style={{
-                display: "grid",
-                gridTemplateColumns: "repeat(3, 1fr)",
-                gap: "32px",
-                position: "relative",
-              }}
-            >
-              {/* connector line */}
+            {/* Vertical timeline — unique to GitMind */}
+            <div style={{ position: "relative", paddingLeft: "40px" }}>
+              {/* Timeline line */}
               <div
                 style={{
                   position: "absolute",
-                  top: "20px",
-                  left: "calc(33% - 20px)",
-                  right: "calc(33% - 20px)",
-                  height: "1px",
+                  left: "11px",
+                  top: "6px",
+                  bottom: "6px",
+                  width: "1px",
                   background:
-                    "linear-gradient(90deg, hsl(38 92% 54% / 0.3), hsl(38 92% 54% / 0.3))",
-                  display: "none",
+                    "linear-gradient(to bottom, hsl(38 92% 54% / 0.6), hsl(38 92% 54% / 0.08))",
                 }}
               />
 
-              {WORKFLOW.map((w, i) => (
-                <FadeUp key={w.step} delay={i * 0.1}>
-                  <div style={{ textAlign: "center" }}>
+              {[
+                {
+                  step: "01",
+                  title: "Paste any public GitHub URL",
+                  desc: "No tokens. No setup. No OAuth. Just paste a URL like github.com/owner/repo and hit analyze.",
+                  detail: "github.com/tiangolo/fastapi",
+                  isCode: true,
+                },
+                {
+                  step: "02",
+                  title: "GitHub API fetches commit history",
+                  desc: "GitMind pulls the full commit log and fetches the actual diff for each commit — not just metadata.",
+                  detail:
+                    "Fetching 20 commits · Reading diffs · Building context",
+                  isCode: true,
+                },
+                {
+                  step: "03",
+                  title: "AI pipeline analyzes each diff",
+                  desc: "Gemini processes every diff independently. Each commit gets an explanation, risk level, and category.",
+                  detail: "Gemini 2.5 Flash → Groq fallback → response",
+                  isCode: true,
+                },
+                {
+                  step: "04",
+                  title: "Intelligence report delivered",
+                  desc: "Repository health score, per-commit AI explanations, risk breakdown, and engineering summary — all instant.",
+                  detail: "Report ready in < 30s",
+                  isCode: false,
+                },
+              ].map((w, i) => (
+                <FadeUp key={w.step} delay={i * 0.08}>
+                  <div
+                    style={{
+                      position: "relative",
+                      paddingBottom: i < 3 ? "36px" : "0",
+                    }}
+                  >
+                    {/* Node */}
                     <div
                       style={{
-                        width: "44px",
-                        height: "44px",
-                        borderRadius: "12px",
-                        background: "hsl(38 92% 54% / 0.08)",
-                        border: "1px solid hsl(38 92% 54% / 0.2)",
+                        position: "absolute",
+                        left: "-40px",
+                        top: "3px",
+                        width: "22px",
+                        height: "22px",
+                        borderRadius: "50%",
+                        background: "hsl(220 14% 9%)",
+                        border: "2px solid hsl(38 92% 54% / 0.5)",
                         display: "flex",
                         alignItems: "center",
                         justifyContent: "center",
-                        margin: "0 auto 14px",
-                        position: "relative",
+                        zIndex: 1,
                       }}
                     >
-                      <w.icon
-                        size={19}
-                        style={{ color: "hsl(38 92% 58%)" }}
-                      />
-                      <span
+                      <div
                         style={{
-                          position: "absolute",
-                          top: "-8px",
-                          right: "-8px",
-                          width: "18px",
-                          height: "18px",
+                          width: "7px",
+                          height: "7px",
                           borderRadius: "50%",
-                          background: "hsl(220 16% 6%)",
-                          border: "1px solid hsl(38 92% 54% / 0.3)",
+                          background: "hsl(38 92% 54%)",
+                        }}
+                      />
+                    </div>
+
+                    <div>
+                      <div
+                        style={{
                           display: "flex",
                           alignItems: "center",
-                          justifyContent: "center",
-                          fontSize: "9px",
-                          fontWeight: 700,
-                          color: "hsl(38 92% 62%)",
-                          fontFamily: "JetBrains Mono, monospace",
+                          gap: "8px",
+                          marginBottom: "5px",
                         }}
                       >
-                        {i + 1}
-                      </span>
+                        <span
+                          style={{
+                            fontFamily: "JetBrains Mono, monospace",
+                            fontSize: "10px",
+                            fontWeight: 700,
+                            color: "hsl(38 92% 54% / 0.55)",
+                          }}
+                        >
+                          {w.step}
+                        </span>
+                        <h3
+                          style={{
+                            fontSize: "14px",
+                            fontWeight: 700,
+                            color: "hsl(38 10% 90%)",
+                            letterSpacing: "-0.015em",
+                          }}
+                        >
+                          {w.title}
+                        </h3>
+                      </div>
+                      <p
+                        style={{
+                          fontSize: "13px",
+                          color: "hsl(220 8% 48%)",
+                          lineHeight: 1.65,
+                          marginBottom: "10px",
+                        }}
+                      >
+                        {w.desc}
+                      </p>
+                      <div
+                        style={{
+                          display: "inline-flex",
+                          alignItems: "center",
+                          gap: "6px",
+                          padding: "5px 10px",
+                          background: "hsl(220 14% 10%)",
+                          border: "1px solid hsl(220 12% 15%)",
+                          borderRadius: "6px",
+                          fontFamily: "JetBrains Mono, monospace",
+                          fontSize: "11px",
+                          color: "hsl(38 92% 58%)",
+                        }}
+                      >
+                        <span style={{ color: "hsl(220 8% 38%)" }}>›</span>
+                        {w.detail}
+                      </div>
                     </div>
-                    <h3
-                      style={{
-                        fontSize: "14px",
-                        fontWeight: 600,
-                        color: "hsl(210 20% 90%)",
-                        marginBottom: "7px",
-                        letterSpacing: "-0.01em",
-                      }}
-                    >
-                      {w.title}
-                    </h3>
-                    <p
-                      style={{
-                        fontSize: "12px",
-                        color: "hsl(215 12% 48%)",
-                        lineHeight: 1.65,
-                      }}
-                    >
-                      {w.desc}
-                    </p>
                   </div>
                 </FadeUp>
               ))}
@@ -1198,157 +1829,185 @@ export default function LandingPage() {
           </div>
         </section>
 
-        {/* ── PRICING ─────────────────────────────────────────────── */}
+        {/* ── OPEN SOURCE / FREE ───────────────────────────────────── */}
         <section
           id="pricing"
           style={{
             position: "relative",
             zIndex: 1,
-            padding: "100px 24px",
+            padding: "80px 24px",
+            borderTop: "1px solid hsl(220 12% 11%)",
+            background: "hsl(220 14% 8%)",
           }}
         >
-          <div style={{ maxWidth: "440px", margin: "0 auto" }}>
-            <FadeUp>
-              <div style={{ textAlign: "center", marginBottom: "36px" }}>
-                <span
-                  style={{
-                    fontSize: "11px",
-                    fontWeight: 700,
-                    color: "hsl(38 92% 58%)",
-                    textTransform: "uppercase",
-                    letterSpacing: "0.12em",
-                    display: "block",
-                    marginBottom: "12px",
-                  }}
-                >
-                  Pricing
-                </span>
-                <h2
-                  style={{
-                    fontSize: "32px",
-                    fontWeight: 800,
-                    letterSpacing: "-0.04em",
-                    color: "hsl(210 20% 94%)",
-                    marginBottom: "8px",
-                  }}
-                >
-                  Free. No limits.
-                </h2>
-                <p style={{ fontSize: "14px", color: "hsl(215 12% 50%)" }}>
-                  Analyze as many repositories as you want.
-                </p>
-              </div>
-            </FadeUp>
-
-            <FadeUp delay={0.1}>
-              <motion.div
-                whileHover={{ y: -3 }}
-                style={{
-                  background: "hsl(220 14% 9%)",
-                  border: "1px solid hsl(38 92% 54% / 0.25)",
-                  borderRadius: "12px",
-                  padding: "28px",
-                  boxShadow:
-                    "0 0 40px hsl(38 92% 54% / 0.08), 0 0 0 1px hsl(38 92% 54% / 0.15)",
-                }}
-              >
-                <div style={{ marginBottom: "4px" }}>
-                  <span
+          <div style={{ maxWidth: "1100px", margin: "0 auto" }}>
+            <div
+              style={{
+                display: "grid",
+                gridTemplateColumns: "1fr 1fr",
+                gap: "48px",
+                alignItems: "center",
+              }}
+            >
+              {/* Left */}
+              <FadeUp>
+                <div>
+                  <div
                     style={{
-                      fontSize: "42px",
-                      fontWeight: 800,
-                      letterSpacing: "-0.05em",
-                      color: "hsl(210 20% 96%)",
+                      display: "flex",
+                      alignItems: "center",
+                      gap: "8px",
+                      marginBottom: "16px",
                     }}
                   >
-                    $0
-                  </span>
-                  <span
-                    style={{
-                      fontSize: "14px",
-                      color: "hsl(215 12% 48%)",
-                      marginLeft: "6px",
-                    }}
-                  >
-                    / forever
-                  </span>
-                </div>
-                <p
-                  style={{
-                    fontSize: "12px",
-                    color: "hsl(215 12% 42%)",
-                    marginBottom: "24px",
-                  }}
-                >
-                  No credit card required
-                </p>
-
-                <div
-                  style={{
-                    display: "flex",
-                    flexDirection: "column",
-                    gap: "10px",
-                    marginBottom: "24px",
-                  }}
-                >
-                  {PRICING_FEATURES.map((f) => (
                     <div
-                      key={f}
                       style={{
-                        display: "flex",
-                        alignItems: "center",
-                        gap: "10px",
-                        fontSize: "13px",
-                        color: "hsl(210 16% 78%)",
+                        width: "20px",
+                        height: "1px",
+                        background: "hsl(38 92% 54%)",
+                      }}
+                    />
+                    <span
+                      style={{
+                        fontSize: "11px",
+                        fontWeight: 700,
+                        color: "hsl(38 92% 58%)",
+                        textTransform: "uppercase",
+                        letterSpacing: "0.1em",
                       }}
                     >
-                      <div
-                        style={{
-                          width: "18px",
-                          height: "18px",
-                          borderRadius: "50%",
-                          background: "hsl(38 92% 54% / 0.1)",
-                          border: "1px solid hsl(38 92% 54% / 0.25)",
-                          display: "flex",
-                          alignItems: "center",
-                          justifyContent: "center",
-                          flexShrink: 0,
-                        }}
-                      >
-                        <Check
-                          size={10}
-                          style={{ color: "hsl(38 92% 62%)" }}
-                        />
-                      </div>
-                      {f}
-                    </div>
-                  ))}
-                </div>
+                      Free forever
+                    </span>
+                  </div>
 
-                <button
-                  onClick={() => router.push("/analyze")}
+                  <h2
+                    style={{
+                      fontSize: "clamp(24px, 3vw, 32px)",
+                      fontWeight: 800,
+                      letterSpacing: "-0.04em",
+                      color: "hsl(38 10% 94%)",
+                      marginBottom: "12px",
+                      lineHeight: 1.2,
+                    }}
+                  >
+                    No subscription.
+                    <br />
+                    No credit card.
+                    <br />
+                    <span style={{ color: "hsl(45 95% 68%)" }}>No limits.</span>
+                  </h2>
+
+                  <p
+                    style={{
+                      fontSize: "14px",
+                      color: "hsl(220 8% 48%)",
+                      lineHeight: 1.7,
+                      marginBottom: "28px",
+                      maxWidth: "360px",
+                    }}
+                  >
+                    GitMind is built as a portfolio project and engineering
+                    tool. Analyze any public repository, any time, completely
+                    free.
+                  </p>
+
+                  <motion.button
+                    whileHover={{ scale: 1.02 }}
+                    whileTap={{ scale: 0.98 }}
+                    onClick={() => router.push("/analyze")}
+                    style={{
+                      display: "inline-flex",
+                      alignItems: "center",
+                      gap: "8px",
+                      padding: "11px 22px",
+                      background: "hsl(38 92% 54%)",
+                      border: "none",
+                      borderRadius: "8px",
+                      color: "hsl(220 16% 6%)",
+                      fontSize: "13px",
+                      fontWeight: 700,
+                      cursor: "pointer",
+                      fontFamily: "Inter, sans-serif",
+                    }}
+                  >
+                    <Search size={14} />
+                    Start analyzing
+                    <ArrowRight size={14} />
+                  </motion.button>
+                </div>
+              </FadeUp>
+
+              {/* Right — feature list terminal style */}
+              <FadeUp delay={0.1}>
+                <div
                   style={{
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "center",
-                    gap: "8px",
-                    width: "100%",
-                    padding: "12px",
-                    background: "hsl(38 92% 54%)",
-                    border: "none",
-                    borderRadius: "8px",
-                    color: "hsl(220 16% 6%)",
-                    fontSize: "13px",
-                    fontWeight: 700,
-                    cursor: "pointer",
-                    fontFamily: "Inter, sans-serif",
+                    background: "hsl(220 14% 9%)",
+                    border: "1px solid hsl(220 12% 13%)",
+                    borderRadius: "10px",
+                    overflow: "hidden",
                   }}
                 >
-                  Start analyzing for free
-                  <ArrowRight size={14} />
-                </button>
-              </motion.div>
-            </FadeUp>
+                  <div
+                    style={{
+                      padding: "10px 14px",
+                      borderBottom: "1px solid hsl(220 10% 11%)",
+                      fontFamily: "JetBrains Mono, monospace",
+                      fontSize: "11px",
+                      color: "hsl(220 8% 40%)",
+                      display: "flex",
+                      gap: "5px",
+                    }}
+                  >
+                    <span style={{ color: "hsl(152 60% 46%)" }}>✓</span>
+                    gitmind --plan free --limits none
+                  </div>
+                  <div style={{ padding: "16px 14px" }}>
+                    {[
+                      "Unlimited repo analysis",
+                      "AI commit explanations",
+                      "Risk detection (3 levels)",
+                      "Repository health scoring",
+                      "Real-time streaming AI",
+                      "Commit category classification",
+                      "Engineering recommendations",
+                      "Export-ready summaries",
+                    ].map((f, i) => (
+                      <div
+                        key={f}
+                        style={{
+                          display: "flex",
+                          alignItems: "center",
+                          gap: "10px",
+                          padding: "7px 0",
+                          borderBottom:
+                            i < 7 ? "1px solid hsl(220 10% 10%)" : "none",
+                        }}
+                      >
+                        <span
+                          style={{
+                            fontFamily: "JetBrains Mono, monospace",
+                            fontSize: "11px",
+                            color: "hsl(38 92% 58%)",
+                            flexShrink: 0,
+                          }}
+                        >
+                          +
+                        </span>
+                        <span
+                          style={{
+                            fontSize: "12px",
+                            color: "hsl(220 8% 65%)",
+                            fontFamily: "JetBrains Mono, monospace",
+                          }}
+                        >
+                          {f}
+                        </span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </FadeUp>
+            </div>
           </div>
         </section>
 
@@ -1359,97 +2018,106 @@ export default function LandingPage() {
             position: "relative",
             zIndex: 1,
             padding: "80px 24px",
-            borderTop: "1px solid hsl(222 14% 12%)",
+            borderTop: "1px solid hsl(220 12% 11%)",
           }}
         >
           <div style={{ maxWidth: "640px", margin: "0 auto" }}>
             <FadeUp>
-              <div style={{ textAlign: "center", marginBottom: "40px" }}>
-                <span
+              <div style={{ marginBottom: "40px" }}>
+                <div
                   style={{
-                    fontSize: "11px",
-                    fontWeight: 700,
-                    color: "hsl(38 92% 58%)",
-                    textTransform: "uppercase",
-                    letterSpacing: "0.12em",
-                    display: "block",
-                    marginBottom: "12px",
+                    display: "flex",
+                    alignItems: "center",
+                    gap: "8px",
+                    marginBottom: "14px",
                   }}
                 >
-                  FAQ
-                </span>
+                  <div
+                    style={{
+                      width: "20px",
+                      height: "1px",
+                      background: "hsl(38 92% 54%)",
+                    }}
+                  />
+                  <span
+                    style={{
+                      fontSize: "11px",
+                      fontWeight: 700,
+                      color: "hsl(38 92% 58%)",
+                      textTransform: "uppercase",
+                      letterSpacing: "0.1em",
+                    }}
+                  >
+                    FAQ
+                  </span>
+                </div>
                 <h2
                   style={{
-                    fontSize: "28px",
+                    fontSize: "26px",
                     fontWeight: 800,
                     letterSpacing: "-0.035em",
-                    color: "hsl(210 20% 94%)",
+                    color: "hsl(38 10% 94%)",
                   }}
                 >
-                  Common questions
+                  Questions about GitMind
                 </h2>
               </div>
             </FadeUp>
 
-            <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
+            <div
+              style={{ display: "flex", flexDirection: "column", gap: "2px" }}
+            >
               {FAQS.map((faq, i) => (
                 <FadeUp key={faq.q} delay={i * 0.04}>
                   <div
                     style={{
-                      background: "hsl(220 14% 9%)",
-                      border: "1px solid hsl(220 12% 13%)",
-                      borderRadius: "9px",
+                      borderBottom: "1px solid hsl(220 12% 11%)",
                       overflow: "hidden",
-                      transition: "border-color 0.15s",
                     }}
-                    onMouseEnter={(e) =>
-                      ((e.currentTarget as HTMLElement).style.borderColor =
-                        "hsl(220 12% 18%)")
-                    }
-                    onMouseLeave={(e) =>
-                      ((e.currentTarget as HTMLElement).style.borderColor =
-                        "hsl(220 12% 13%)")
-                    }
                   >
                     <button
-                      onClick={() =>
-                        setOpenFaq(openFaq === i ? null : i)
-                      }
+                      onClick={() => setOpenFaq(openFaq === i ? null : i)}
                       style={{
                         width: "100%",
                         display: "flex",
                         alignItems: "center",
                         justifyContent: "space-between",
-                        padding: "15px 18px",
+                        padding: "16px 0",
                         background: "none",
                         border: "none",
                         cursor: "pointer",
                         fontFamily: "Inter, sans-serif",
                         textAlign: "left",
-                        gap: "12px",
+                        gap: "16px",
                       }}
                     >
                       <span
                         style={{
                           fontSize: "13px",
                           fontWeight: 500,
-                          color: "hsl(210 20% 88%)",
+                          color:
+                            openFaq === i
+                              ? "hsl(38 92% 62%)"
+                              : "hsl(38 10% 82%)",
+                          transition: "color 0.15s",
                         }}
                       >
                         {faq.q}
                       </span>
-                      <ChevronDown
-                        size={15}
+                      <span
                         style={{
-                          color: "hsl(215 12% 45%)",
+                          fontSize: "16px",
+                          color: "hsl(220 8% 40%)",
                           flexShrink: 0,
+                          fontWeight: 300,
                           transform:
-                            openFaq === i
-                              ? "rotate(180deg)"
-                              : "rotate(0deg)",
+                            openFaq === i ? "rotate(45deg)" : "rotate(0deg)",
                           transition: "transform 0.2s",
+                          display: "inline-block",
                         }}
-                      />
+                      >
+                        +
+                      </span>
                     </button>
 
                     <AnimatePresence>
@@ -1458,17 +2126,15 @@ export default function LandingPage() {
                           initial={{ height: 0 }}
                           animate={{ height: "auto" }}
                           exit={{ height: 0 }}
-                          transition={{ duration: 0.2 }}
+                          transition={{ duration: 0.18 }}
                           style={{ overflow: "hidden" }}
                         >
                           <p
                             style={{
-                              padding: "0 18px 15px",
+                              paddingBottom: "16px",
                               fontSize: "13px",
-                              color: "hsl(215 12% 52%)",
-                              lineHeight: 1.7,
-                              borderTop: "1px solid hsl(222 14% 14%)",
-                              paddingTop: "12px",
+                              color: "hsl(220 8% 50%)",
+                              lineHeight: 1.75,
                               margin: 0,
                             }}
                           >
@@ -1484,118 +2150,177 @@ export default function LandingPage() {
           </div>
         </section>
 
-        {/* ── CTA ─────────────────────────────────────────────────── */}
+        {/* ── FINAL CTA ────────────────────────────────────────────── */}
         <section
           style={{
             position: "relative",
             zIndex: 1,
             padding: "80px 24px",
-            background: "hsl(222 18% 8%)",
-            borderTop: "1px solid hsl(222 14% 12%)",
+            borderTop: "1px solid hsl(220 12% 11%)",
           }}
         >
           <FadeUp>
             <div
               style={{
-                maxWidth: "560px",
+                maxWidth: "700px",
                 margin: "0 auto",
-                textAlign: "center",
               }}
             >
+              {/* Terminal-style CTA block */}
               <div
                 style={{
-                  width: "52px",
-                  height: "52px",
-                  borderRadius: "14px",
-                  background: "hsl(38 92% 54% / 0.08)",
-                  border: "1px solid hsl(38 92% 54% / 0.2)",
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  margin: "0 auto 20px",
+                  background: "hsl(220 14% 9%)",
+                  border: "1px solid hsl(220 12% 14%)",
+                  borderRadius: "12px",
+                  overflow: "hidden",
+                  boxShadow: "0 0 48px hsl(38 92% 54% / 0.06)",
                 }}
               >
-                <Terminal
-                  size={22}
-                  style={{ color: "hsl(38 92% 58%)" }}
-                />
-              </div>
-              <h2
-                style={{
-                  fontSize: "clamp(26px, 3.5vw, 34px)",
-                  fontWeight: 800,
-                  letterSpacing: "-0.04em",
-                  marginBottom: "12px",
-                  color: "hsl(210 20% 94%)",
-                  lineHeight: 1.15,
-                }}
-              >
-                Ready to understand
-                <br />
-                any codebase?
-              </h2>
-              <p
-                style={{
-                  fontSize: "14px",
-                  color: "hsl(215 12% 50%)",
-                  marginBottom: "28px",
-                  lineHeight: 1.65,
-                }}
-              >
-                Paste a GitHub URL and get AI-powered engineering intelligence
-                in seconds. No signup required to analyze.
-              </p>
-              <div
-                style={{
-                  display: "flex",
-                  gap: "10px",
-                  justifyContent: "center",
-                  flexWrap: "wrap",
-                }}
-              >
-                <motion.button
-                  whileHover={{ scale: 1.02 }}
-                  whileTap={{ scale: 0.98 }}
-                  onClick={() => router.push("/analyze")}
+                {/* Terminal header */}
+                <div
                   style={{
+                    padding: "11px 16px",
+                    borderBottom: "1px solid hsl(220 10% 11%)",
                     display: "flex",
                     alignItems: "center",
-                    gap: "7px",
-                    padding: "11px 22px",
-                    background: "hsl(38 92% 54%)",
-                    border: "none",
-                    borderRadius: "8px",
-                    color: "hsl(220 16% 6%)",
-                    fontSize: "13px",
-                    fontWeight: 700,
-                    cursor: "pointer",
-                    fontFamily: "Inter, sans-serif",
+                    gap: "8px",
+                    background: "hsl(220 14% 8%)",
                   }}
                 >
-                  <Search size={14} />
-                  Analyze a repository
-                </motion.button>
-                <motion.button
-                  whileHover={{ scale: 1.02 }}
-                  whileTap={{ scale: 0.98 }}
-                  onClick={() => router.push("/signup")}
-                  style={{
-                    display: "flex",
-                    alignItems: "center",
-                    gap: "7px",
-                    padding: "11px 22px",
-                    background: "hsl(220 12% 13%)",
-                    border: "1px solid hsl(222 14% 22%)",
-                    borderRadius: "8px",
-                    color: "hsl(210 20% 85%)",
-                    fontSize: "13px",
-                    fontWeight: 500,
-                    cursor: "pointer",
-                    fontFamily: "Inter, sans-serif",
-                  }}
-                >
-                  Create free account
-                </motion.button>
+                  <div style={{ display: "flex", gap: "5px" }}>
+                    {[
+                      "hsl(0 70% 56%)",
+                      "hsl(38 95% 54%)",
+                      "hsl(152 68% 42%)",
+                    ].map((c) => (
+                      <div
+                        key={c}
+                        style={{
+                          width: "10px",
+                          height: "10px",
+                          borderRadius: "50%",
+                          background: c,
+                          opacity: 0.6,
+                        }}
+                      />
+                    ))}
+                  </div>
+                  <span
+                    style={{
+                      fontFamily: "JetBrains Mono, monospace",
+                      fontSize: "11px",
+                      color: "hsl(220 8% 36%)",
+                      marginLeft: "6px",
+                    }}
+                  >
+                    gitmind analyze
+                  </span>
+                </div>
+
+                {/* Content */}
+                <div style={{ padding: "36px 40px" }}>
+                  <h2
+                    style={{
+                      fontSize: "clamp(22px, 3vw, 30px)",
+                      fontWeight: 800,
+                      letterSpacing: "-0.04em",
+                      marginBottom: "10px",
+                      color: "hsl(38 10% 94%)",
+                      lineHeight: 1.2,
+                    }}
+                  >
+                    Ready to understand any codebase?
+                  </h2>
+                  <p
+                    style={{
+                      fontSize: "13px",
+                      color: "hsl(220 8% 48%)",
+                      marginBottom: "28px",
+                      lineHeight: 1.65,
+                    }}
+                  >
+                    Paste a GitHub URL. Get AI-powered engineering intelligence
+                    in seconds.
+                    <br />
+                    No signup required to analyze.
+                  </p>
+
+                  {/* Fake terminal line */}
+                  <div
+                    style={{
+                      fontFamily: "JetBrains Mono, monospace",
+                      fontSize: "12px",
+                      color: "hsl(38 92% 58%)",
+                      marginBottom: "24px",
+                      display: "flex",
+                      alignItems: "center",
+                      gap: "8px",
+                    }}
+                  >
+                    <span style={{ color: "hsl(220 8% 36%)" }}>$</span>
+                    gitmind analyze github.com/vercel/next.js
+                    <motion.span
+                      animate={{ opacity: [1, 0, 1] }}
+                      transition={{ duration: 1, repeat: Infinity }}
+                      style={{
+                        display: "inline-block",
+                        width: "8px",
+                        height: "14px",
+                        background: "hsl(38 92% 54%)",
+                        borderRadius: "1px",
+                        verticalAlign: "text-bottom",
+                      }}
+                    />
+                  </div>
+
+                  <div
+                    style={{ display: "flex", gap: "10px", flexWrap: "wrap" }}
+                  >
+                    <motion.button
+                      whileHover={{ scale: 1.02 }}
+                      whileTap={{ scale: 0.98 }}
+                      onClick={() => router.push("/analyze")}
+                      style={{
+                        display: "inline-flex",
+                        alignItems: "center",
+                        gap: "8px",
+                        padding: "10px 22px",
+                        background: "hsl(38 92% 54%)",
+                        border: "none",
+                        borderRadius: "8px",
+                        color: "hsl(220 16% 6%)",
+                        fontSize: "13px",
+                        fontWeight: 700,
+                        cursor: "pointer",
+                        fontFamily: "Inter, sans-serif",
+                      }}
+                    >
+                      <Search size={14} />
+                      Analyze a repository
+                    </motion.button>
+                    <motion.button
+                      whileHover={{ scale: 1.02 }}
+                      whileTap={{ scale: 0.98 }}
+                      onClick={() => router.push("/signup")}
+                      style={{
+                        display: "inline-flex",
+                        alignItems: "center",
+                        gap: "8px",
+                        padding: "10px 20px",
+                        background: "none",
+                        border: "1px solid hsl(220 12% 18%)",
+                        borderRadius: "8px",
+                        color: "hsl(220 8% 62%)",
+                        fontSize: "13px",
+                        fontWeight: 500,
+                        cursor: "pointer",
+                        fontFamily: "Inter, sans-serif",
+                      }}
+                    >
+                      Explore Dashboard
+                    </motion.button>
+                  </div>
+                </div>
               </div>
             </div>
           </FadeUp>
@@ -1607,12 +2332,12 @@ export default function LandingPage() {
             position: "relative",
             zIndex: 1,
             padding: "24px",
-            borderTop: "1px solid hsl(222 14% 12%)",
+            borderTop: "1px solid hsl(220 12% 10%)",
           }}
         >
           <div
             style={{
-              maxWidth: "1100px",
+              maxWidth: "1180px",
               margin: "0 auto",
               display: "flex",
               alignItems: "center",
@@ -1625,13 +2350,12 @@ export default function LandingPage() {
             <p
               style={{
                 fontSize: "12px",
-                color: "hsl(215 12% 40%)",
+                color: "hsl(220 8% 36%)",
                 textAlign: "center",
               }}
             >
-              Built by{" "}
-              <span style={{ color: "hsl(215 12% 58%)" }}>Arun C</span> ·
-              VIT Vellore · Powered by Gemini · Groq · GitHub API
+              Built by <span style={{ color: "hsl(220 8% 54%)" }}>Arun C</span>{" "}
+              · Powered by Gemini · Groq · GitHub API
             </p>
             <a
               href="https://github.com/ArunChandrasekar07/gitmind"
@@ -1642,15 +2366,15 @@ export default function LandingPage() {
                 alignItems: "center",
                 gap: "6px",
                 fontSize: "12px",
-                color: "hsl(215 12% 42%)",
+                color: "hsl(220 8% 38%)",
                 textDecoration: "none",
                 transition: "color 0.15s",
               }}
               onMouseEnter={(e) =>
-                (e.currentTarget.style.color = "hsl(210 20% 75%)")
+                (e.currentTarget.style.color = "hsl(38 92% 58%)")
               }
               onMouseLeave={(e) =>
-                (e.currentTarget.style.color = "hsl(215 12% 42%)")
+                (e.currentTarget.style.color = "hsl(220 8% 38%)")
               }
             >
               <GitBranch size={13} />
