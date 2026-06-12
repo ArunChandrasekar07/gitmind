@@ -40,7 +40,7 @@ export default function ForgotPasswordPage() {
       <div
         style={{
           minHeight: "100vh",
-          background: "hsl(222 20% 7%)",
+          background: "hsl(220 16% 6%)",
           display: "flex",
           alignItems: "center",
           justifyContent: "center",
@@ -89,8 +89,8 @@ export default function ForgotPasswordPage() {
 
           <div
             style={{
-              background: "hsl(222 18% 10%)",
-              border: "1px solid hsl(222 14% 15%)",
+              background: "hsl(220 14% 9%)",
+              border: "1px solid hsl(220 12% 13%)",
               borderRadius: "12px",
               padding: "32px",
               boxShadow: "0 8px 32px hsl(0 0% 0% / 0.4)",
@@ -147,9 +147,9 @@ export default function ForgotPasswordPage() {
                     alignItems: "center",
                     gap: "6px",
                     padding: "9px 18px",
-                    background: "hsl(188 94% 48%)",
+                    background: "hsl(38 92% 54%)",
                     borderRadius: "8px",
-                    color: "hsl(222 20% 7%)",
+                    color: "hsl(220 16% 6%)",
                     fontSize: "13px",
                     fontWeight: 600,
                     textDecoration: "none",
@@ -207,8 +207,8 @@ export default function ForgotPasswordPage() {
                         style={{
                           width: "100%",
                           padding: "10px 12px",
-                          background: "hsl(222 16% 12%)",
-                          border: "1px solid hsl(222 14% 18%)",
+                          background: "hsl(220 12% 11%)",
+                          border: "1px solid hsl(220 12% 16%)",
                           borderRadius: "8px",
                           color: "hsl(210 20% 94%)",
                           fontSize: "13px",
@@ -220,13 +220,13 @@ export default function ForgotPasswordPage() {
                         }}
                         onFocus={(e) => {
                           e.currentTarget.style.borderColor =
-                            "hsl(188 94% 48% / 0.6)";
+                            "hsl(38 92% 54% / 0.6)";
                           e.currentTarget.style.boxShadow =
-                            "0 0 0 3px hsl(188 94% 48% / 0.1)";
+                            "0 0 0 3px hsl(38 92% 54% / 0.1)";
                         }}
                         onBlur={(e) => {
                           e.currentTarget.style.borderColor =
-                            "hsl(222 14% 18%)";
+                            "hsl(220 12% 16%)";
                           e.currentTarget.style.boxShadow = "none";
                         }}
                       />
@@ -257,10 +257,10 @@ export default function ForgotPasswordPage() {
                         gap: "8px",
                         width: "100%",
                         padding: "11px 16px",
-                        background: "hsl(188 94% 48%)",
+                        background: "hsl(38 92% 54%)",
                         border: "none",
                         borderRadius: "8px",
-                        color: "hsl(222 20% 7%)",
+                        color: "hsl(220 16% 6%)",
                         fontSize: "13px",
                         fontWeight: 600,
                         cursor: isLoading ? "not-allowed" : "pointer",

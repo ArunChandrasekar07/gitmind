@@ -11,20 +11,30 @@ export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
   },
 });
 
-export async function signInWithGoogle() {
+export async function signInWithGoogle(from?: string) {
+  const origin =
+    typeof window !== "undefined" ? window.location.origin : "";
+
   return supabase.auth.signInWithOAuth({
     provider: "google",
     options: {
-      redirectTo: `${typeof window !== "undefined" ? window.location.origin : ""}/auth/callback`,
+      redirectTo: `${origin}/auth/callback${
+        from ? `?from=${encodeURIComponent(from)}` : ""
+      }`,
     },
   });
 }
 
-export async function signInWithGitHub() {
+export async function signInWithGitHub(from?: string) {
+  const origin =
+    typeof window !== "undefined" ? window.location.origin : "";
+
   return supabase.auth.signInWithOAuth({
     provider: "github",
     options: {
-      redirectTo: `${typeof window !== "undefined" ? window.location.origin : ""}/auth/callback`,
+      redirectTo: `${origin}/auth/callback${
+        from ? `?from=${encodeURIComponent(from)}` : ""
+      }`,
     },
   });
 }

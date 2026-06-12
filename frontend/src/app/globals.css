@@ -1,5 +1,4 @@
 @import url("https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap");
-
 @import "tailwindcss";
 
 @theme {
@@ -9,55 +8,54 @@
 
 @layer base {
   :root {
-    /* GitMind — Deep Slate + Cyan identity */
-    /* Nothing from DevMind */
-    --background:          222 20% 7%;
-    --background-subtle:   222 18% 9%;
-    --surface:             222 18% 10%;
-    --surface-raised:      222 16% 13%;
-    --surface-overlay:     222 16% 16%;
+    /* GitMind — Obsidian + Amber Gold */
+    --background:          220 16% 6%;
+    --background-subtle:   220 14% 8%;
+    --surface:             220 14% 9%;
+    --surface-raised:      220 12% 12%;
+    --surface-overlay:     220 10% 15%;
 
-    --foreground:          210 20% 94%;
-    --foreground-muted:    215 12% 58%;
-    --foreground-subtle:   215 10% 38%;
+    --foreground:          38 10% 94%;
+    --foreground-muted:    220 8% 54%;
+    --foreground-subtle:   220 6% 36%;
 
-    /* Cyan accent — unique to GitMind */
-    --accent:              188 94% 48%;
-    --accent-dim:          188 94% 40%;
-    --accent-muted:        188 94% 48% / 0.12;
-    --accent-border:       188 94% 48% / 0.25;
+    /* Amber gold accent */
+    --accent:              38 92% 54%;
+    --accent-dim:          38 92% 44%;
+    --accent-muted:        38 92% 54% / 0.12;
+    --accent-border:       38 92% 54% / 0.28;
 
     /* Semantic */
-    --success:             152 68% 42%;
-    --success-muted:       152 68% 42% / 0.12;
-    --success-border:      152 68% 42% / 0.3;
+    --success:             152 60% 40%;
+    --success-muted:       152 60% 40% / 0.12;
+    --success-border:      152 60% 40% / 0.28;
 
-    --warning:             38 95% 54%;
-    --warning-muted:       38 95% 54% / 0.12;
-    --warning-border:      38 95% 54% / 0.3;
+    --warning:             38 92% 54%;
+    --warning-muted:       38 92% 54% / 0.12;
+    --warning-border:      38 92% 54% / 0.28;
 
-    --danger:              0 70% 56%;
-    --danger-muted:        0 70% 56% / 0.12;
-    --danger-border:       0 70% 56% / 0.3;
+    --danger:              0 70% 54%;
+    --danger-muted:        0 70% 54% / 0.12;
+    --danger-border:       0 70% 54% / 0.28;
 
     /* shadcn compat */
-    --card:                222 18% 10%;
-    --card-foreground:     210 20% 94%;
-    --popover:             222 16% 13%;
-    --popover-foreground:  210 20% 94%;
-    --primary:             188 94% 48%;
-    --primary-foreground:  222 20% 7%;
-    --secondary:           222 16% 13%;
-    --secondary-foreground: 210 20% 94%;
-    --muted:               222 16% 13%;
-    --muted-foreground:    215 12% 58%;
-    --accent-shadcn:       222 16% 16%;
-    --accent-foreground:   210 20% 94%;
-    --destructive:         0 70% 56%;
-    --destructive-foreground: 210 20% 94%;
-    --border:              222 14% 15%;
-    --input:               222 14% 15%;
-    --ring:                188 94% 48%;
+    --card:                220 14% 9%;
+    --card-foreground:     38 10% 94%;
+    --popover:             220 12% 12%;
+    --popover-foreground:  38 10% 94%;
+    --primary:             38 92% 54%;
+    --primary-foreground:  220 16% 6%;
+    --secondary:           220 12% 12%;
+    --secondary-foreground: 38 10% 94%;
+    --muted:               220 12% 12%;
+    --muted-foreground:    220 8% 54%;
+    --accent-shadcn:       220 10% 15%;
+    --accent-foreground:   38 10% 94%;
+    --destructive:         0 70% 54%;
+    --destructive-foreground: 38 10% 94%;
+    --border:              220 12% 13%;
+    --input:               220 12% 13%;
+    --ring:                38 92% 54%;
     --radius:              0.5rem;
   }
 
@@ -85,18 +83,18 @@
   }
 
   ::selection {
-    background: hsl(188 94% 48% / 0.2);
-    color: hsl(var(--foreground));
+    background: hsl(38 92% 54% / 0.2);
+    color: hsl(38 10% 94%);
   }
 
   ::-webkit-scrollbar { width: 5px; height: 5px; }
   ::-webkit-scrollbar-track { background: transparent; }
   ::-webkit-scrollbar-thumb {
-    background: hsl(222 14% 20%);
+    background: hsl(220 10% 18%);
     border-radius: 3px;
   }
   ::-webkit-scrollbar-thumb:hover {
-    background: hsl(222 14% 28%);
+    background: hsl(220 10% 26%);
   }
 
   h1, h2, h3, h4, h5, h6 {
@@ -115,61 +113,90 @@
 @layer utilities {
   .font-mono { font-family: var(--font-mono); }
 
-  /* === GitMind Cyan gradient === */
-  .gradient-cyan {
-    background: linear-gradient(135deg, hsl(188 94% 52%) 0%, hsl(200 90% 58%) 100%);
+
+  /* === GitMind Amber + Soft Gold gradient === */
+  .gradient-amber {
+    background: linear-gradient(
+      135deg,
+      hsl(38 92% 54%) 0%,
+      hsl(45 95% 68%) 100%
+    );
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
   }
 
+  /* === Soft gold text — premium highlights === */
+  .text-gold {
+    color: hsl(45 95% 68%);
+  }
+
+  /* === Premium badge === */
+  .badge-premium {
+    color: hsl(45 95% 72%);
+    background: hsl(45 95% 68% / 0.1);
+    border-color: hsl(45 95% 68% / 0.25);
+  }
+
   /* === Surfaces === */
-  .bg-surface        { background: hsl(var(--surface)); }
-  .bg-surface-raised { background: hsl(var(--surface-raised)); }
-  .bg-surface-overlay { background: hsl(var(--surface-overlay)); }
-  .bg-subtle         { background: hsl(var(--background-subtle)); }
+  .bg-surface         { background: hsl(220 14% 9%); }
+  .bg-surface-raised  { background: hsl(220 12% 12%); }
+  .bg-surface-overlay { background: hsl(220 10% 15%); }
+  .bg-subtle          { background: hsl(220 14% 8%); }
 
   /* === Borders === */
-  .border-subtle  { border-color: hsl(222 14% 15%); }
-  .border-strong  { border-color: hsl(222 14% 22%); }
-  .border-accent  { border-color: hsl(var(--accent-border)); }
+  .border-subtle { border-color: hsl(220 12% 13%); }
+  .border-strong { border-color: hsl(220 12% 20%); }
+  .border-accent { border-color: hsl(38 92% 54% / 0.28); }
 
   /* === Shadows === */
   .shadow-sm-dark {
-    box-shadow: 0 1px 3px hsl(0 0% 0% / 0.4),
-                0 0 0 1px hsl(222 14% 15%);
+    box-shadow:
+      0 1px 3px hsl(0 0% 0% / 0.45),
+      0 0 0 1px hsl(220 12% 13%);
   }
   .shadow-md-dark {
-    box-shadow: 0 4px 16px hsl(0 0% 0% / 0.5),
-                0 0 0 1px hsl(222 14% 16%);
+    box-shadow:
+      0 4px 16px hsl(0 0% 0% / 0.55),
+      0 0 0 1px hsl(220 12% 14%);
   }
   .shadow-lg-dark {
-    box-shadow: 0 8px 32px hsl(0 0% 0% / 0.6),
-                0 0 0 1px hsl(222 14% 18%);
+    box-shadow:
+      0 8px 32px hsl(0 0% 0% / 0.65),
+      0 0 0 1px hsl(220 12% 15%);
   }
   .shadow-accent {
-    box-shadow: 0 0 32px hsl(188 94% 48% / 0.12),
-                0 0 0 1px hsl(188 94% 48% / 0.2);
+    box-shadow:
+      0 0 32px hsl(38 92% 54% / 0.14),
+      0 0 0 1px hsl(38 92% 54% / 0.22);
   }
 
-  /* === Glow === */
-  .glow-cyan {
-    box-shadow: 0 0 24px hsl(188 94% 48% / 0.2),
-                0 0 48px hsl(188 94% 48% / 0.08);
+  /* === Amber glow === */
+  .glow-amber {
+    box-shadow:
+      0 0 24px hsl(38 92% 54% / 0.18),
+      0 0 48px hsl(38 92% 54% / 0.07);
+  }
+
+  /* === Premium gold glow — logo, hero, special elements === */
+  .glow-gold {
+    box-shadow:
+      0 0 32px hsl(45 95% 68% / 0.22),
+      0 0 64px hsl(45 95% 68% / 0.08);
   }
 
   /* === Engineering grid pattern === */
   .bg-grid-subtle {
     background-image:
-      linear-gradient(hsl(210 20% 94% / 0.03) 1px, transparent 1px),
-      linear-gradient(90deg, hsl(210 20% 94% / 0.03) 1px, transparent 1px);
+      linear-gradient(hsl(38 10% 94% / 0.025) 1px, transparent 1px),
+      linear-gradient(90deg, hsl(38 10% 94% / 0.025) 1px, transparent 1px);
     background-size: 32px 32px;
   }
 
   /* === Dot grid === */
   .bg-dots {
     background-image: radial-gradient(
-      hsl(210 20% 94% / 0.06) 1px,
+      hsl(38 10% 94% / 0.055) 1px,
       transparent 1px
     );
     background-size: 20px 20px;
@@ -189,37 +216,37 @@
     width: 1px;
     background: linear-gradient(
       to bottom,
-      hsl(188 94% 48% / 0.5),
-      hsl(188 94% 48% / 0.05)
+      hsl(38 92% 54% / 0.5),
+      hsl(38 92% 54% / 0.04)
     );
   }
 
   /* === Risk styles === */
-  .risk-safe   {
-    color: hsl(152 68% 48%);
-    background: hsl(var(--success-muted));
-    border-color: hsl(var(--success-border));
+  .risk-safe {
+    color: hsl(152 60% 46%);
+    background: hsl(152 60% 40% / 0.1);
+    border-color: hsl(152 60% 40% / 0.28);
   }
-  .risk-warn   {
-    color: hsl(38 95% 60%);
-    background: hsl(var(--warning-muted));
-    border-color: hsl(var(--warning-border));
+  .risk-warn {
+    color: hsl(38 92% 60%);
+    background: hsl(38 92% 54% / 0.1);
+    border-color: hsl(38 92% 54% / 0.28);
   }
   .risk-danger {
-    color: hsl(0 70% 64%);
-    background: hsl(var(--danger-muted));
-    border-color: hsl(var(--danger-border));
+    color: hsl(0 70% 62%);
+    background: hsl(0 70% 54% / 0.1);
+    border-color: hsl(0 70% 54% / 0.28);
   }
 
   /* === Commit categories === */
-  .cat-feat     { color: hsl(199 89% 58%); background: hsl(199 89% 48% / 0.1); border-color: hsl(199 89% 48% / 0.25); }
-  .cat-fix      { color: hsl(0 70% 64%);   background: hsl(0 70% 56% / 0.1);   border-color: hsl(0 70% 56% / 0.25); }
-  .cat-refactor { color: hsl(258 80% 72%); background: hsl(258 80% 65% / 0.1); border-color: hsl(258 80% 65% / 0.25); }
-  .cat-perf     { color: hsl(38 95% 60%);  background: hsl(38 95% 54% / 0.1);  border-color: hsl(38 95% 54% / 0.25); }
-  .cat-security { color: hsl(328 75% 68%); background: hsl(328 75% 60% / 0.1); border-color: hsl(328 75% 60% / 0.25); }
-  .cat-docs     { color: hsl(155 68% 52%); background: hsl(155 68% 42% / 0.1); border-color: hsl(155 68% 42% / 0.25); }
-  .cat-chore    { color: hsl(215 12% 58%); background: hsl(215 12% 50% / 0.1); border-color: hsl(215 12% 50% / 0.25); }
-  .cat-commit   { color: hsl(215 12% 52%); background: hsl(215 12% 45% / 0.1); border-color: hsl(215 12% 45% / 0.25); }
+  .cat-feat     { color: hsl(210 80% 65%); background: hsl(210 80% 60% / 0.1); border-color: hsl(210 80% 60% / 0.25); }
+  .cat-fix      { color: hsl(0 70% 62%);   background: hsl(0 70% 54% / 0.1);   border-color: hsl(0 70% 54% / 0.25); }
+  .cat-refactor { color: hsl(258 75% 70%); background: hsl(258 75% 65% / 0.1); border-color: hsl(258 75% 65% / 0.25); }
+  .cat-perf     { color: hsl(38 92% 60%);  background: hsl(38 92% 54% / 0.1);  border-color: hsl(38 92% 54% / 0.25); }
+  .cat-security { color: hsl(330 70% 65%); background: hsl(330 70% 60% / 0.1); border-color: hsl(330 70% 60% / 0.25); }
+  .cat-docs     { color: hsl(155 60% 50%); background: hsl(155 60% 42% / 0.1); border-color: hsl(155 60% 42% / 0.25); }
+  .cat-chore    { color: hsl(220 8% 55%);  background: hsl(220 8% 50% / 0.1);  border-color: hsl(220 8% 50% / 0.25); }
+  .cat-commit   { color: hsl(220 8% 50%);  background: hsl(220 8% 44% / 0.1);  border-color: hsl(220 8% 44% / 0.25); }
 
   /* === Animations === */
   @keyframes shimmer {
@@ -237,7 +264,7 @@
     background: linear-gradient(
       90deg,
       transparent,
-      hsl(210 20% 94% / 0.04),
+      hsl(38 10% 94% / 0.04),
       transparent
     );
     animation: shimmer 1.8s infinite;
@@ -247,10 +274,15 @@
   .spin { animation: spin 1s linear infinite; }
 
   @keyframes pulse-glow {
-    0%, 100% { box-shadow: 0 0 0 0 hsl(188 94% 48% / 0.3); }
-    50%       { box-shadow: 0 0 0 8px hsl(188 94% 48% / 0); }
+    0%, 100% { box-shadow: 0 0 0 0 hsl(38 92% 54% / 0.35); }
+    50%       { box-shadow: 0 0 0 8px hsl(38 92% 54% / 0); }
   }
-  .pulse-glow { animation: pulse-glow 2s infinite; }
+
+  @keyframes pulse-gold {
+    0%, 100% { box-shadow: 0 0 0 0 hsl(45 95% 68% / 0.4); }
+    50%       { box-shadow: 0 0 0 10px hsl(45 95% 68% / 0); }
+  }
+  .pulse-gold { animation: pulse-gold 2.5s infinite; }
 
   @keyframes fade-up {
     from { opacity: 0; transform: translateY(12px); }
@@ -264,64 +296,46 @@
   }
   .blink { animation: blink 1s step-end infinite; }
 
-  /* === Input focus === */
-  .input-focus {
-    transition: border-color 0.15s, box-shadow 0.15s;
-  }
+  .input-focus { transition: border-color 0.15s, box-shadow 0.15s; }
   .input-focus:focus {
     outline: none;
-    border-color: hsl(188 94% 48% / 0.6);
-    box-shadow: 0 0 0 3px hsl(188 94% 48% / 0.12);
+    border-color: hsl(38 92% 54% / 0.6);
+    box-shadow: 0 0 0 3px hsl(38 92% 54% / 0.12);
   }
 
-  /* === Button base === */
   .btn-primary {
-    background: hsl(188 94% 48%);
-    color: hsl(222 20% 7%);
+    background: hsl(38 92% 54%);
+    color: hsl(220 16% 6%);
     font-weight: 600;
     transition: opacity 0.15s, transform 0.1s;
   }
-  .btn-primary:hover:not(:disabled) {
-    opacity: 0.9;
-  }
-  .btn-primary:active:not(:disabled) {
-    transform: scale(0.98);
-  }
-  .btn-primary:disabled {
-    opacity: 0.5;
-    cursor: not-allowed;
-  }
+  .btn-primary:hover:not(:disabled) { opacity: 0.9; }
+  .btn-primary:active:not(:disabled) { transform: scale(0.98); }
+  .btn-primary:disabled { opacity: 0.5; cursor: not-allowed; }
 
   .btn-secondary {
-    background: hsl(222 16% 13%);
-    color: hsl(210 20% 94%);
-    border: 1px solid hsl(222 14% 20%);
+    background: hsl(220 12% 12%);
+    color: hsl(38 10% 88%);
+    border: 1px solid hsl(220 12% 18%);
     transition: background 0.15s, border-color 0.15s;
   }
   .btn-secondary:hover:not(:disabled) {
-    background: hsl(222 16% 16%);
-    border-color: hsl(222 14% 26%);
+    background: hsl(220 12% 15%);
+    border-color: hsl(220 12% 24%);
   }
-  .btn-secondary:disabled {
-    opacity: 0.5;
-    cursor: not-allowed;
-  }
+  .btn-secondary:disabled { opacity: 0.5; cursor: not-allowed; }
 
-  /* === Card base === */
   .card {
-    background: hsl(var(--surface));
-    border: 1px solid hsl(222 14% 15%);
+    background: hsl(220 14% 9%);
+    border: 1px solid hsl(220 12% 13%);
     border-radius: 10px;
   }
-  .card-hover {
-    transition: border-color 0.15s, background 0.15s;
-  }
+  .card-hover { transition: border-color 0.15s, background 0.15s; }
   .card-hover:hover {
-    border-color: hsl(222 14% 22%);
-    background: hsl(var(--surface-raised));
+    border-color: hsl(220 12% 20%);
+    background: hsl(220 12% 11%);
   }
 
-  /* === Scrollbar hidden === */
   .scrollbar-none {
     scrollbar-width: none;
     -ms-overflow-style: none;

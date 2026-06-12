@@ -45,24 +45,24 @@ export function LoadingStages({ stages, currentStage }: LoadingStagesProps) {
                 alignItems: "center",
                 justifyContent: "center",
                 background: isDone
-                  ? "hsl(188 94% 48% / 0.15)"
+                  ? "hsl(38 92% 54% / 0.15)"
                   : isActive
-                  ? "hsl(188 94% 48% / 0.1)"
-                  : "hsl(222 16% 14%)",
+                  ? "hsl(38 92% 54% / 0.1)"
+                  : "hsl(220 12% 13%)",
                 border: isDone
-                  ? "1px solid hsl(188 94% 48% / 0.4)"
+                  ? "1px solid hsl(38 92% 54% / 0.4)"
                   : isActive
-                  ? "1px solid hsl(188 94% 48% / 0.3)"
-                  : "1px solid hsl(222 14% 20%)",
+                  ? "1px solid hsl(38 92% 54% / 0.3)"
+                  : "1px solid hsl(220 12% 18%)",
               }}
             >
               {isDone ? (
-                <Check size={11} style={{ color: "hsl(188 94% 52%)" }} />
+                <Check size={11} style={{ color: "hsl(38 92% 58%)" }} />
               ) : isActive ? (
                 <Loader2
                   size={11}
                   style={{
-                    color: "hsl(188 94% 52%)",
+                    color: "hsl(38 92% 58%)",
                     animation: "spin 1s linear infinite",
                   }}
                 />
@@ -84,7 +84,7 @@ export function LoadingStages({ stages, currentStage }: LoadingStagesProps) {
                 color: isDone
                   ? "hsl(215 12% 58%)"
                   : isActive
-                  ? "hsl(188 94% 62%)"
+                  ? "hsl(38 92% 66%)"
                   : "hsl(215 12% 45%)",
                 fontWeight: isActive ? 500 : 400,
                 transition: "color 0.2s",

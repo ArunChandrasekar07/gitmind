@@ -10,7 +10,7 @@ export default function NotFound() {
     <div
       style={{
         minHeight: "100vh",
-        background: "hsl(222 20% 7%)",
+        background: "hsl(220 16% 6%)",
         display: "flex",
         flexDirection: "column",
         alignItems: "center",
@@ -42,8 +42,8 @@ export default function NotFound() {
             width: "56px",
             height: "56px",
             borderRadius: "14px",
-            background: "hsl(222 16% 13%)",
-            border: "1px solid hsl(222 14% 20%)",
+            background: "hsl(220 12% 12%)",
+            border: "1px solid hsl(220 12% 18%)",
             display: "flex",
             alignItems: "center",
             justifyContent: "center",
@@ -57,7 +57,7 @@ export default function NotFound() {
           style={{
             fontSize: "72px",
             fontWeight: 800,
-            color: "hsl(222 14% 18%)",
+            color: "hsl(220 12% 16%)",
             letterSpacing: "-0.05em",
             lineHeight: 1,
             marginBottom: "16px",
@@ -97,8 +97,8 @@ export default function NotFound() {
               alignItems: "center",
               gap: "6px",
               padding: "9px 16px",
-              background: "hsl(222 16% 13%)",
-              border: "1px solid hsl(222 14% 20%)",
+              background: "hsl(220 12% 12%)",
+              border: "1px solid hsl(220 12% 18%)",
               borderRadius: "8px",
               color: "hsl(210 20% 88%)",
               fontSize: "13px",
@@ -107,10 +107,10 @@ export default function NotFound() {
               transition: "background 0.15s",
             }}
             onMouseEnter={(e) =>
-              (e.currentTarget.style.background = "hsl(222 16% 17%)")
+              (e.currentTarget.style.background = "hsl(220 12% 15%)")
             }
             onMouseLeave={(e) =>
-              (e.currentTarget.style.background = "hsl(222 16% 13%)")
+              (e.currentTarget.style.background = "hsl(220 12% 12%)")
             }
           >
             <ArrowLeft size={13} />
@@ -123,10 +123,10 @@ export default function NotFound() {
               alignItems: "center",
               gap: "6px",
               padding: "9px 16px",
-              background: "hsl(188 94% 48%)",
+              background: "hsl(38 92% 54%)",
               border: "none",
               borderRadius: "8px",
-              color: "hsl(222 20% 7%)",
+              color: "hsl(220 16% 6%)",
               fontSize: "13px",
               fontWeight: 600,
               textDecoration: "none",

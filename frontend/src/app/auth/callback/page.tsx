@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { supabase } from "@/lib/supabase";
 import { useAuthStore } from "@/lib/store";
 import { Wordmark } from "@/components/layout/Logo";
@@ -9,6 +9,8 @@ import { Loader2 } from "lucide-react";
 
 export default function AuthCallbackPage() {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const from = searchParams.get("from");
   const { setUser } = useAuthStore();
 
   useEffect(() => {
@@ -36,7 +38,7 @@ export default function AuthCallbackPage() {
             },
             retry.session.access_token
           );
-          router.push("/analyze");
+          router.push("/dashboard");
           return;
         }
 
@@ -51,7 +53,7 @@ export default function AuthCallbackPage() {
           },
           data.session.access_token
         );
-        router.push("/analyze");
+        router.push("/dashboard");
       } catch {
         router.push("/login");
       }
@@ -63,7 +65,7 @@ export default function AuthCallbackPage() {
     <div
       style={{
         minHeight: "100vh",
-        background: "hsl(222 20% 7%)",
+        background: "hsl(220 16% 6%)",
         display: "flex",
         flexDirection: "column",
         alignItems: "center",
@@ -84,7 +86,7 @@ export default function AuthCallbackPage() {
         <Loader2
           size={16}
           style={{
-            color: "hsl(188 94% 52%)",
+            color: "hsl(38 92% 58%)",
             animation: "spin 1s linear infinite",
           }}
         />

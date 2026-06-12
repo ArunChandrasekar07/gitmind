@@ -70,7 +70,7 @@ export function CommitRow({
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay: Math.min(index * 0.035, 0.35), duration: 0.25 }}
       style={{
-        borderBottom: "1px solid hsl(222 14% 13%)",
+        borderBottom: "1px solid hsl(220 10% 11%)",
         borderLeft: `2px solid ${
           risk === "danger"
             ? "hsl(0 70% 56% / 0.5)"
@@ -113,8 +113,8 @@ export function CommitRow({
           style={{
             fontFamily: "JetBrains Mono, monospace",
             fontSize: "11px",
-            color: "hsl(188 94% 52%)",
-            background: "hsl(188 94% 48% / 0.08)",
+            color: "hsl(38 92% 58%)",
+            background: "hsl(38 92% 54% / 0.08)",
             padding: "2px 6px",
             borderRadius: "4px",
             flexShrink: 0,
@@ -191,7 +191,7 @@ export function CommitRow({
                 width: "20px",
                 height: "20px",
                 borderRadius: "50%",
-                border: "1px solid hsl(222 14% 20%)",
+                border: "1px solid hsl(220 12% 18%)",
               }}
             />
           ) : (
@@ -249,7 +249,7 @@ export function CommitRow({
             <Loader2
               size={13}
               style={{
-                color: "hsl(188 94% 52%)",
+                color: "hsl(38 92% 58%)",
                 animation: "spin 1s linear infinite",
               }}
             />
@@ -277,7 +277,7 @@ export function CommitRow({
           >
             <div
               style={{
-                borderTop: "1px solid hsl(222 14% 13%)",
+                borderTop: "1px solid hsl(220 10% 11%)",
                 padding: "16px",
                 background: "hsl(222 20% 8%)",
               }}
@@ -322,13 +322,13 @@ export function CommitRow({
                               ? "hsl(152 68% 42% / 0.1)"
                               : f.status === "removed"
                               ? "hsl(0 70% 56% / 0.1)"
-                              : "hsl(222 16% 14%)",
+                              : "hsl(220 12% 13%)",
                           border: `1px solid ${
                             f.status === "added"
                               ? "hsl(152 68% 42% / 0.25)"
                               : f.status === "removed"
                               ? "hsl(0 70% 56% / 0.25)"
-                              : "hsl(222 14% 20%)"
+                              : "hsl(220 12% 18%)"
                           }`,
                         }}
                       >
@@ -343,7 +343,7 @@ export function CommitRow({
               <div
                 style={{
                   background: "hsl(222 18% 11%)",
-                  border: "1px solid hsl(222 14% 18%)",
+                  border: "1px solid hsl(220 12% 16%)",
                   borderRadius: "8px",
                   padding: "14px",
                 }}
@@ -361,8 +361,8 @@ export function CommitRow({
                       width: "20px",
                       height: "20px",
                       borderRadius: "5px",
-                      background: "hsl(188 94% 48% / 0.12)",
-                      border: "1px solid hsl(188 94% 48% / 0.25)",
+                      background: "hsl(38 92% 54% / 0.12)",
+                      border: "1px solid hsl(38 92% 54% / 0.25)",
                       display: "flex",
                       alignItems: "center",
                       justifyContent: "center",
@@ -374,7 +374,7 @@ export function CommitRow({
                     style={{
                       fontSize: "11px",
                       fontWeight: 600,
-                      color: "hsl(188 94% 62%)",
+                      color: "hsl(38 92% 66%)",
                       textTransform: "uppercase",
                       letterSpacing: "0.06em",
                     }}
@@ -390,7 +390,7 @@ export function CommitRow({
                             width: "4px",
                             height: "4px",
                             borderRadius: "50%",
-                            background: "hsl(188 94% 52%)",
+                            background: "hsl(38 92% 58%)",
                           }}
                           animate={{ opacity: [0.3, 1, 0.3] }}
                           transition={{
@@ -468,7 +468,7 @@ export function CommitRow({
                           display: "inline-block",
                           width: "2px",
                           height: "14px",
-                          background: "hsl(188 94% 52%)",
+                          background: "hsl(38 92% 58%)",
                           marginLeft: "2px",
                           borderRadius: "1px",
                           verticalAlign: "text-bottom",

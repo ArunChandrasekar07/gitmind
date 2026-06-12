@@ -171,7 +171,7 @@ function AnalyzeContent() {
     <div
       style={{
         minHeight: "100vh",
-        background: "hsl(222 20% 7%)",
+        background: "hsl(220 16% 6%)",
         display: "flex",
         flexDirection: "column",
       }}
@@ -187,9 +187,9 @@ function AnalyzeContent() {
           height: "52px",
           display: "flex",
           alignItems: "center",
-          background: "hsl(222 20% 7% / 0.9)",
+          background: "hsl(220 16% 6% / 0.9)",
           backdropFilter: "blur(16px)",
-          borderBottom: "1px solid hsl(222 14% 13%)",
+          borderBottom: "1px solid hsl(220 10% 11%)",
           padding: "0 20px",
           gap: "12px",
         }}
@@ -213,7 +213,7 @@ function AnalyzeContent() {
           }}
           onMouseEnter={(e) => {
             e.currentTarget.style.color = "hsl(210 20% 80%)";
-            e.currentTarget.style.background = "hsl(222 16% 14%)";
+            e.currentTarget.style.background = "hsl(220 12% 13%)";
           }}
           onMouseLeave={(e) => {
             e.currentTarget.style.color = "hsl(215 12% 48%)";
@@ -235,8 +235,8 @@ function AnalyzeContent() {
             display: "flex",
             alignItems: "center",
             gap: "8px",
-            background: "hsl(222 16% 12%)",
-            border: "1px solid hsl(222 14% 17%)",
+            background: "hsl(220 12% 11%)",
+            border: "1px solid hsl(220 12% 15%)",
             borderRadius: "8px",
             padding: "0 10px",
             height: "34px",
@@ -245,13 +245,13 @@ function AnalyzeContent() {
           }}
           onFocusCapture={(e) => {
             (e.currentTarget as HTMLElement).style.borderColor =
-              "hsl(188 94% 48% / 0.5)";
+              "hsl(38 92% 54% / 0.5)";
             (e.currentTarget as HTMLElement).style.boxShadow =
-              "0 0 0 3px hsl(188 94% 48% / 0.08)";
+              "0 0 0 3px hsl(38 92% 54% / 0.08)";
           }}
           onBlurCapture={(e) => {
             (e.currentTarget as HTMLElement).style.borderColor =
-              "hsl(222 14% 17%)";
+              "hsl(220 12% 15%)";
             (e.currentTarget as HTMLElement).style.boxShadow = "none";
           }}
         >
@@ -310,11 +310,11 @@ function AnalyzeContent() {
             gap: "6px",
             padding: "7px 14px",
             background: isLoading
-              ? "hsl(188 94% 48% / 0.5)"
-              : "hsl(188 94% 48%)",
+              ? "hsl(38 92% 54% / 0.5)"
+              : "hsl(38 92% 54%)",
             border: "none",
             borderRadius: "7px",
-            color: "hsl(222 20% 7%)",
+            color: "hsl(220 16% 6%)",
             fontSize: "12px",
             fontWeight: 700,
             cursor: isLoading ? "not-allowed" : "pointer",
@@ -342,8 +342,8 @@ function AnalyzeContent() {
             onClick={() => router.push("/dashboard")}
             style={{
               padding: "5px 10px",
-              background: "hsl(222 16% 13%)",
-              border: "1px solid hsl(222 14% 20%)",
+              background: "hsl(220 12% 12%)",
+              border: "1px solid hsl(220 12% 18%)",
               borderRadius: "6px",
               color: "hsl(215 12% 52%)",
               fontSize: "12px",
@@ -355,10 +355,10 @@ function AnalyzeContent() {
             }}
             className="md-show"
             onMouseEnter={(e) =>
-              (e.currentTarget.style.background = "hsl(222 16% 17%)")
+              (e.currentTarget.style.background = "hsl(220 12% 15%)")
             }
             onMouseLeave={(e) =>
-              (e.currentTarget.style.background = "hsl(222 16% 13%)")
+              (e.currentTarget.style.background = "hsl(220 12% 12%)")
             }
           >
             Dashboard
@@ -392,8 +392,8 @@ function AnalyzeContent() {
                     width: "64px",
                     height: "64px",
                     borderRadius: "16px",
-                    background: "hsl(188 94% 48% / 0.08)",
-                    border: "1px solid hsl(188 94% 48% / 0.2)",
+                    background: "hsl(38 92% 54% / 0.08)",
+                    border: "1px solid hsl(38 92% 54% / 0.2)",
                     display: "flex",
                     alignItems: "center",
                     justifyContent: "center",
@@ -401,7 +401,7 @@ function AnalyzeContent() {
                 >
                   <Brain
                     size={28}
-                    style={{ color: "hsl(188 94% 52%)" }}
+                    style={{ color: "hsl(38 92% 58%)" }}
                   />
                 </div>
                 <motion.div
@@ -412,8 +412,8 @@ function AnalyzeContent() {
                     inset: "-4px",
                     borderRadius: "20px",
                     border: "2px solid transparent",
-                    borderTopColor: "hsl(188 94% 48%)",
-                    borderRightColor: "hsl(188 94% 48% / 0.3)",
+                    borderTopColor: "hsl(38 92% 54%)",
+                    borderRightColor: "hsl(38 92% 54% / 0.3)",
                   }}
                 />
               </div>
@@ -429,7 +429,7 @@ function AnalyzeContent() {
                   marginTop: "28px",
                   width: "200px",
                   height: "2px",
-                  background: "hsl(222 16% 14%)",
+                  background: "hsl(220 12% 13%)",
                   borderRadius: "1px",
                   overflow: "hidden",
                   position: "relative",
@@ -443,7 +443,7 @@ function AnalyzeContent() {
                     right: 0,
                     bottom: 0,
                     background:
-                      "linear-gradient(90deg, transparent, hsl(188 94% 48%), transparent)",
+                      "linear-gradient(90deg, transparent, hsl(38 92% 54%), transparent)",
                   }}
                   animate={{ x: ["-100%", "100%"] }}
                   transition={{
@@ -517,8 +517,8 @@ function AnalyzeContent() {
                   }}
                   style={{
                     padding: "5px 12px",
-                    background: "hsl(222 16% 12%)",
-                    border: "1px solid hsl(222 14% 18%)",
+                    background: "hsl(220 12% 11%)",
+                    border: "1px solid hsl(220 12% 16%)",
                     borderRadius: "6px",
                     fontSize: "12px",
                     fontFamily: "JetBrains Mono, monospace",
@@ -527,14 +527,14 @@ function AnalyzeContent() {
                     transition: "color 0.15s, border-color 0.15s",
                   }}
                   onMouseEnter={(e) => {
-                    e.currentTarget.style.color = "hsl(188 94% 56%)";
+                    e.currentTarget.style.color = "hsl(38 92% 62%)";
                     e.currentTarget.style.borderColor =
-                      "hsl(188 94% 48% / 0.3)";
+                      "hsl(38 92% 54% / 0.3)";
                   }}
                   onMouseLeave={(e) => {
                     e.currentTarget.style.color = "hsl(215 12% 52%)";
                     e.currentTarget.style.borderColor =
-                      "hsl(222 14% 18%)";
+                      "hsl(220 12% 16%)";
                   }}
                 >
                   {r.replace("https://github.com/", "")}
@@ -576,8 +576,8 @@ function AnalyzeContent() {
                     display: "flex",
                     alignItems: "center",
                     gap: "7px",
-                    background: "hsl(222 16% 12%)",
-                    border: "1px solid hsl(222 14% 17%)",
+                    background: "hsl(220 12% 11%)",
+                    border: "1px solid hsl(220 12% 15%)",
                     borderRadius: "7px",
                     padding: "5px 10px",
                     flex: 1,
@@ -625,15 +625,15 @@ function AnalyzeContent() {
                         transition: "all 0.15s",
                         background:
                           filterRisk === f.key
-                            ? "hsl(188 94% 48% / 0.12)"
-                            : "hsl(222 16% 12%)",
+                            ? "hsl(38 92% 54% / 0.12)"
+                            : "hsl(220 12% 11%)",
                         border:
                           filterRisk === f.key
-                            ? "1px solid hsl(188 94% 48% / 0.3)"
-                            : "1px solid hsl(222 14% 17%)",
+                            ? "1px solid hsl(38 92% 54% / 0.3)"
+                            : "1px solid hsl(220 12% 15%)",
                         color:
                           filterRisk === f.key
-                            ? "hsl(188 94% 56%)"
+                            ? "hsl(38 92% 62%)"
                             : "hsl(215 12% 50%)",
                       }}
                     >
@@ -664,8 +664,8 @@ function AnalyzeContent() {
                     alignItems: "center",
                     gap: "5px",
                     padding: "5px 10px",
-                    background: "hsl(222 16% 12%)",
-                    border: "1px solid hsl(222 14% 17%)",
+                    background: "hsl(220 12% 11%)",
+                    border: "1px solid hsl(220 12% 15%)",
                     borderRadius: "7px",
                     color: "hsl(215 12% 50%)",
                     fontSize: "12px",
@@ -682,7 +682,7 @@ function AnalyzeContent() {
                   onMouseLeave={(e) => {
                     e.currentTarget.style.color = "hsl(215 12% 50%)";
                     e.currentTarget.style.borderColor =
-                      "hsl(222 14% 17%)";
+                      "hsl(220 12% 15%)";
                   }}
                 >
                   <RefreshCw size={12} />
@@ -708,8 +708,8 @@ function AnalyzeContent() {
               {filteredCommits && filteredCommits.length > 0 ? (
                 <div
                   style={{
-                    background: "hsl(222 18% 10%)",
-                    border: "1px solid hsl(222 14% 15%)",
+                    background: "hsl(220 14% 9%)",
+                    border: "1px solid hsl(220 12% 13%)",
                     borderRadius: "10px",
                     overflow: "hidden",
                   }}
@@ -735,10 +735,10 @@ function AnalyzeContent() {
                       onClick={() => setFilterRisk("all")}
                       style={{
                         padding: "7px 14px",
-                        background: "hsl(188 94% 48%)",
+                        background: "hsl(38 92% 54%)",
                         border: "none",
                         borderRadius: "7px",
-                        color: "hsl(222 20% 7%)",
+                        color: "hsl(220 16% 6%)",
                         fontSize: "12px",
                         fontWeight: 600,
                         cursor: "pointer",
@@ -785,7 +785,7 @@ export default function AnalyzePage() {
         <div
           style={{
             minHeight: "100vh",
-            background: "hsl(222 20% 7%)",
+            background: "hsl(220 16% 6%)",
             display: "flex",
             alignItems: "center",
             justifyContent: "center",
@@ -794,7 +794,7 @@ export default function AnalyzePage() {
           <Loader2
             size={24}
             style={{
-              color: "hsl(188 94% 52%)",
+              color: "hsl(38 92% 58%)",
               animation: "spin 1s linear infinite",
             }}
           />

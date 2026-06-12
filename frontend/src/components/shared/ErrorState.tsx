@@ -72,7 +72,7 @@ export function ErrorState({
             alignItems: "center",
             gap: "8px",
             padding: "8px 16px",
-            background: "hsl(222 16% 13%)",
+            background: "hsl(220 12% 12%)",
             border: "1px solid hsl(222 14% 22%)",
             borderRadius: "8px",
             color: "hsl(210 20% 88%)",
@@ -83,10 +83,10 @@ export function ErrorState({
             fontFamily: "Inter, sans-serif",
           }}
           onMouseEnter={(e) =>
-            (e.currentTarget.style.background = "hsl(222 16% 17%)")
+            (e.currentTarget.style.background = "hsl(220 12% 15%)")
           }
           onMouseLeave={(e) =>
-            (e.currentTarget.style.background = "hsl(222 16% 13%)")
+            (e.currentTarget.style.background = "hsl(220 12% 12%)")
           }
         >
           <RefreshCw size={14} />

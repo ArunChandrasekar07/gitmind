@@ -14,8 +14,8 @@ const S = {
   input: {
     width: "100%",
     padding: "10px 12px",
-    background: "hsl(222 16% 12%)",
-    border: "1px solid hsl(222 14% 18%)",
+    background: "hsl(220 12% 11%)",
+    border: "1px solid hsl(220 12% 16%)",
     borderRadius: "8px",
     color: "hsl(210 20% 94%)",
     fontSize: "13px",
@@ -38,10 +38,10 @@ const S = {
     gap: "8px",
     width: "100%",
     padding: "11px 16px",
-    background: "hsl(188 94% 48%)",
+    background: "hsl(38 92% 54%)",
     border: "none",
     borderRadius: "8px",
-    color: "hsl(222 20% 7%)",
+    color: "hsl(220 16% 6%)",
     fontSize: "13px",
     fontWeight: 600,
     cursor: "pointer",
@@ -54,8 +54,8 @@ const S = {
     gap: "10px",
     width: "100%",
     padding: "10px 16px",
-    background: "hsl(222 16% 13%)",
-    border: "1px solid hsl(222 14% 20%)",
+    background: "hsl(220 12% 12%)",
+    border: "1px solid hsl(220 12% 18%)",
     borderRadius: "8px",
     color: "hsl(210 20% 88%)",
     fontSize: "13px",
@@ -148,11 +148,11 @@ export default function SignupPage() {
   const disabled = isLoading || !!oauthLoading;
 
   const focusStyle = (e: React.FocusEvent<HTMLInputElement>) => {
-    e.currentTarget.style.borderColor = "hsl(188 94% 48% / 0.6)";
-    e.currentTarget.style.boxShadow = "0 0 0 3px hsl(188 94% 48% / 0.1)";
+    e.currentTarget.style.borderColor = "hsl(38 92% 54% / 0.6)";
+    e.currentTarget.style.boxShadow = "0 0 0 3px hsl(38 92% 54% / 0.1)";
   };
   const blurStyle = (e: React.FocusEvent<HTMLInputElement>) => {
-    e.currentTarget.style.borderColor = "hsl(222 14% 18%)";
+    e.currentTarget.style.borderColor = "hsl(220 12% 16%)";
     e.currentTarget.style.boxShadow = "none";
   };
 
@@ -162,7 +162,7 @@ export default function SignupPage() {
       <div
         style={{
           minHeight: "100vh",
-          background: "hsl(222 20% 7%)",
+          background: "hsl(220 16% 6%)",
           display: "flex",
           alignItems: "center",
           justifyContent: "center",
@@ -211,8 +211,8 @@ export default function SignupPage() {
 
           <div
             style={{
-              background: "hsl(222 18% 10%)",
-              border: "1px solid hsl(222 14% 15%)",
+              background: "hsl(220 14% 9%)",
+              border: "1px solid hsl(220 12% 13%)",
               borderRadius: "12px",
               padding: "32px",
               boxShadow: "0 8px 32px hsl(0 0% 0% / 0.4)",
@@ -259,8 +259,8 @@ export default function SignupPage() {
                     }
                   }}
                   onMouseLeave={(e) => {
-                    e.currentTarget.style.background = "hsl(222 16% 13%)";
-                    e.currentTarget.style.borderColor = "hsl(222 14% 20%)";
+                    e.currentTarget.style.background = "hsl(220 12% 12%)";
+                    e.currentTarget.style.borderColor = "hsl(220 12% 18%)";
                   }}
                 >
                   {oauthLoading === o.key ? (
@@ -411,7 +411,7 @@ export default function SignupPage() {
               Have an account?{" "}
               <Link
                 href="/login"
-                style={{ color: "hsl(188 94% 56%)", fontWeight: 500, textDecoration: "none" }}
+                style={{ color: "hsl(38 92% 62%)", fontWeight: 500, textDecoration: "none" }}
               >
                 Sign in
               </Link>

@@ -57,9 +57,9 @@ const FEATURES = [
     icon: Brain,
     title: "Commit Intelligence",
     desc: "Every commit explained in plain English. Understand intent, impact, and architectural decisions without reading raw diffs.",
-    color: "hsl(188 94% 52%)",
-    bg: "hsl(188 94% 48% / 0.08)",
-    border: "hsl(188 94% 48% / 0.2)",
+    color: "hsl(38 92% 58%)",
+    bg: "hsl(38 92% 54% / 0.08)",
+    border: "hsl(38 92% 54% / 0.2)",
   },
   {
     icon: Shield,
@@ -201,7 +201,7 @@ export default function LandingPage() {
       <div
         style={{
           minHeight: "100vh",
-          background: "hsl(222 20% 7%)",
+          background: "hsl(220 16% 6%)",
           color: "hsl(210 20% 94%)",
           overflowX: "hidden",
         }}
@@ -225,7 +225,7 @@ export default function LandingPage() {
               height: "500px",
               borderRadius: "50%",
               background:
-                "radial-gradient(circle, hsl(188 94% 48% / 0.06) 0%, transparent 70%)",
+                "radial-gradient(circle, hsl(38 92% 54% / 0.06) 0%, transparent 70%)",
               filter: "blur(40px)",
             }}
           />
@@ -269,7 +269,7 @@ export default function LandingPage() {
             height: "56px",
             display: "flex",
             alignItems: "center",
-            background: "hsl(222 20% 7% / 0.85)",
+            background: "hsl(220 16% 6% / 0.85)",
             backdropFilter: "blur(16px)",
             borderBottom: "1px solid hsl(222 14% 12%)",
           }}
@@ -314,7 +314,7 @@ export default function LandingPage() {
                   }}
                   onMouseEnter={(e) => {
                     e.currentTarget.style.color = "hsl(210 20% 88%)";
-                    e.currentTarget.style.background = "hsl(222 16% 13%)";
+                    e.currentTarget.style.background = "hsl(220 12% 12%)";
                   }}
                   onMouseLeave={(e) => {
                     e.currentTarget.style.color = "hsl(215 12% 52%)";
@@ -336,10 +336,10 @@ export default function LandingPage() {
                     alignItems: "center",
                     gap: "6px",
                     padding: "7px 14px",
-                    background: "hsl(188 94% 48%)",
+                    background: "hsl(38 92% 54%)",
                     border: "none",
                     borderRadius: "7px",
-                    color: "hsl(222 20% 7%)",
+                    color: "hsl(220 16% 6%)",
                     fontSize: "13px",
                     fontWeight: 600,
                     cursor: "pointer",
@@ -377,10 +377,10 @@ export default function LandingPage() {
                       alignItems: "center",
                       gap: "6px",
                       padding: "7px 14px",
-                      background: "hsl(188 94% 48%)",
+                      background: "hsl(38 92% 54%)",
                       border: "none",
                       borderRadius: "7px",
-                      color: "hsl(222 20% 7%)",
+                      color: "hsl(220 16% 6%)",
                       fontSize: "13px",
                       fontWeight: 600,
                       textDecoration: "none",
@@ -429,8 +429,8 @@ export default function LandingPage() {
                       alignItems: "center",
                       gap: "6px",
                       padding: "4px 12px",
-                      background: "hsl(188 94% 48% / 0.08)",
-                      border: "1px solid hsl(188 94% 48% / 0.2)",
+                      background: "hsl(38 92% 54% / 0.08)",
+                      border: "1px solid hsl(38 92% 54% / 0.2)",
                       borderRadius: "20px",
                       fontSize: "12px",
                       fontWeight: 500,
@@ -461,7 +461,7 @@ export default function LandingPage() {
                   <span
                     style={{
                       background:
-                        "linear-gradient(135deg, hsl(188 94% 52%) 0%, hsl(200 90% 62%) 100%)",
+                        "linear-gradient(135deg, hsl(38 92% 58%) 0%, hsl(32 96% 65%) 100%)",
                       WebkitBackgroundClip: "text",
                       WebkitTextFillColor: "transparent",
                       backgroundClip: "text",
@@ -500,8 +500,8 @@ export default function LandingPage() {
                     style={{
                       display: "flex",
                       gap: "8px",
-                      background: "hsl(222 18% 10%)",
-                      border: "1px solid hsl(222 14% 17%)",
+                      background: "hsl(220 14% 9%)",
+                      border: "1px solid hsl(220 12% 15%)",
                       borderRadius: "10px",
                       padding: "6px 6px 6px 14px",
                       alignItems: "center",
@@ -539,10 +539,10 @@ export default function LandingPage() {
                         alignItems: "center",
                         gap: "6px",
                         padding: "8px 16px",
-                        background: "hsl(188 94% 48%)",
+                        background: "hsl(38 92% 54%)",
                         border: "none",
                         borderRadius: "7px",
-                        color: "hsl(222 20% 7%)",
+                        color: "hsl(220 16% 6%)",
                         fontSize: "13px",
                         fontWeight: 600,
                         cursor: "pointer",
@@ -589,7 +589,7 @@ export default function LandingPage() {
                       }}
                       style={{
                         padding: "3px 9px",
-                        background: "hsl(222 16% 13%)",
+                        background: "hsl(220 12% 12%)",
                         border: "1px solid hsl(222 14% 19%)",
                         borderRadius: "5px",
                         fontSize: "11px",
@@ -599,9 +599,9 @@ export default function LandingPage() {
                         transition: "color 0.15s, border-color 0.15s",
                       }}
                       onMouseEnter={(e) => {
-                        e.currentTarget.style.color = "hsl(188 94% 56%)";
+                        e.currentTarget.style.color = "hsl(38 92% 62%)";
                         e.currentTarget.style.borderColor =
-                          "hsl(188 94% 48% / 0.3)";
+                          "hsl(38 92% 54% / 0.3)";
                       }}
                       onMouseLeave={(e) => {
                         e.currentTarget.style.color = "hsl(215 12% 52%)";
@@ -623,7 +623,7 @@ export default function LandingPage() {
               >
                 <div
                   style={{
-                    background: "hsl(222 18% 10%)",
+                    background: "hsl(220 14% 9%)",
                     border: "1px solid hsl(222 14% 16%)",
                     borderRadius: "12px",
                     overflow: "hidden",
@@ -700,7 +700,7 @@ export default function LandingPage() {
                   <div
                     style={{
                       padding: "10px 14px",
-                      borderBottom: "1px solid hsl(222 14% 13%)",
+                      borderBottom: "1px solid hsl(220 10% 11%)",
                       display: "flex",
                       alignItems: "center",
                       justifyContent: "space-between",
@@ -752,8 +752,8 @@ export default function LandingPage() {
                           key={c.sha}
                           animate={{
                             background: isActive
-                              ? "hsl(188 94% 48% / 0.04)"
-                              : "transparent",
+                              ? "hsl(38 92% 54% / 0.04)"
+                              : "hsl(38 92% 54% / 0)",
                           }}
                           transition={{ duration: 0.3 }}
                           style={{
@@ -763,7 +763,7 @@ export default function LandingPage() {
                             padding: "9px 14px",
                             borderBottom: "1px solid hsl(222 14% 12%)",
                             borderLeft: `2px solid ${
-                              isActive ? risk.dot : "transparent"
+                              isActive ? risk.dot : "hsl(38 92% 54% / 0)"
                             }`,
                             transition: "border-left-color 0.3s",
                           }}
@@ -796,7 +796,7 @@ export default function LandingPage() {
                             style={{
                               fontFamily: "JetBrains Mono, monospace",
                               fontSize: "10px",
-                              color: "hsl(188 94% 52%)",
+                              color: "hsl(38 92% 58%)",
                               flexShrink: 0,
                               opacity: 0.7,
                             }}
@@ -837,7 +837,7 @@ export default function LandingPage() {
                                     width: "3px",
                                     height: "3px",
                                     borderRadius: "50%",
-                                    background: "hsl(188 94% 52%)",
+                                    background: "hsl(38 92% 58%)",
                                   }}
                                   animate={{ opacity: [0.3, 1, 0.3] }}
                                   transition={{
@@ -875,7 +875,7 @@ export default function LandingPage() {
                   >
                     <span>6 of 24 commits shown</span>
                     <span style={{ display: "flex", alignItems: "center", gap: "4px" }}>
-                      <Brain size={9} style={{ color: "hsl(188 94% 48%)" }} />
+                      <Brain size={9} style={{ color: "hsl(38 92% 54%)" }} />
                       GitMind Intelligence
                     </span>
                   </div>
@@ -917,7 +917,7 @@ export default function LandingPage() {
                       fontWeight: 800,
                       letterSpacing: "-0.04em",
                       background:
-                        "linear-gradient(135deg, hsl(188 94% 52%) 0%, hsl(200 90% 62%) 100%)",
+                        "linear-gradient(135deg, hsl(38 92% 58%) 0%, hsl(32 96% 65%) 100%)",
                       WebkitBackgroundClip: "text",
                       WebkitTextFillColor: "transparent",
                       backgroundClip: "text",
@@ -956,7 +956,7 @@ export default function LandingPage() {
                   style={{
                     fontSize: "11px",
                     fontWeight: 700,
-                    color: "hsl(188 94% 52%)",
+                    color: "hsl(38 92% 58%)",
                     textTransform: "uppercase",
                     letterSpacing: "0.12em",
                     display: "block",
@@ -1005,8 +1005,8 @@ export default function LandingPage() {
                   <motion.div
                     whileHover={{ y: -3, transition: { duration: 0.15 } }}
                     style={{
-                      background: "hsl(222 18% 10%)",
-                      border: "1px solid hsl(222 14% 15%)",
+                      background: "hsl(220 14% 9%)",
+                      border: "1px solid hsl(220 12% 13%)",
                       borderRadius: "10px",
                       padding: "22px",
                       height: "100%",
@@ -1019,7 +1019,7 @@ export default function LandingPage() {
                     }
                     onMouseLeave={(e) =>
                       ((e.currentTarget as HTMLElement).style.borderColor =
-                        "hsl(222 14% 15%)")
+                        "hsl(220 12% 13%)")
                     }
                   >
                     <div
@@ -1082,7 +1082,7 @@ export default function LandingPage() {
                   style={{
                     fontSize: "11px",
                     fontWeight: 700,
-                    color: "hsl(188 94% 52%)",
+                    color: "hsl(38 92% 58%)",
                     textTransform: "uppercase",
                     letterSpacing: "0.12em",
                     display: "block",
@@ -1123,7 +1123,7 @@ export default function LandingPage() {
                   right: "calc(33% - 20px)",
                   height: "1px",
                   background:
-                    "linear-gradient(90deg, hsl(188 94% 48% / 0.3), hsl(188 94% 48% / 0.3))",
+                    "linear-gradient(90deg, hsl(38 92% 54% / 0.3), hsl(38 92% 54% / 0.3))",
                   display: "none",
                 }}
               />
@@ -1136,8 +1136,8 @@ export default function LandingPage() {
                         width: "44px",
                         height: "44px",
                         borderRadius: "12px",
-                        background: "hsl(188 94% 48% / 0.08)",
-                        border: "1px solid hsl(188 94% 48% / 0.2)",
+                        background: "hsl(38 92% 54% / 0.08)",
+                        border: "1px solid hsl(38 92% 54% / 0.2)",
                         display: "flex",
                         alignItems: "center",
                         justifyContent: "center",
@@ -1147,7 +1147,7 @@ export default function LandingPage() {
                     >
                       <w.icon
                         size={19}
-                        style={{ color: "hsl(188 94% 52%)" }}
+                        style={{ color: "hsl(38 92% 58%)" }}
                       />
                       <span
                         style={{
@@ -1157,14 +1157,14 @@ export default function LandingPage() {
                           width: "18px",
                           height: "18px",
                           borderRadius: "50%",
-                          background: "hsl(222 20% 7%)",
-                          border: "1px solid hsl(188 94% 48% / 0.3)",
+                          background: "hsl(220 16% 6%)",
+                          border: "1px solid hsl(38 92% 54% / 0.3)",
                           display: "flex",
                           alignItems: "center",
                           justifyContent: "center",
                           fontSize: "9px",
                           fontWeight: 700,
-                          color: "hsl(188 94% 56%)",
+                          color: "hsl(38 92% 62%)",
                           fontFamily: "JetBrains Mono, monospace",
                         }}
                       >
@@ -1214,7 +1214,7 @@ export default function LandingPage() {
                   style={{
                     fontSize: "11px",
                     fontWeight: 700,
-                    color: "hsl(188 94% 52%)",
+                    color: "hsl(38 92% 58%)",
                     textTransform: "uppercase",
                     letterSpacing: "0.12em",
                     display: "block",
@@ -1244,12 +1244,12 @@ export default function LandingPage() {
               <motion.div
                 whileHover={{ y: -3 }}
                 style={{
-                  background: "hsl(222 18% 10%)",
-                  border: "1px solid hsl(188 94% 48% / 0.25)",
+                  background: "hsl(220 14% 9%)",
+                  border: "1px solid hsl(38 92% 54% / 0.25)",
                   borderRadius: "12px",
                   padding: "28px",
                   boxShadow:
-                    "0 0 40px hsl(188 94% 48% / 0.08), 0 0 0 1px hsl(188 94% 48% / 0.15)",
+                    "0 0 40px hsl(38 92% 54% / 0.08), 0 0 0 1px hsl(38 92% 54% / 0.15)",
                 }}
               >
                 <div style={{ marginBottom: "4px" }}>
@@ -1307,8 +1307,8 @@ export default function LandingPage() {
                           width: "18px",
                           height: "18px",
                           borderRadius: "50%",
-                          background: "hsl(188 94% 48% / 0.1)",
-                          border: "1px solid hsl(188 94% 48% / 0.25)",
+                          background: "hsl(38 92% 54% / 0.1)",
+                          border: "1px solid hsl(38 92% 54% / 0.25)",
                           display: "flex",
                           alignItems: "center",
                           justifyContent: "center",
@@ -1317,7 +1317,7 @@ export default function LandingPage() {
                       >
                         <Check
                           size={10}
-                          style={{ color: "hsl(188 94% 56%)" }}
+                          style={{ color: "hsl(38 92% 62%)" }}
                         />
                       </div>
                       {f}
@@ -1334,10 +1334,10 @@ export default function LandingPage() {
                     gap: "8px",
                     width: "100%",
                     padding: "12px",
-                    background: "hsl(188 94% 48%)",
+                    background: "hsl(38 92% 54%)",
                     border: "none",
                     borderRadius: "8px",
-                    color: "hsl(222 20% 7%)",
+                    color: "hsl(220 16% 6%)",
                     fontSize: "13px",
                     fontWeight: 700,
                     cursor: "pointer",
@@ -1369,7 +1369,7 @@ export default function LandingPage() {
                   style={{
                     fontSize: "11px",
                     fontWeight: 700,
-                    color: "hsl(188 94% 52%)",
+                    color: "hsl(38 92% 58%)",
                     textTransform: "uppercase",
                     letterSpacing: "0.12em",
                     display: "block",
@@ -1396,19 +1396,19 @@ export default function LandingPage() {
                 <FadeUp key={faq.q} delay={i * 0.04}>
                   <div
                     style={{
-                      background: "hsl(222 18% 10%)",
-                      border: "1px solid hsl(222 14% 15%)",
+                      background: "hsl(220 14% 9%)",
+                      border: "1px solid hsl(220 12% 13%)",
                       borderRadius: "9px",
                       overflow: "hidden",
                       transition: "border-color 0.15s",
                     }}
                     onMouseEnter={(e) =>
                       ((e.currentTarget as HTMLElement).style.borderColor =
-                        "hsl(222 14% 20%)")
+                        "hsl(220 12% 18%)")
                     }
                     onMouseLeave={(e) =>
                       ((e.currentTarget as HTMLElement).style.borderColor =
-                        "hsl(222 14% 15%)")
+                        "hsl(220 12% 13%)")
                     }
                   >
                     <button
@@ -1507,8 +1507,8 @@ export default function LandingPage() {
                   width: "52px",
                   height: "52px",
                   borderRadius: "14px",
-                  background: "hsl(188 94% 48% / 0.08)",
-                  border: "1px solid hsl(188 94% 48% / 0.2)",
+                  background: "hsl(38 92% 54% / 0.08)",
+                  border: "1px solid hsl(38 92% 54% / 0.2)",
                   display: "flex",
                   alignItems: "center",
                   justifyContent: "center",
@@ -1517,7 +1517,7 @@ export default function LandingPage() {
               >
                 <Terminal
                   size={22}
-                  style={{ color: "hsl(188 94% 52%)" }}
+                  style={{ color: "hsl(38 92% 58%)" }}
                 />
               </div>
               <h2
@@ -1562,10 +1562,10 @@ export default function LandingPage() {
                     alignItems: "center",
                     gap: "7px",
                     padding: "11px 22px",
-                    background: "hsl(188 94% 48%)",
+                    background: "hsl(38 92% 54%)",
                     border: "none",
                     borderRadius: "8px",
-                    color: "hsl(222 20% 7%)",
+                    color: "hsl(220 16% 6%)",
                     fontSize: "13px",
                     fontWeight: 700,
                     cursor: "pointer",
@@ -1584,7 +1584,7 @@ export default function LandingPage() {
                     alignItems: "center",
                     gap: "7px",
                     padding: "11px 22px",
-                    background: "hsl(222 16% 14%)",
+                    background: "hsl(220 12% 13%)",
                     border: "1px solid hsl(222 14% 22%)",
                     borderRadius: "8px",
                     color: "hsl(210 20% 85%)",

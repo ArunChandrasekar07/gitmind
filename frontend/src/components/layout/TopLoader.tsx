@@ -12,8 +12,8 @@ export function TopLoader() {
   useEffect(() => {
     setLoading(true);
     setProgress(15);
-    const t1 = setTimeout(() => setProgress(60), 100);
-    const t2 = setTimeout(() => setProgress(88), 350);
+    const t1 = setTimeout(() => setProgress(60), 150);
+    const t2 = setTimeout(() => setProgress(88), 400);
     const t3 = setTimeout(() => {
       setProgress(100);
       setTimeout(() => setLoading(false), 220);
@@ -31,8 +31,9 @@ export function TopLoader() {
         <motion.div
           className="fixed top-0 left-0 right-0 z-[9999] h-[2px] origin-left"
           style={{
+            /* amber → soft gold shimmer */
             background:
-              "linear-gradient(90deg, hsl(188 94% 48%), hsl(200 90% 60%), hsl(188 94% 48%))",
+              "linear-gradient(90deg, hsl(38 92% 54%), hsl(45 95% 68%), hsl(38 92% 54%))",
           }}
           initial={{ scaleX: 0, opacity: 1 }}
           animate={{ scaleX: progress / 100 }}

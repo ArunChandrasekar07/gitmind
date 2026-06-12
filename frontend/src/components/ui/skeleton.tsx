@@ -9,7 +9,7 @@ export function Skeleton({ className, ...props }: SkeletonProps) {
     <div
       className={cn("shimmer rounded-md", className)}
       style={{
-        background: "hsl(222 16% 14%)",
+        background: "hsl(220 12% 13%)",
       }}
       {...props}
     />
@@ -61,8 +61,8 @@ export function RepoHeaderSkeleton() {
   return (
     <div
       style={{
-        background: "hsl(222 18% 10%)",
-        border: "1px solid hsl(222 14% 15%)",
+        background: "hsl(220 14% 9%)",
+        border: "1px solid hsl(220 12% 13%)",
         borderRadius: "10px",
         padding: "20px",
         marginBottom: "16px",

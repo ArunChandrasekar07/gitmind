@@ -14,7 +14,7 @@ import { useAuthStore } from "@/lib/store";
 const S = {
   page: {
     minHeight: "100vh",
-    background: "hsl(222 20% 7%)",
+    background: "hsl(220 16% 6%)",
     display: "flex",
     position: "relative" as const,
     overflow: "hidden",
@@ -24,7 +24,7 @@ const S = {
     display: "flex",
     flexDirection: "column" as const,
     padding: "40px",
-    borderRight: "1px solid hsl(222 14% 13%)",
+    borderRight: "1px solid hsl(220 10% 11%)",
     overflowY: "auto" as const,
   },
   right: {
@@ -39,8 +39,8 @@ const S = {
   input: {
     width: "100%",
     padding: "10px 12px",
-    background: "hsl(222 16% 12%)",
-    border: "1px solid hsl(222 14% 18%)",
+    background: "hsl(220 12% 11%)",
+    border: "1px solid hsl(220 12% 16%)",
     borderRadius: "8px",
     color: "hsl(210 20% 94%)",
     fontSize: "13px",
@@ -64,10 +64,10 @@ const S = {
     gap: "8px",
     width: "100%",
     padding: "11px 16px",
-    background: "hsl(188 94% 48%)",
+    background: "hsl(38 92% 54%)",
     border: "none",
     borderRadius: "8px",
-    color: "hsl(222 20% 7%)",
+    color: "hsl(220 16% 6%)",
     fontSize: "13px",
     fontWeight: 600,
     cursor: "pointer",
@@ -81,8 +81,8 @@ const S = {
     gap: "10px",
     width: "100%",
     padding: "10px 16px",
-    background: "hsl(222 16% 13%)",
-    border: "1px solid hsl(222 14% 20%)",
+    background: "hsl(220 12% 12%)",
+    border: "1px solid hsl(220 12% 18%)",
     borderRadius: "8px",
     color: "hsl(210 20% 88%)",
     fontSize: "13px",
@@ -146,7 +146,7 @@ export default function LoginPage() {
         },
         data.session.access_token
       );
-      router.push("/analyze");
+      router.push("/dashboard");
     } catch {
       setError("Login failed. Please try again.");
     } finally {
@@ -253,8 +253,8 @@ export default function LoginPage() {
                   }
                 }}
                 onMouseLeave={(e) => {
-                  e.currentTarget.style.background = "hsl(222 16% 13%)";
-                  e.currentTarget.style.borderColor = "hsl(222 14% 20%)";
+                  e.currentTarget.style.background = "hsl(220 12% 12%)";
+                  e.currentTarget.style.borderColor = "hsl(220 12% 18%)";
                 }}
               >
                 {oauthLoading === "google" ? (
@@ -280,8 +280,8 @@ export default function LoginPage() {
                   }
                 }}
                 onMouseLeave={(e) => {
-                  e.currentTarget.style.background = "hsl(222 16% 13%)";
-                  e.currentTarget.style.borderColor = "hsl(222 14% 20%)";
+                  e.currentTarget.style.background = "hsl(220 12% 12%)";
+                  e.currentTarget.style.borderColor = "hsl(220 12% 18%)";
                 }}
               >
                 {oauthLoading === "github" ? (
@@ -324,11 +324,11 @@ export default function LoginPage() {
                     disabled={disabled}
                     style={{ ...S.input, opacity: disabled ? 0.6 : 1 }}
                     onFocus={(e) => {
-                      e.currentTarget.style.borderColor = "hsl(188 94% 48% / 0.6)";
-                      e.currentTarget.style.boxShadow = "0 0 0 3px hsl(188 94% 48% / 0.1)";
+                      e.currentTarget.style.borderColor = "hsl(38 92% 54% / 0.6)";
+                      e.currentTarget.style.boxShadow = "0 0 0 3px hsl(38 92% 54% / 0.1)";
                     }}
                     onBlur={(e) => {
-                      e.currentTarget.style.borderColor = "hsl(222 14% 18%)";
+                      e.currentTarget.style.borderColor = "hsl(220 12% 16%)";
                       e.currentTarget.style.boxShadow = "none";
                     }}
                   />
@@ -342,7 +342,7 @@ export default function LoginPage() {
                       href="/forgot-password"
                       style={{
                         fontSize: "12px",
-                        color: "hsl(188 94% 52%)",
+                        color: "hsl(38 92% 58%)",
                         textDecoration: "none",
                       }}
                     >
@@ -363,11 +363,11 @@ export default function LoginPage() {
                         opacity: disabled ? 0.6 : 1,
                       }}
                       onFocus={(e) => {
-                        e.currentTarget.style.borderColor = "hsl(188 94% 48% / 0.6)";
-                        e.currentTarget.style.boxShadow = "0 0 0 3px hsl(188 94% 48% / 0.1)";
+                        e.currentTarget.style.borderColor = "hsl(38 92% 54% / 0.6)";
+                        e.currentTarget.style.boxShadow = "0 0 0 3px hsl(38 92% 54% / 0.1)";
                       }}
                       onBlur={(e) => {
-                        e.currentTarget.style.borderColor = "hsl(222 14% 18%)";
+                        e.currentTarget.style.borderColor = "hsl(220 12% 16%)";
                         e.currentTarget.style.boxShadow = "none";
                       }}
                     />
@@ -445,7 +445,7 @@ export default function LoginPage() {
               <Link
                 href="/signup"
                 style={{
-                  color: "hsl(188 94% 56%)",
+                  color: "hsl(38 92% 62%)",
                   fontWeight: 500,
                   textDecoration: "none",
                 }}
@@ -472,7 +472,7 @@ export default function LoginPage() {
               style={{
                 fontSize: "11px",
                 fontWeight: 600,
-                color: "hsl(188 94% 52%)",
+                color: "hsl(38 92% 58%)",
                 textTransform: "uppercase",
                 letterSpacing: "0.1em",
                 marginBottom: "12px",
@@ -509,7 +509,7 @@ export default function LoginPage() {
             {/* Mini commit preview */}
             <div
               style={{
-                background: "hsl(222 18% 10%)",
+                background: "hsl(220 14% 9%)",
                 border: "1px solid hsl(222 14% 16%)",
                 borderRadius: "10px",
                 overflow: "hidden",
@@ -531,7 +531,7 @@ export default function LoginPage() {
                     width: "8px",
                     height: "8px",
                     borderRadius: "50%",
-                    background: "hsl(188 94% 48%)",
+                    background: "hsl(38 92% 54%)",
                     animation: "pulse-glow 2s infinite",
                   }}
                 />
@@ -549,7 +549,7 @@ export default function LoginPage() {
                     alignItems: "center",
                     gap: "8px",
                     padding: "10px 14px",
-                    borderBottom: i < 2 ? "1px solid hsl(222 14% 13%)" : "none",
+                    borderBottom: i < 2 ? "1px solid hsl(220 10% 11%)" : "none",
                     borderLeft: `2px solid ${
                       c.risk === "danger"
                         ? "hsl(0 70% 56% / 0.5)"
@@ -577,8 +577,8 @@ export default function LoginPage() {
                     style={{
                       fontFamily: "JetBrains Mono, monospace",
                       fontSize: "10px",
-                      color: "hsl(188 94% 52%)",
-                      background: "hsl(188 94% 48% / 0.08)",
+                      color: "hsl(38 92% 58%)",
+                      background: "hsl(38 92% 54% / 0.08)",
                       padding: "1px 5px",
                       borderRadius: "3px",
                       flexShrink: 0,
@@ -631,7 +631,7 @@ export default function LoginPage() {
       <style>{`
         @keyframes spin { to { transform: rotate(360deg); } }
         @keyframes pulse-glow {
-          0%, 100% { box-shadow: 0 0 0 0 hsl(188 94% 48% / 0.4); }
+          0%, 100% { box-shadow: 0 0 0 0 hsl(38 92% 54% / 0.4); }
           50% { box-shadow: 0 0 0 6px hsl(188 94% 48% / 0); }
         }
         @media (max-width: 768px) {

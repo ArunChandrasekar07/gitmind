@@ -33,8 +33,8 @@ export function RepoSummary({
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.3 }}
       style={{
-        background: "hsl(222 18% 10%)",
-        border: "1px solid hsl(222 14% 15%)",
+        background: "hsl(220 14% 9%)",
+        border: "1px solid hsl(220 12% 13%)",
         borderRadius: "10px",
         marginBottom: "12px",
         overflow: "hidden",
@@ -55,7 +55,7 @@ export function RepoSummary({
               width: "44px",
               height: "44px",
               borderRadius: "10px",
-              border: "1px solid hsl(222 14% 18%)",
+              border: "1px solid hsl(220 12% 16%)",
               flexShrink: 0,
             }}
           />
@@ -99,9 +99,9 @@ export function RepoSummary({
                   borderRadius: "4px",
                   fontSize: "11px",
                   fontWeight: 600,
-                  color: "hsl(188 94% 56%)",
-                  background: "hsl(188 94% 48% / 0.1)",
-                  border: "1px solid hsl(188 94% 48% / 0.2)",
+                  color: "hsl(38 92% 62%)",
+                  background: "hsl(38 92% 54% / 0.1)",
+                  border: "1px solid hsl(38 92% 54% / 0.2)",
                 }}
               >
                 {commitCount} commits
@@ -179,8 +179,8 @@ export function RepoSummary({
                   fontSize: "11px",
                   fontFamily: "JetBrains Mono, monospace",
                   color: "hsl(215 12% 55%)",
-                  background: "hsl(222 16% 13%)",
-                  border: "1px solid hsl(222 14% 18%)",
+                  background: "hsl(220 12% 12%)",
+                  border: "1px solid hsl(220 12% 16%)",
                 }}
               >
                 {t}
@@ -212,7 +212,7 @@ export function RepoSummary({
             style={{
               fontSize: "11px",
               fontWeight: 600,
-              color: "hsl(188 94% 56%)",
+              color: "hsl(38 92% 62%)",
               textTransform: "uppercase",
               letterSpacing: "0.07em",
               marginBottom: "10px",
