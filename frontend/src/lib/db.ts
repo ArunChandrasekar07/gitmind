@@ -56,7 +56,10 @@ export async function saveAnalysisToHistory(
       }
     );
 
-  if (error) console.error("Failed to save analysis history:", error);
+  if (error) {
+  if (error.code === "42501") return; // RLS / logged out
+  console.error("Failed to save analysis history:", error);
+}
 }
 
 export async function getAnalysisHistory(
