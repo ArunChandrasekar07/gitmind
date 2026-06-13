@@ -9,6 +9,8 @@ import {
   Clock, Filter,
 } from "lucide-react";
 import { formatRelativeTime, formatDate } from "@/lib/utils";
+import { useAuthStore } from "@/lib/store";
+import { getAnalysisHistory, deleteHistoryItem, clearAnalysisHistory } from "@/lib/db";
 
 interface HistoryItem {
   id: string;
@@ -22,18 +24,36 @@ interface HistoryItem {
 
 export default function HistoryPage() {
   const router = useRouter();
+  const { user } = useAuthStore();
   const [history, setHistory] = useState<HistoryItem[]>([]);
   const [search, setSearch] = useState("");
   const [filterRisk, setFilterRisk] = useState("all");
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const stored = localStorage.getItem("gitmind-history");
-    if (stored) {
-      try {
-        setHistory(JSON.parse(stored));
-      } catch { /* ignore */ }
-    }
-  }, []);
+    const load = async () => {
+      if (user?.id) {
+        const data = await getAnalysisHistory(user.id);
+        setHistory(
+          data.map((h) => ({
+            id: h.id,
+            repo_url: h.repo_url,
+            repo_name: h.repo_name,
+            analyzed_at: h.analyzed_at,
+            total_commits: h.total_commits,
+            risk_counts: {
+              safe: h.risk_safe,
+              warn: h.risk_warn,
+              danger: h.risk_danger,
+            },
+            language: h.language || "",
+          }))
+        );
+      }
+      setLoading(false);
+    };
+    load();
+  }, [user?.id]);
 
   const filtered = history.filter((h) => {
     const matchSearch = h.repo_name
@@ -49,18 +69,19 @@ export default function HistoryPage() {
     return matchSearch && matchRisk;
   });
 
-  const deleteItem = (id: string, e: React.MouseEvent) => {
+  const deleteItem = async (id: string, e: React.MouseEvent) => {
     e.stopPropagation();
-    const updated = history.filter((h) => h.id !== id);
-    setHistory(updated);
-    localStorage.setItem("gitmind-history", JSON.stringify(updated));
+    if (!user?.id) return;
+    await deleteHistoryItem(user.id, id);
+    setHistory((prev) => prev.filter((h) => h.id !== id));
   };
 
-  const clearAll = () => {
+  const clearAll = async () => {
+    if (!user?.id) return;
+    await clearAnalysisHistory(user.id);
     setHistory([]);
-    localStorage.removeItem("gitmind-history");
   };
-
+  if (loading) return null;
   return (
     <div style={{ maxWidth: "860px", margin: "0 auto" }}>
       {/* Header */}

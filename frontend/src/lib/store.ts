@@ -1,7 +1,9 @@
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
 import { supabase, signOutUser } from "./supabase";
-
+let notificationsEnabled = true;
+export const getNotificationsEnabled = () => notificationsEnabled;
+export const setNotificationsEnabled = (val: boolean) => { notificationsEnabled = val; };
 export interface GitmindUser {
   id: string;
   email: string;
@@ -40,47 +42,41 @@ export const useAuthStore = create<AuthState>()(
       },
 
       checkAuth: async () => {
-        set({ isLoading: true });
-        try {
-          const { data } = await supabase.auth.getSession();
-          if (data.session) {
-            const u = data.session.user;
-            set({
-              user: {
-                id: u.id,
-                email: u.email ?? "",
-                full_name:
-                  u.user_metadata?.full_name ??
-                  u.user_metadata?.name ??
-                  null,
-                avatar_url: u.user_metadata?.avatar_url ?? null,
-              },
-              token: data.session.access_token,
-              isAuthenticated: true,
-              isLoading: false,
-            });
-          } else {
-            set({
-              user: null,
-              token: null,
-              isAuthenticated: false,
-              isLoading: false,
-            });
-          }
-        } catch {
-          set({
-            user: null,
-            token: null,
-            isAuthenticated: false,
-            isLoading: false,
-          });
-        }
-      },
+  set({ isLoading: true });
+  try {
+    const { data } = await supabase.auth.getSession();
+    if (data.session) {
+      const u = data.session.user;
+
+      // Fetch latest name from profiles table
+      const { data: profile } = await supabase
+        .from("profiles")
+        .select("full_name, avatar_url")
+        .eq("id", u.id)
+        .single();
+
+      set({
+        user: {
+          id: u.id,
+          email: u.email ?? "",
+          full_name: profile?.full_name ?? u.user_metadata?.full_name ?? u.user_metadata?.name ?? null,
+          avatar_url: profile?.avatar_url ?? u.user_metadata?.avatar_url ?? null,
+        },
+        token: data.session.access_token,
+        isAuthenticated: true,
+        isLoading: false,
+      });
+    } else {
+      set({ user: null, token: null, isAuthenticated: false, isLoading: false });
+    }
+  } catch {
+    set({ user: null, token: null, isAuthenticated: false, isLoading: false });
+  }
+},
     }),
     {
       name: "gitmind-auth",
       partialize: (s) => ({
-        user: s.user,
         token: s.token,
         isAuthenticated: s.isAuthenticated,
       }),

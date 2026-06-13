@@ -11,30 +11,27 @@ export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
   },
 });
 
-export async function signInWithGoogle(from?: string) {
-  const origin =
-    typeof window !== "undefined" ? window.location.origin : "";
+// Call once on app boot — ensures client has session before any DB call
+export async function initSupabaseSession(): Promise<void> {
+  await supabase.auth.getSession();
+}
 
+export async function signInWithGoogle(from?: string) {
+  const origin = typeof window !== "undefined" ? window.location.origin : "";
   return supabase.auth.signInWithOAuth({
     provider: "google",
     options: {
-      redirectTo: `${origin}/auth/callback${
-        from ? `?from=${encodeURIComponent(from)}` : ""
-      }`,
+      redirectTo: `${origin}/auth/callback${from ? `?from=${encodeURIComponent(from)}` : ""}`,
     },
   });
 }
 
 export async function signInWithGitHub(from?: string) {
-  const origin =
-    typeof window !== "undefined" ? window.location.origin : "";
-
+  const origin = typeof window !== "undefined" ? window.location.origin : "";
   return supabase.auth.signInWithOAuth({
     provider: "github",
     options: {
-      redirectTo: `${origin}/auth/callback${
-        from ? `?from=${encodeURIComponent(from)}` : ""
-      }`,
+      redirectTo: `${origin}/auth/callback${from ? `?from=${encodeURIComponent(from)}` : ""}`,
     },
   });
 }

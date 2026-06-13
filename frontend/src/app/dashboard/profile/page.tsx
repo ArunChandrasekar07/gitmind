@@ -11,13 +11,24 @@ import { toast } from "sonner";
 
 export default function ProfilePage() {
   const { user, setUser, token } = useAuthStore();
-  const [name, setName] = useState(user?.full_name || "");
+  const [name, setName] = useState("");
   const [isSaving, setIsSaving] = useState(false);
   const [saved, setSaved] = useState(false);
-
+  const [loading, setLoading] = useState(true);
+  // Always fetch fresh from DB, never rely on Zustand cache
   useEffect(() => {
-    if (user?.full_name) setName(user.full_name);
-  }, [user]);
+    const fetchProfile = async () => {
+      if (!user?.id) return;
+      const { data } = await supabase
+        .from("profiles")
+        .select("full_name")
+        .eq("id", user.id)
+        .single();
+      if (data?.full_name) setName(data.full_name);
+      setLoading(false);
+    };
+    fetchProfile();
+  }, [user?.id]);
 
   const initials = name
     ? name
@@ -29,22 +40,30 @@ export default function ProfilePage() {
     : user?.email?.[0]?.toUpperCase() || "U";
 
   const handleSave = async () => {
+    if (!user?.id) return;
     setIsSaving(true);
     try {
-      const { error } = await supabase.auth.updateUser({
+      // Update auth metadata
+      const { error: authError } = await supabase.auth.updateUser({
         data: { full_name: name },
       });
-      if (error) {
-        toast.error("Failed to update profile");
-        return;
-      }
-      if (user && token) {
-        setUser({ ...user, full_name: name }, token);
-      }
+      if (authError) throw authError;
+
+      // Update profiles table
+      const { error: dbError } = await supabase
+        .from("profiles")
+        .update({ full_name: name, updated_at: new Date().toISOString() })
+        .eq("id", user.id);
+      if (dbError) throw dbError;
+
+      // Update Zustand
+      if (token) setUser({ ...user, full_name: name }, token);
+
       setSaved(true);
       toast.success("Profile updated");
       setTimeout(() => setSaved(false), 3000);
-    } catch {
+    } catch (err) {
+      console.error(err);
       toast.error("Failed to update profile");
     } finally {
       setIsSaving(false);
@@ -64,7 +83,7 @@ export default function ProfilePage() {
     transition: "border-color 0.15s, box-shadow 0.15s",
     boxSizing: "border-box" as const,
   };
-
+  if (loading) return null;
   return (
     <div style={{ maxWidth: "560px", margin: "0 auto" }}>
       {/* Header */}

@@ -99,14 +99,28 @@ export default function DashboardLayout({
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [userMenuOpen, setUserMenuOpen] = useState(false);
   const [authChecked, setAuthChecked] = useState(false);
+  const [profileName, setProfileName] = useState<string | null>(null);
 
   useEffect(() => {
     const init = async () => {
-      if (!token && !isAuthenticated) {
+      // Wait for Zustand to rehydrate
+      await new Promise(r => setTimeout(r, 80));
+      const store = useAuthStore.getState();
+      if (!store.token && !store.isAuthenticated) {
         router.push("/login");
         return;
       }
-      if (!user) await checkAuth();
+      await checkAuth();
+      const { supabase } = await import("@/lib/supabase");
+      const { data: { session } } = await supabase.auth.getSession();
+      if (session?.user?.id) {
+        const { data } = await supabase
+          .from("profiles")
+          .select("full_name")
+          .eq("id", session.user.id)
+          .single();
+        if (data?.full_name) setProfileName(data.full_name);
+      }
       setAuthChecked(true);
     };
     init();
@@ -120,8 +134,8 @@ export default function DashboardLayout({
   const isActive = (href: string, exact: boolean) =>
     exact ? pathname === href : pathname.startsWith(href);
 
-  const initials = user?.full_name
-    ? user.full_name
+  const initials = (profileName || user?.full_name)
+    ? (profileName || user?.full_name)!
         .split(" ")
         .map((n) => n[0])
         .join("")
@@ -315,7 +329,7 @@ export default function DashboardLayout({
                 whiteSpace: "nowrap",
               }}
             >
-              {user?.full_name || user?.email?.split("@")[0] || "User"}
+              {profileName || user?.full_name || user?.email?.split("@")[0] || "User"}
             </div>
             <div
               style={{

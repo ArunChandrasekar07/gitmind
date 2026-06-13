@@ -1,16 +1,16 @@
 "use client";
 
-import { useState, useEffect, useCallback, Suspense } from "react";
+import { useState, useEffect, useCallback, Suspense, useRef } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   Search, ArrowLeft, Loader2, GitCommit,
-  Brain, BarChart2, GitBranch, Download, BookmarkPlus,
-  Filter, SortAsc, RefreshCw,
+  Brain, GitBranch, RefreshCw, Filter, BookmarkPlus,
+  Check,
 } from "lucide-react";
 import { Wordmark } from "@/components/layout/Logo";
 import { TopLoader } from "@/components/layout/TopLoader";
-import { analyzeAPI, BatchAnalysisResponse } from "@/lib/api";
+import { analyzeAPI, BatchAnalysisResponse, pingBackend } from "@/lib/api";
 import { CommitRow } from "@/components/commit/CommitRow";
 import { RepoSummary } from "@/components/repo/RepoSummary";
 import { RepoHeaderSkeleton, CommitRowSkeleton } from "@/components/ui/skeleton";
@@ -18,9 +18,15 @@ import { EmptyState } from "@/components/shared/EmptyState";
 import { ErrorState } from "@/components/shared/ErrorState";
 import { LoadingStages } from "@/components/shared/LoadingStages";
 import { getRiskFromAnalysis } from "@/components/commit/RiskBadge";
-import { useAuthStore } from "@/lib/store";
-import { pingBackend } from "@/lib/api";
+import { useAuthStore, getNotificationsEnabled } from "@/lib/store";
 import { toast } from "sonner";
+import {
+  saveAnalysisToHistory,
+  createAnalysisSession,
+  updateAnalysisSession,
+  getLatestAnalysisSession,
+  saveRepository,
+} from "@/lib/db";
 
 const ANALYSIS_STAGES = [
   { id: "connect", label: "Connecting to GitHub API" },
@@ -31,9 +37,9 @@ const ANALYSIS_STAGES = [
 ];
 
 const EXAMPLE_REPOS = [
-  "https://github.com/vercel/ai",
-  "https://github.com/langchain-ai/langchain",
-  "https://github.com/supabase/supabase",
+  "https://github.com/tiangolo/fastapi",
+  "https://github.com/vercel/next.js",
+  "https://github.com/ArunChandrasekar07/devmind",
 ];
 
 function AnalyzeContent() {
@@ -49,111 +55,14 @@ function AnalyzeContent() {
   const [error, setError] = useState("");
   const [filterRisk, setFilterRisk] = useState<string>("all");
   const [searchCommit, setSearchCommit] = useState("");
+  const [sessionId, setSessionId] = useState<string | null>(null);
+  const [sessionRestored, setSessionRestored] = useState(false);
+  const [savedSuccess, setSavedSuccess] = useState(false);
+  const hasRestoredRef = useRef(false);
+  const handleAnalyzeRef = useRef<((url?: string, limit?: number, sessionId?: string | null) => Promise<void>) | null>(null);
 
-  useEffect(() => {
-    pingBackend();
-  }, []);
-
-  const handleAnalyze = useCallback(
-    async (targetUrl?: string) => {
-      const repoUrl = targetUrl || url;
-      if (!repoUrl.trim()) {
-        toast.error("Please enter a GitHub repository URL");
-        return;
-      }
-
-      setIsLoading(true);
-      setResult(null);
-      setError("");
-      setCurrentStage(0);
-      setFilterRisk("all");
-      setSearchCommit("");
-
-      const stageInterval = setInterval(() => {
-        setCurrentStage((p) => Math.min(p + 1, ANALYSIS_STAGES.length - 1));
-      }, 700);
-
-      try {
-        const data = await analyzeAPI.analyzeBatch(repoUrl, limit);
-        clearInterval(stageInterval);
-        setResult(data);
-
-        // Save to history
-        const riskCounts = data.analyzed_commits.reduce(
-          (acc, item) => {
-            const risk = getRiskFromAnalysis(item.analysis);
-            if (risk === "danger") acc.danger++;
-            else if (risk === "warn") acc.warn++;
-            else acc.safe++;
-            return acc;
-          },
-          { safe: 0, warn: 0, danger: 0 }
-        );
-
-        const historyItem = {
-          id: `${Date.now()}`,
-          repo_url: repoUrl,
-          repo_name: data.repo.full_name,
-          analyzed_at: new Date().toISOString(),
-          total_commits: data.total,
-          risk_counts: riskCounts,
-          language: data.repo.language || "",
-        };
-
-        const stored = localStorage.getItem("gitmind-history");
-        const history = stored ? JSON.parse(stored) : [];
-        const updated = [
-          historyItem,
-          ...history.filter((h: { repo_url: string }) => h.repo_url !== repoUrl),
-        ].slice(0, 50);
-        localStorage.setItem("gitmind-history", JSON.stringify(updated));
-
-        toast.success(
-          `Analyzed ${data.total} commits from ${data.repo.name}`
-        );
-      } catch (err: unknown) {
-        clearInterval(stageInterval);
-        const msg =
-          err instanceof Error ? err.message : "Analysis failed";
-        setError(msg);
-        toast.error(msg);
-      } finally {
-        setIsLoading(false);
-      }
-    },
-    [url, limit]
-  );
-
-  useEffect(() => {
-    const initialUrl = searchParams.get("url");
-    if (initialUrl) {
-      setUrl(initialUrl);
-      handleAnalyze(initialUrl);
-    }
-  }, []);
-
-  /* ── filtered commits ─────────────────────────────────── */
-  const filteredCommits = result?.analyzed_commits.filter((item) => {
-    const risk = getRiskFromAnalysis(item.analysis);
-    const matchesRisk =
-      filterRisk === "all" ||
-      (filterRisk === "safe" && risk === "safe") ||
-      (filterRisk === "warn" && risk === "warn") ||
-      (filterRisk === "danger" && risk === "danger");
-    const matchesSearch =
-      !searchCommit ||
-      item.commit.message
-        .toLowerCase()
-        .includes(searchCommit.toLowerCase()) ||
-      item.commit.author
-        .toLowerCase()
-        .includes(searchCommit.toLowerCase()) ||
-      item.commit.short_sha
-        .toLowerCase()
-        .includes(searchCommit.toLowerCase());
-    return matchesRisk && matchesSearch;
-  });
-
+  
+  // ── Compute risk counts ────────────────────────────────────
   const riskCounts = result
     ? result.analyzed_commits.reduce(
         (acc, item) => {
@@ -166,6 +75,189 @@ function AnalyzeContent() {
         { safe: 0, warn: 0, danger: 0 }
       )
     : { safe: 0, warn: 0, danger: 0 };
+
+  const healthScore = result
+    ? Math.round(
+        ((riskCounts.safe + riskCounts.warn * 0.5) /
+          Math.max(result.total, 1)) *
+          100
+      )
+    : null;
+
+  // ── Save to Supabase repo list ──────────────────────────────
+  const handleSaveRepo = async () => {
+    if (!user?.id || !result) return;
+    await saveRepository(user.id, {
+      url: result.repo.html_url,
+      name: result.repo.full_name,
+      description: result.repo.description,
+      language: result.repo.language,
+      stars: result.repo.stars,
+    });
+    setSavedSuccess(true);
+    toast.success("Repository saved");
+    setTimeout(() => setSavedSuccess(false), 3000);
+  };
+
+  // ── Main analysis function ─────────────────────────────────
+  const handleAnalyze = useCallback(
+    async (
+      targetUrl?: string,
+      targetLimit?: number,
+      existingSessionId?: string | null
+    ) => {
+      const repoUrl = targetUrl || url;
+      const repoLimit = targetLimit ?? limit;
+
+      if (!repoUrl.trim()) {
+        toast.error("Please enter a GitHub repository URL");
+        return;
+      }
+
+      setIsLoading(true);
+      setResult(null);
+      setError("");
+      setCurrentStage(0);
+      setFilterRisk("all");
+      setSearchCommit("");
+      setSessionRestored(false);
+
+      // Create or reuse session
+      let activeSessionId = existingSessionId || null;
+      if (!activeSessionId) {
+        activeSessionId = await createAnalysisSession(
+          user?.id || null,
+          repoUrl,
+          repoLimit
+        );
+        if (activeSessionId) setSessionId(activeSessionId);
+      }
+
+      const stageInterval = setInterval(() => {
+        setCurrentStage((p) => Math.min(p + 1, ANALYSIS_STAGES.length - 1));
+      }, 700);
+
+      try {
+        const data = await analyzeAPI.analyzeBatch(repoUrl, repoLimit);
+        clearInterval(stageInterval);
+        setResult(data);
+
+        const rc = data.analyzed_commits.reduce(
+          (acc, item) => {
+            const risk = getRiskFromAnalysis(item.analysis);
+            if (risk === "danger") acc.danger++;
+            else if (risk === "warn") acc.warn++;
+            else acc.safe++;
+            return acc;
+          },
+          { safe: 0, warn: 0, danger: 0 }
+        );
+
+        const hs = Math.round(
+          ((rc.safe + rc.warn * 0.5) / Math.max(data.total, 1)) * 100
+        );
+
+        // Save to Supabase in parallel
+        if (user?.id) {
+          await Promise.all([
+            // Save to history
+            saveAnalysisToHistory(user.id, data, rc, hs),
+            // Update session
+            activeSessionId
+              ? updateAnalysisSession(activeSessionId, {
+                  status: "complete",
+                  result_json: data,
+                  completed_at: new Date().toISOString(),
+                })
+              : Promise.resolve(),
+          ]);
+        } else if (activeSessionId) {
+          // Anonymous user — just update session
+          await updateAnalysisSession(activeSessionId, {
+            status: "complete",
+            result_json: data,
+            completed_at: new Date().toISOString(),
+          });
+        }
+
+        if (getNotificationsEnabled()) {
+          toast.success(`Analyzed ${data.total} commits from ${data.repo.name}`);
+        }
+      } catch (err: unknown) {
+        clearInterval(stageInterval);
+        const msg = err instanceof Error ? err.message : "Analysis failed";
+        setError(msg);
+        toast.error(msg);
+
+        if (activeSessionId) {
+          await updateAnalysisSession(activeSessionId, {
+            status: "error",
+            error_message: msg,
+          });
+        }
+      } finally {
+        setIsLoading(false);
+      }
+    },
+    [url, limit, user]
+  );
+  // ── Restore last session on mount ──────────────────────────
+  useEffect(() => {
+    pingBackend();
+
+    const restoreSession = async () => {
+      if (hasRestoredRef.current) return;
+      hasRestoredRef.current = true;
+
+      const initialUrl = searchParams.get("url");
+      if (initialUrl) {
+        setUrl(initialUrl);
+        // Delay to let handleAnalyze be defined
+        setTimeout(() => handleAnalyzeRef.current?.(initialUrl), 0);
+        return;
+      }
+
+      if (user?.id) {
+        const session = await getLatestAnalysisSession(user.id);
+        if (session) {
+          setUrl(session.repo_url);
+          setLimit(session.limit_count);
+          setSessionId(session.id);
+
+          if (session.status === "complete" && session.result_json) {
+            setResult(session.result_json);
+            setSessionRestored(true);
+            toast.success("Previous analysis restored");
+          } else if (session.status === "loading") {
+            toast.info("Resuming previous analysis...");
+            setTimeout(() => handleAnalyzeRef.current?.(session.repo_url, session.limit_count, session.id), 0);
+          }
+        }
+      }
+    };
+
+    restoreSession();
+  }, [user?.id]);
+
+  useEffect(() => {
+    handleAnalyzeRef.current = handleAnalyze;
+  }, [handleAnalyze]);
+
+  // ── Filtered commits ───────────────────────────────────────
+  const filteredCommits = result?.analyzed_commits.filter((item) => {
+    const risk = getRiskFromAnalysis(item.analysis);
+    const matchesRisk =
+      filterRisk === "all" ||
+      (filterRisk === "safe" && risk === "safe") ||
+      (filterRisk === "warn" && risk === "warn") ||
+      (filterRisk === "danger" && risk === "danger");
+    const matchesSearch =
+      !searchCommit ||
+      item.commit.message.toLowerCase().includes(searchCommit.toLowerCase()) ||
+      item.commit.author.toLowerCase().includes(searchCommit.toLowerCase()) ||
+      item.commit.short_sha.toLowerCase().includes(searchCommit.toLowerCase());
+    return matchesRisk && matchesSearch;
+  });
 
   return (
     <div
@@ -187,9 +279,9 @@ function AnalyzeContent() {
           height: "52px",
           display: "flex",
           alignItems: "center",
-          background: "hsl(220 16% 6% / 0.9)",
+          background: "hsl(220 16% 6% / 0.92)",
           backdropFilter: "blur(16px)",
-          borderBottom: "1px solid hsl(220 10% 11%)",
+          borderBottom: "1px solid hsl(220 12% 11%)",
           padding: "0 20px",
           gap: "12px",
         }}
@@ -204,7 +296,7 @@ function AnalyzeContent() {
             background: "none",
             border: "none",
             borderRadius: "6px",
-            color: "hsl(215 12% 48%)",
+            color: "hsl(220 8% 46%)",
             fontSize: "12px",
             cursor: "pointer",
             fontFamily: "Inter, sans-serif",
@@ -212,30 +304,49 @@ function AnalyzeContent() {
             transition: "color 0.15s, background 0.15s",
           }}
           onMouseEnter={(e) => {
-            e.currentTarget.style.color = "hsl(210 20% 80%)";
-            e.currentTarget.style.background = "hsl(220 12% 13%)";
+            e.currentTarget.style.color = "hsl(38 10% 80%)";
+            e.currentTarget.style.background = "hsl(220 12% 12%)";
           }}
           onMouseLeave={(e) => {
-            e.currentTarget.style.color = "hsl(215 12% 48%)";
+            e.currentTarget.style.color = "hsl(220 8% 46%)";
             e.currentTarget.style.background = "none";
           }}
         >
           <ArrowLeft size={13} />
-          <span style={{ display: "none" }} className="sm-show">
-            Home
-          </span>
         </button>
 
         <Wordmark size={22} />
 
-        {/* Search bar */}
+        {/* Restored badge */}
+        {sessionRestored && (
+          <span
+            style={{
+              display: "flex",
+              alignItems: "center",
+              gap: "4px",
+              padding: "3px 8px",
+              background: "hsl(152 60% 40% / 0.12)",
+              border: "1px solid hsl(152 60% 40% / 0.25)",
+              borderRadius: "5px",
+              fontSize: "11px",
+              color: "hsl(152 60% 48%)",
+              fontWeight: 500,
+              flexShrink: 0,
+            }}
+          >
+            <Check size={10} />
+            Restored
+          </span>
+        )}
+
+        {/* URL Search */}
         <div
           style={{
             flex: 1,
             display: "flex",
             alignItems: "center",
             gap: "8px",
-            background: "hsl(220 12% 11%)",
+            background: "hsl(220 14% 10%)",
             border: "1px solid hsl(220 12% 15%)",
             borderRadius: "8px",
             padding: "0 10px",
@@ -257,7 +368,7 @@ function AnalyzeContent() {
         >
           <GitBranch
             size={13}
-            style={{ color: "hsl(215 12% 40%)", flexShrink: 0 }}
+            style={{ color: "hsl(220 8% 38%)", flexShrink: 0 }}
           />
           <input
             value={url}
@@ -270,7 +381,7 @@ function AnalyzeContent() {
               border: "none",
               outline: "none",
               fontSize: "12px",
-              color: "hsl(210 20% 88%)",
+              color: "hsl(38 10% 88%)",
               fontFamily: "Inter, sans-serif",
               minWidth: 0,
             }}
@@ -283,7 +394,7 @@ function AnalyzeContent() {
               border: "none",
               outline: "none",
               fontSize: "11px",
-              color: "hsl(215 12% 45%)",
+              color: "hsl(220 8% 44%)",
               cursor: "pointer",
               fontFamily: "Inter, sans-serif",
               flexShrink: 0,
@@ -293,7 +404,7 @@ function AnalyzeContent() {
               <option
                 key={n}
                 value={n}
-                style={{ background: "hsl(222 18% 12%)" }}
+                style={{ background: "hsl(220 14% 10%)" }}
               >
                 {n} commits
               </option>
@@ -320,7 +431,6 @@ function AnalyzeContent() {
             cursor: isLoading ? "not-allowed" : "pointer",
             fontFamily: "Inter, sans-serif",
             flexShrink: 0,
-            transition: "background 0.15s",
           }}
         >
           {isLoading ? (
@@ -331,12 +441,45 @@ function AnalyzeContent() {
           ) : (
             <Search size={13} />
           )}
-          <span style={{ display: "none" }} className="sm-show">
-            Analyze
-          </span>
+          Analyze
         </button>
 
-        {/* Auth shortcut */}
+        {/* Save repo button */}
+        {result && isAuthenticated && (
+          <button
+            onClick={handleSaveRepo}
+            style={{
+              display: "flex",
+              alignItems: "center",
+              gap: "5px",
+              padding: "6px 10px",
+              background: savedSuccess
+                ? "hsl(152 60% 40% / 0.12)"
+                : "hsl(220 12% 12%)",
+              border: `1px solid ${
+                savedSuccess
+                  ? "hsl(152 60% 40% / 0.3)"
+                  : "hsl(220 12% 18%)"
+              }`,
+              borderRadius: "7px",
+              color: savedSuccess
+                ? "hsl(152 60% 48%)"
+                : "hsl(220 8% 52%)",
+              fontSize: "12px",
+              cursor: "pointer",
+              fontFamily: "Inter, sans-serif",
+              flexShrink: 0,
+              transition: "all 0.15s",
+            }}
+          >
+            {savedSuccess ? (
+              <Check size={13} />
+            ) : (
+              <BookmarkPlus size={13} />
+            )}
+          </button>
+        )}
+
         {isAuthenticated && (
           <button
             onClick={() => router.push("/dashboard")}
@@ -345,21 +488,12 @@ function AnalyzeContent() {
               background: "hsl(220 12% 12%)",
               border: "1px solid hsl(220 12% 18%)",
               borderRadius: "6px",
-              color: "hsl(215 12% 52%)",
+              color: "hsl(220 8% 50%)",
               fontSize: "12px",
               cursor: "pointer",
               fontFamily: "Inter, sans-serif",
               flexShrink: 0,
-              transition: "background 0.15s",
-              display: "none",
             }}
-            className="md-show"
-            onMouseEnter={(e) =>
-              (e.currentTarget.style.background = "hsl(220 12% 15%)")
-            }
-            onMouseLeave={(e) =>
-              (e.currentTarget.style.background = "hsl(220 12% 12%)")
-            }
           >
             Dashboard
           </button>
@@ -367,9 +501,16 @@ function AnalyzeContent() {
       </nav>
 
       {/* ── MAIN ─────────────────────────────────────────── */}
-      <main style={{ flex: 1, maxWidth: "900px", width: "100%", margin: "0 auto", padding: "20px" }}>
-
-        {/* Loading state */}
+      <main
+        style={{
+          flex: 1,
+          maxWidth: "900px",
+          width: "100%",
+          margin: "0 auto",
+          padding: "20px",
+        }}
+      >
+        {/* Loading */}
         <AnimatePresence>
           {isLoading && (
             <motion.div
@@ -385,7 +526,6 @@ function AnalyzeContent() {
                 paddingBottom: "80px",
               }}
             >
-              {/* Animated logo */}
               <div style={{ position: "relative", marginBottom: "36px" }}>
                 <div
                   style={{
@@ -399,14 +539,15 @@ function AnalyzeContent() {
                     justifyContent: "center",
                   }}
                 >
-                  <Brain
-                    size={28}
-                    style={{ color: "hsl(38 92% 58%)" }}
-                  />
+                  <Brain size={28} style={{ color: "hsl(38 92% 58%)" }} />
                 </div>
                 <motion.div
                   animate={{ rotate: 360 }}
-                  transition={{ duration: 2, repeat: Infinity, ease: "linear" }}
+                  transition={{
+                    duration: 2,
+                    repeat: Infinity,
+                    ease: "linear",
+                  }}
                   style={{
                     position: "absolute",
                     inset: "-4px",
@@ -423,7 +564,6 @@ function AnalyzeContent() {
                 currentStage={currentStage}
               />
 
-              {/* shimmer bar */}
               <div
                 style={{
                   marginTop: "28px",
@@ -457,39 +597,19 @@ function AnalyzeContent() {
           )}
         </AnimatePresence>
 
-        {/* Skeleton while loading */}
-        {isLoading && (
-          <div style={{ display: "none" }}>
-            <RepoHeaderSkeleton />
-            {Array.from({ length: 5 }).map((_, i) => (
-              <CommitRowSkeleton key={i} />
-            ))}
-          </div>
-        )}
-
-        {/* Error state */}
+        {/* Error */}
         {!isLoading && error && (
-          <ErrorState
-            message={error}
-            onRetry={() => handleAnalyze()}
-          />
+          <ErrorState message={error} onRetry={() => handleAnalyze()} />
         )}
 
         {/* Empty state */}
         {!isLoading && !error && !result && (
-          <div
-            style={{
-              paddingTop: "60px",
-              paddingBottom: "40px",
-            }}
-          >
+          <div style={{ paddingTop: "60px" }}>
             <EmptyState
               icon={GitBranch}
               title="Ready to analyze"
-              description="Enter a GitHub repository URL in the search bar above to get started."
+              description="Enter a GitHub repository URL above to get started."
             />
-
-            {/* Example repos */}
             <div
               style={{
                 marginTop: "24px",
@@ -502,11 +622,11 @@ function AnalyzeContent() {
               <span
                 style={{
                   fontSize: "12px",
-                  color: "hsl(215 12% 42%)",
+                  color: "hsl(220 8% 40%)",
                   alignSelf: "center",
                 }}
               >
-                Try these repos:
+                Try:
               </span>
               {EXAMPLE_REPOS.map((r) => (
                 <button
@@ -517,22 +637,22 @@ function AnalyzeContent() {
                   }}
                   style={{
                     padding: "5px 12px",
-                    background: "hsl(220 12% 11%)",
+                    background: "hsl(220 14% 10%)",
                     border: "1px solid hsl(220 12% 16%)",
                     borderRadius: "6px",
                     fontSize: "12px",
                     fontFamily: "JetBrains Mono, monospace",
-                    color: "hsl(215 12% 52%)",
+                    color: "hsl(220 8% 50%)",
                     cursor: "pointer",
                     transition: "color 0.15s, border-color 0.15s",
                   }}
                   onMouseEnter={(e) => {
-                    e.currentTarget.style.color = "hsl(38 92% 62%)";
+                    e.currentTarget.style.color = "hsl(38 92% 60%)";
                     e.currentTarget.style.borderColor =
                       "hsl(38 92% 54% / 0.3)";
                   }}
                   onMouseLeave={(e) => {
-                    e.currentTarget.style.color = "hsl(215 12% 52%)";
+                    e.currentTarget.style.color = "hsl(220 8% 50%)";
                     e.currentTarget.style.borderColor =
                       "hsl(220 12% 16%)";
                   }}
@@ -552,7 +672,6 @@ function AnalyzeContent() {
               animate={{ opacity: 1 }}
               transition={{ duration: 0.3 }}
             >
-              {/* Repo summary */}
               <RepoSummary
                 repo={result.repo}
                 summary={result.summary}
@@ -565,18 +684,17 @@ function AnalyzeContent() {
                 style={{
                   display: "flex",
                   alignItems: "center",
-                  gap: "10px",
+                  gap: "8px",
                   marginBottom: "10px",
                   flexWrap: "wrap",
                 }}
               >
-                {/* Commit search */}
                 <div
                   style={{
                     display: "flex",
                     alignItems: "center",
                     gap: "7px",
-                    background: "hsl(220 12% 11%)",
+                    background: "hsl(220 14% 10%)",
                     border: "1px solid hsl(220 12% 15%)",
                     borderRadius: "7px",
                     padding: "5px 10px",
@@ -586,7 +704,7 @@ function AnalyzeContent() {
                 >
                   <Search
                     size={12}
-                    style={{ color: "hsl(215 12% 42%)", flexShrink: 0 }}
+                    style={{ color: "hsl(220 8% 40%)", flexShrink: 0 }}
                   />
                   <input
                     value={searchCommit}
@@ -597,15 +715,14 @@ function AnalyzeContent() {
                       border: "none",
                       outline: "none",
                       fontSize: "12px",
-                      color: "hsl(210 20% 88%)",
+                      color: "hsl(38 10% 88%)",
                       fontFamily: "Inter, sans-serif",
                       width: "100%",
                     }}
                   />
                 </div>
 
-                {/* Risk filter */}
-                <div style={{ display: "flex", gap: "5px" }}>
+                <div style={{ display: "flex", gap: "4px" }}>
                   {[
                     { key: "all", label: "All" },
                     { key: "safe", label: "Safe" },
@@ -622,11 +739,10 @@ function AnalyzeContent() {
                         fontWeight: filterRisk === f.key ? 600 : 400,
                         cursor: "pointer",
                         fontFamily: "Inter, sans-serif",
-                        transition: "all 0.15s",
                         background:
                           filterRisk === f.key
                             ? "hsl(38 92% 54% / 0.12)"
-                            : "hsl(220 12% 11%)",
+                            : "hsl(220 14% 10%)",
                         border:
                           filterRisk === f.key
                             ? "1px solid hsl(38 92% 54% / 0.3)"
@@ -634,17 +750,13 @@ function AnalyzeContent() {
                         color:
                           filterRisk === f.key
                             ? "hsl(38 92% 62%)"
-                            : "hsl(215 12% 50%)",
+                            : "hsl(220 8% 48%)",
+                        transition: "all 0.12s",
                       }}
                     >
                       {f.label}
-                      {f.key !== "all" && result && (
-                        <span
-                          style={{
-                            marginLeft: "4px",
-                            opacity: 0.7,
-                          }}
-                        >
+                      {f.key !== "all" && (
+                        <span style={{ marginLeft: "4px", opacity: 0.7 }}>
                           {f.key === "safe"
                             ? riskCounts.safe
                             : f.key === "warn"
@@ -656,7 +768,6 @@ function AnalyzeContent() {
                   ))}
                 </div>
 
-                {/* Re-analyze */}
                 <button
                   onClick={() => handleAnalyze()}
                   style={{
@@ -664,39 +775,24 @@ function AnalyzeContent() {
                     alignItems: "center",
                     gap: "5px",
                     padding: "5px 10px",
-                    background: "hsl(220 12% 11%)",
+                    background: "hsl(220 14% 10%)",
                     border: "1px solid hsl(220 12% 15%)",
                     borderRadius: "7px",
-                    color: "hsl(215 12% 50%)",
+                    color: "hsl(220 8% 48%)",
                     fontSize: "12px",
                     cursor: "pointer",
                     fontFamily: "Inter, sans-serif",
                     flexShrink: 0,
-                    transition: "all 0.15s",
-                  }}
-                  onMouseEnter={(e) => {
-                    e.currentTarget.style.color = "hsl(210 20% 80%)";
-                    e.currentTarget.style.borderColor =
-                      "hsl(222 14% 24%)";
-                  }}
-                  onMouseLeave={(e) => {
-                    e.currentTarget.style.color = "hsl(215 12% 50%)";
-                    e.currentTarget.style.borderColor =
-                      "hsl(220 12% 15%)";
                   }}
                 >
                   <RefreshCw size={12} />
-                  <span style={{ display: "none" }} className="sm-show">
-                    Re-analyze
-                  </span>
                 </button>
               </div>
 
-              {/* Result count */}
               <p
                 style={{
                   fontSize: "11px",
-                  color: "hsl(215 12% 40%)",
+                  color: "hsl(220 8% 38%)",
                   marginBottom: "8px",
                 }}
               >
@@ -704,7 +800,6 @@ function AnalyzeContent() {
                 click any row to expand AI intelligence
               </p>
 
-              {/* Commit list */}
               {filteredCommits && filteredCommits.length > 0 ? (
                 <div
                   style={{
@@ -729,7 +824,7 @@ function AnalyzeContent() {
                 <EmptyState
                   icon={Filter}
                   title="No commits match"
-                  description={`No commits match the current filter "${filterRisk}". Try changing the filter.`}
+                  description={`No commits match "${filterRisk}". Try changing the filter.`}
                   action={
                     <button
                       onClick={() => setFilterRisk("all")}
@@ -751,13 +846,12 @@ function AnalyzeContent() {
                 />
               )}
 
-              {/* Footer */}
               <p
                 style={{
                   textAlign: "center",
                   marginTop: "28px",
                   fontSize: "11px",
-                  color: "hsl(215 12% 35%)",
+                  color: "hsl(220 8% 32%)",
                   paddingBottom: "20px",
                 }}
               >
@@ -771,8 +865,6 @@ function AnalyzeContent() {
 
       <style>{`
         @keyframes spin { to { transform: rotate(360deg); } }
-        @media (min-width: 640px) { .sm-show { display: inline !important; } }
-        @media (min-width: 768px) { .md-show { display: block !important; } }
       `}</style>
     </div>
   );
@@ -794,7 +886,7 @@ export default function AnalyzePage() {
           <Loader2
             size={24}
             style={{
-              color: "hsl(38 92% 58%)",
+              color: "hsl(38 92% 54%)",
               animation: "spin 1s linear infinite",
             }}
           />

@@ -10,6 +10,7 @@ import {
 } from "lucide-react";
 import { useAuthStore } from "@/lib/store";
 import { formatRelativeTime } from "@/lib/utils";
+import { getAnalysisHistory } from "@/lib/db";
 
 interface HistoryItem {
   id: string;
@@ -87,15 +88,31 @@ export default function DashboardPage() {
   const router = useRouter();
   const { user } = useAuthStore();
   const [history, setHistory] = useState<HistoryItem[]>([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const stored = localStorage.getItem("gitmind-history");
-    if (stored) {
-      try {
-        setHistory(JSON.parse(stored).slice(0, 20));
-      } catch { /* ignore */ }
-    }
-  }, []);
+    const load = async () => {
+      if (!user?.id) return;
+      const data = await getAnalysisHistory(user.id, 20);
+      setHistory(
+        data.map((h) => ({
+          id: h.id,
+          repo_url: h.repo_url,
+          repo_name: h.repo_name,
+          analyzed_at: h.analyzed_at,
+          total_commits: h.total_commits,
+          risk_counts: {
+            safe: h.risk_safe,
+            warn: h.risk_warn,
+            danger: h.risk_danger,
+          },
+          language: h.language || "",
+        }))
+      );
+      setLoading(false);
+    };
+    load();
+  }, [user?.id]);
 
   const greeting = () => {
     const h = new Date().getHours();
@@ -110,7 +127,7 @@ export default function DashboardPage() {
     (a, h) => a + h.risk_counts.danger + h.risk_counts.warn,
     0
   );
-
+  if (loading) return null;
   return (
     <div style={{ maxWidth: "860px", margin: "0 auto" }}>
       {/* Header */}

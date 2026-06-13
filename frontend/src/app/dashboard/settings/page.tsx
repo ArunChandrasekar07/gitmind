@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import {
   Shield, Trash2, LogOut, Bell, Moon,
@@ -9,6 +9,7 @@ import {
 import { useAuthStore } from "@/lib/store";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
+import { clearAnalysisHistory } from "@/lib/db";
 
 function SectionHeader({
   icon: Icon,
@@ -111,13 +112,34 @@ function SettingRow({
 
 export default function SettingsPage() {
   const router = useRouter();
+  const { user} = useAuthStore();
   const { logout } = useAuthStore();
   const [notifications, setNotifications] = useState(true);
+  const [loading, setLoading] = useState(true);
+  useEffect(() => {
+    const load = async () => {
+      if (!user?.id) return;
+      const { getUserSettings } = await import("@/lib/db");
+      const s = await getUserSettings(user.id);
+      setNotifications(s.notifications);
+      setLoading(false);
+    };
+    load();
+  }, [user?.id]);
 
-  const clearHistory = () => {
-    localStorage.removeItem("gitmind-history");
-    localStorage.removeItem("gitmind-saved");
-    toast.success("All local data cleared");
+  const handleToggleNotifications = async (val: boolean) => {
+    setNotifications(val);
+    const { setNotificationsEnabled } = await import("@/lib/store");
+    setNotificationsEnabled(val);
+    if (!user?.id) return;
+    const { saveUserSettings } = await import("@/lib/db");
+    await saveUserSettings(user.id, { notifications: val });
+  };
+
+  const clearHistory = async () => {
+    if (!user?.id) return;
+    await clearAnalysisHistory(user.id);
+    toast.success("Analysis history cleared");
   };
 
   const handleSignOut = async () => {
@@ -153,7 +175,7 @@ export default function SettingsPage() {
     flexShrink: 0,
     transition: "background 0.15s",
   };
-
+  if (loading) return null;
   return (
     <div style={{ maxWidth: "600px", margin: "0 auto" }}>
       {/* Header */}
@@ -204,7 +226,7 @@ export default function SettingsPage() {
             description="Receive a notification when repository analysis finishes"
             action={
               <button
-                onClick={() => setNotifications(!notifications)}
+                onClick={() => handleToggleNotifications(!notifications)}
                 style={{
                   width: "38px",
                   height: "22px",

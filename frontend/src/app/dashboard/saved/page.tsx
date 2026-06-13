@@ -8,6 +8,8 @@ import {
   GitBranch, Search,
 } from "lucide-react";
 import { formatRelativeTime } from "@/lib/utils";
+import { useAuthStore } from "@/lib/store";
+import { getSavedRepositories, deleteSavedRepository } from "@/lib/db";
 
 interface SavedRepo {
   id: string;
@@ -21,28 +23,42 @@ interface SavedRepo {
 
 export default function SavedPage() {
   const router = useRouter();
+  const { user } = useAuthStore();
   const [saved, setSaved] = useState<SavedRepo[]>([]);
   const [search, setSearch] = useState("");
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const stored = localStorage.getItem("gitmind-saved");
-    if (stored) {
-      try {
-        setSaved(JSON.parse(stored));
-      } catch { /* ignore */ }
-    }
-  }, []);
+    const load = async () => {
+      if (user?.id) {
+        const data = await getSavedRepositories(user.id);
+        setSaved(
+          data.map((s) => ({
+            id: s.id,
+            repo_url: s.repo_url,
+            repo_name: s.repo_name,
+            description: s.description || "",
+            language: s.language || "",
+            stars: s.stars,
+            saved_at: s.saved_at,
+          }))
+        );
+      }
+      setLoading(false);
+    };
+    load();
+  }, [user?.id]);
 
   const filtered = saved.filter((s) =>
     s.repo_name.toLowerCase().includes(search.toLowerCase())
   );
 
-  const deleteItem = (id: string) => {
-    const updated = saved.filter((s) => s.id !== id);
-    setSaved(updated);
-    localStorage.setItem("gitmind-saved", JSON.stringify(updated));
+  const deleteItem = async (id: string) => {
+    if (!user?.id) return;
+    await deleteSavedRepository(user.id, id);
+    setSaved((prev) => prev.filter((s) => s.id !== id));
   };
-
+  if (loading) return null;
   return (
     <div style={{ maxWidth: "860px", margin: "0 auto" }}>
       {/* Header */}
