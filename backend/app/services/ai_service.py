@@ -1,15 +1,17 @@
 # ============================================
 # GitMind — Multi-Provider LLM Client
 # Gemini → Groq → OpenRouter fallback chain
-# Smart cooldown — skips rate-limited models
+# Provider-level + model-level cooldown
+# Think-block stripping for verbose models
 # ============================================
 from google import genai
 from google.genai import types
 from groq import Groq
-from typing import Generator, List, Dict, Any
+from typing import Generator, List, Dict, Any, Optional
 import httpx
 import json
 import logging
+import re
 import time
 
 from app.config import settings
@@ -18,24 +20,30 @@ logger = logging.getLogger(__name__)
 
 # ─── System Instruction ───────────────────────────────────────────────────────
 SYSTEM_INSTRUCTION = """You are a Git commit analyzer. Analyze code diffs and explain them clearly.
-- Be concise and technical
+- Be concise, technical, and conservative
+- Prefer underclaiming over hallucinating
+- Never infer intent beyond visible diff
+- For refactors assume runtime behavior unchanged unless logic changed
 - State what changed and why it matters
 - Flag bugs, security issues, or breaking changes
 - Use markdown formatting
+- ONLY state what is directly visible in the diff. Do not infer intent beyond what the code shows.
+- If the patch is truncated or unclear, say 'patch truncated — limited analysis' rather than guessing
+- Do not output reasoning or thinking. Respond directly with the analysis only.
 - Never hallucinate — only analyze what is provided"""
 
-# ─── Model Lists — fastest/cheapest first ─────────────────────────────────────
+# ─── Model Lists ──────────────────────────────────────────────────────────────
 GEMINI_MODELS = [
     "gemini-2.5-flash",
-    "gemini-3.5-flash",
     "gemini-2.0-flash",
+    "gemini-3.5-flash",
     "gemini-2.5-pro",
 ]
 
 GROQ_MODELS = [
     "openai/gpt-oss-120b",
-    "llama-3.3-70b-versatile",
     "qwen/qwen3-32b",
+    "llama-3.3-70b-versatile",
     "llama-3.1-8b-instant",
 ]
 
@@ -46,23 +54,88 @@ OPENROUTER_MODELS = [
     "meta-llama/llama-3.3-70b-instruct:free",
 ]
 
-# ─── Cooldown tracker — skips models that hit 429 for 120s ────────────────────
-_skip_until: Dict[str, float] = {}
-COOLDOWN = 60  # seconds
+# ─── Cooldown — model-level and provider-level ────────────────────────────────
+_model_skip_until: Dict[str, float] = {}
+_provider_skip_until: Dict[str, float] = {}
+
+MODEL_COOLDOWN = 120
+PROVIDER_COOLDOWN = 90
 
 
-def _is_cooling(model: str) -> bool:
-    return _skip_until.get(model, 0) > time.time()
+def _model_cooling(model: str) -> bool:
+    return _model_skip_until.get(model, 0) > time.time()
 
 
-def _cool(model: str) -> None:
-    _skip_until[model] = time.time() + COOLDOWN
-    logger.warning(f"⏳ {model} cooling for {COOLDOWN}s")
+def _cool_model(model: str) -> None:
+    _model_skip_until[model] = time.time() + MODEL_COOLDOWN
+    logger.warning(f"⏳ Model {model} cooling for {MODEL_COOLDOWN}s")
+
+
+def _provider_cooling(provider: str) -> bool:
+    return _provider_skip_until.get(provider, 0) > time.time()
+
+
+def _cool_provider(provider: str) -> None:
+    _provider_skip_until[provider] = time.time() + PROVIDER_COOLDOWN
+    logger.warning(f"⏳ Provider {provider} cooling for {PROVIDER_COOLDOWN}s")
+
+
+# ─── Think-block stripping ────────────────────────────────────────────────────
+def _strip_think_blocks(text: str) -> str:
+    text = re.sub(
+        r"<think>.*?</think>",
+        "",
+        text,
+        flags=re.DOTALL | re.IGNORECASE,
+    )
+
+    text = re.sub(
+        r"<think>.*",
+        "",
+        text,
+        flags=re.DOTALL | re.IGNORECASE,
+    )
+
+    return text.strip()
+
+
+def _normalize_commit_output(text: str) -> str:
+    text = re.sub(r"\r\n", "\n", text).strip()
+    text = re.sub(r"\n{3,}", "\n\n", text)
+    text = re.sub(r"(?m)^What changed\s+(?!—)", "What changed — ", text)
+    text = re.sub(r"(?m)^Impact\s+(?!—)", "Impact — ", text)
+    text = re.sub(r"(?m)^Risk\s+(?!—)", "Risk — ", text)
+    text = re.sub(r"(?m)^Category\s+(?!—)", "Category — ", text)
+    return text
+
+
+# ─── Health score computation — single source of truth ───────────────────────
+def _compute_health(analyses: List[str]) -> tuple[int, str]:
+    """
+    Derive score and label from actual commit analyses.
+    Returns (score: int, label: str) — used by both frontend and summary prompt
+    so badge, label, and AI summary never contradict each other.
+    """
+    safe  = sum(1 for a in analyses if "🟢" in a)
+    warn  = sum(1 for a in analyses if "🟡" in a)
+    risk  = sum(1 for a in analyses if "🔴" in a)
+    total = max(safe + warn + risk, 1)
+
+    score = int((safe * 100 + warn * 50 + risk * 0) / total)
+
+    if score >= 85:
+        label = "Healthy"
+    elif score >= 65:
+        label = "Moderate"
+    else:
+        label = "Needs Attention"
+
+    return score, label
 
 
 # ─── Clients ──────────────────────────────────────────────────────────────────
-_gemini_client = None
-_groq_client = None
+_gemini_client: Optional[genai.Client] = None
+_groq_client: Optional[Groq] = None
 
 
 def get_gemini_client() -> genai.Client:
@@ -76,34 +149,37 @@ def get_groq_client() -> Groq:
     global _groq_client
     if _groq_client is None:
         _groq_client = Groq(
-    api_key=settings.groq_api_key,
-    max_retries=0,
-    )
+            api_key=settings.groq_api_key,
+            max_retries=0,
+        )
     return _groq_client
 
 
 def is_quota_error(e: Exception) -> bool:
     msg = str(e).lower()
     return any(x in msg for x in [
-    "quota",
-    "rate limit",
-    "429",
-    "503",
-    "unavailable",
-    "high demand",
-    "exhausted",
-    "too many requests",
-    "resource_exhausted",
-])
+        "quota",
+        "rate limit",
+        "429",
+        "503",
+        "unavailable",
+        "high demand",
+        "exhausted",
+        "too many requests",
+        "resource_exhausted",
+    ])
 
 
 # ─── Gemini ───────────────────────────────────────────────────────────────────
-def _try_gemini_stream(prompt: str) -> Generator[str, None, None]:
+def _try_gemini_stream(prompt: str, max_tokens: int = 300) -> Generator[str, None, None]:
     client = get_gemini_client()
-    for model in GEMINI_MODELS:
-        if _is_cooling(model):
-            logger.info(f"⏭️  Skip {model} (cooling)")
-            continue
+    available = [m for m in GEMINI_MODELS if not _model_cooling(m)]
+
+    if not available:
+        _cool_provider("gemini")
+        raise Exception("Gemini exhausted")
+
+    for model in available:
         try:
             logger.info(f"🔄 Gemini: {model}")
             stream = client.models.generate_content_stream(
@@ -111,8 +187,8 @@ def _try_gemini_stream(prompt: str) -> Generator[str, None, None]:
                 contents=prompt,
                 config=types.GenerateContentConfig(
                     system_instruction=SYSTEM_INSTRUCTION,
-                    temperature=0.1,
-                    max_output_tokens=600,
+                    temperature=0.15,
+                    max_output_tokens=max_tokens,
                 ),
             )
             chunks = 0
@@ -125,22 +201,28 @@ def _try_gemini_stream(prompt: str) -> Generator[str, None, None]:
                 return
         except Exception as e:
             if is_quota_error(e):
-                _cool(model)
+                _cool_model(model)
                 continue
             logger.error(f"❌ Gemini {model}: {e}")
             continue
+
+    _cool_provider("gemini")
     raise Exception("Gemini exhausted")
 
 
 # ─── Groq ─────────────────────────────────────────────────────────────────────
-def _try_groq_stream(prompt: str) -> Generator[str, None, None]:
+def _try_groq_stream(prompt: str, max_tokens: int = 300) -> Generator[str, None, None]:
     if not settings.groq_api_key:
         raise Exception("No Groq key")
+
     client = get_groq_client()
-    for model in GROQ_MODELS:
-        if _is_cooling(model):
-            logger.info(f"⏭️  Skip {model} (cooling)")
-            continue
+    available = [m for m in GROQ_MODELS if not _model_cooling(m)]
+
+    if not available:
+        _cool_provider("groq")
+        raise Exception("Groq exhausted")
+
+    for model in available:
         try:
             logger.info(f"🔄 Groq: {model}")
             stream = client.chat.completions.create(
@@ -150,7 +232,7 @@ def _try_groq_stream(prompt: str) -> Generator[str, None, None]:
                     {"role": "user", "content": prompt},
                 ],
                 stream=True,
-                max_tokens=600,
+                max_tokens=max_tokens,
                 temperature=0.1,
             )
             chunks = 0
@@ -164,21 +246,27 @@ def _try_groq_stream(prompt: str) -> Generator[str, None, None]:
                 return
         except Exception as e:
             if is_quota_error(e):
-                _cool(model)
+                _cool_model(model)
                 continue
             logger.error(f"❌ Groq {model}: {e}")
             continue
+
+    _cool_provider("groq")
     raise Exception("Groq exhausted")
 
 
 # ─── OpenRouter ───────────────────────────────────────────────────────────────
-def _try_openrouter_stream(prompt: str) -> Generator[str, None, None]:
+def _try_openrouter_stream(prompt: str, max_tokens: int = 300) -> Generator[str, None, None]:
     if not settings.openrouter_api_key:
         raise Exception("No OpenRouter key")
-    for model in OPENROUTER_MODELS:
-        if _is_cooling(model):
-            logger.info(f"⏭️  Skip {model} (cooling)")
-            continue
+
+    available = [m for m in OPENROUTER_MODELS if not _model_cooling(m)]
+
+    if not available:
+        _cool_provider("openrouter")
+        raise Exception("OpenRouter exhausted")
+
+    for model in available:
         try:
             logger.info(f"🔄 OpenRouter: {model}")
             with httpx.stream(
@@ -197,13 +285,13 @@ def _try_openrouter_stream(prompt: str) -> Generator[str, None, None]:
                         {"role": "user", "content": prompt},
                     ],
                     "stream": True,
-                    "max_tokens": 600,
+                    "max_tokens": max_tokens,
                     "temperature": 0.1,
                 },
-                timeout=25,
+                timeout=45,
             ) as response:
                 if response.status_code == 429:
-                    _cool(model)
+                    _cool_model(model)
                     continue
                 if response.status_code != 200:
                     logger.warning(f"⚠️ OpenRouter {model}: {response.status_code}")
@@ -228,22 +316,38 @@ def _try_openrouter_stream(prompt: str) -> Generator[str, None, None]:
         except Exception as e:
             logger.warning(f"⚠️ OpenRouter {model}: {e}")
             continue
+
+    _cool_provider("openrouter")
     raise Exception("OpenRouter exhausted")
 
 
 # ─── Main fallback chain ──────────────────────────────────────────────────────
-def generate_streaming_response(prompt: str) -> Generator[str, None, None]:
-    for name, fn in [
-        ("Gemini", _try_gemini_stream),
-        ("Groq", _try_groq_stream),
-        ("OpenRouter", _try_openrouter_stream),
-    ]:
+def generate_streaming_response(
+    prompt: str,
+    max_tokens: int = 300,
+) -> Generator[str, None, None]:
+    providers = [
+        ("Gemini",     "gemini",     _try_gemini_stream),
+        ("Groq",       "groq",       _try_groq_stream),
+        ("OpenRouter", "openrouter", _try_openrouter_stream),
+    ]
+
+    for name, key, fn in providers:
+        if _provider_cooling(key):
+            logger.info(f"⏭️  Skip provider {name} (cooling)")
+            continue
         try:
             yielded = False
-            for text in fn(prompt):
-                yield text
+            full_response = ""
+
+            for text in fn(prompt, max_tokens):
+                full_response += text
                 yielded = True
+
             if yielded:
+                clean = _strip_think_blocks(full_response)
+                if clean:
+                    yield clean
                 return
         except Exception as e:
             logger.warning(f"⚠️ {name} failed: {e}")
@@ -252,41 +356,99 @@ def generate_streaming_response(prompt: str) -> Generator[str, None, None]:
     yield "Analysis unavailable — all providers at capacity. Please try again shortly."
 
 
-def generate_response(prompt: str) -> str:
-    return "".join(generate_streaming_response(prompt))
+def generate_response(prompt: str, max_tokens: int = 300) -> str:
+    raw = "".join(generate_streaming_response(prompt, max_tokens))
+    clean = _strip_think_blocks(raw)
+    return _normalize_commit_output(clean)
 
-
-# ─── Commit Analysis ──────────────────────────────────────────────────────────
-def analyze_commit(commit: Dict[str, Any]) -> str:
+# ─── Shared file trimmer ──────────────────────────────────────────────────────
+def _build_slim_files(commit: Dict[str, Any], patch_limit: int = 900, file_limit: int = 8) -> list:
     files = commit.get("files", [])
-    # Trim patch data — only keep filename, status, line counts
-    slim_files = [
+    return [
         {
             "filename": f.get("filename", ""),
             "status": f.get("status", ""),
             "additions": f.get("additions", 0),
             "deletions": f.get("deletions", 0),
-            # Only first 300 chars of patch
-            "patch": (f.get("patch") or "")[:300],
+            "patch": (f.get("patch") or "")[:patch_limit],
         }
-        for f in files[:8]
+        for f in files[:file_limit]
     ]
 
-    prompt = f"""Analyze this Git commit. Be concise — max 100 words.
+
+# ─── Commit Analysis ──────────────────────────────────────────────────────────
+def analyze_commit(commit: Dict[str, Any]) -> str:
+    slim_files = _build_slim_files(commit)
+
+    prompt = f"""Analyze this Git commit. Be concise but technically insightful — max 130 words.
 
 Message: {commit['message'][:200]}
 Author: {commit['author']}
 +{commit.get('additions', 0)} -{commit.get('deletions', 0)} across {commit.get('files_changed', '?')} files
 
-Files: {json.dumps(slim_files, indent=None)[:1200]}
+Files: {json.dumps(slim_files, indent=None)[:1500]}
 
-Output:
-1. **What changed** (1 sentence)
-2. **Impact** (1 sentence)
-3. **Risk**: 🟢 Safe / 🟡 Minor risk / 🔴 Bug or security issue
-4. **Category**: feat/fix/refactor/docs/chore/perf/security"""
+Output EXACTLY in this format (STRICT, NO EXCEPTIONS):
 
-    return generate_response(prompt)
+**What changed** — 1 concise technical sentence describing the exact code change.
+
+**Impact** — 1-2 concise technical sentences explaining:
+- which subsystem is affected
+- why it matters
+- likely runtime/build/developer impact
+
+**Risk** — 🟢 Safe OR 🟡 Minor risk OR 🔴 Risk
+
+**Category** — choose EXACTLY ONE:
+feat OR fix OR refactor OR docs OR chore OR perf OR security
+
+RULES:
+1. Insert EXACTLY one blank line between sections
+2. NEVER put two sections on same line
+3. Output plain markdown only
+4. Do NOT write paragraphs like:
+   "Impact ... Risk ... Category ..."
+5. Category must be ONE word only
+6. Avoid generic phrases like:
+   - improves performance
+   - affects behavior
+   - bug fix
+   Prefer technical specificity:
+   mention subsystem, mechanism, or concrete effect
+   RISK RULES:
+Mark 🟡 ONLY if:
+- public API changed
+- auth/security changed
+- DB schema changed
+- cache/routing semantics changed
+- runtime logic changed significantly
+- downstream compatibility may break
+
+Mark 🔴 ONLY if:
+- explicit vulnerability
+- credential leak
+- auth bypass
+- data loss
+- severe breaking production issue
+
+Never warn for:
+- renames
+- formatting
+- README
+- .gitignore
+- CI workflow changes
+- dependency bump alone
+- eslint/prettier config
+- Flow annotations / type suppressions
+- dependency removal alone
+
+VERSION RULE:
+When mentioning version numbers:
+- Copy exact version strings from diff
+- Never rewrite semantic versions
+- If uncertain, omit version number"""
+
+    return generate_response(prompt, max_tokens=650)
 
 
 # ─── Repository Summary ───────────────────────────────────────────────────────
@@ -297,47 +459,111 @@ def generate_repo_summary(
 ) -> str:
     messages = [c["message"][:80] for c in commits[:15]]
 
-    prompt = f"""Repository health report. Max 150 words.
+    # Strip think blocks from analyses before feeding into summary
+    # FIX: prevents leaked reasoning tokens from polluting health score reasoning
+    clean_analyses = [_strip_think_blocks(a) for a in analyses[:15]]
+    risk_snippets = [a[:200] for a in clean_analyses]
 
-Repo: {repo_info['full_name']} | Lang: {repo_info.get('language','?')} | Stars: {repo_info.get('stars',0)}
+    # Compute health from actual signal — single source of truth
+    # FIX: AI summary must use this label so badge/label/summary never contradict
+    score, health_label = _compute_health(analyses)
+
+    prompt = f"""Repository health report. Max 180 words.
+
+Repo: {repo_info['full_name']} | Lang: {repo_info.get('language', '?')} | Stars: {repo_info.get('stars', 0)}
 Description: {(repo_info.get('description') or 'None')[:100]}
 
-Last {len(commits)} commits:
+Last {len(commits)} commit messages:
 {json.dumps(messages, indent=None)}
 
-Output:
-1. **Activity** — how active?
-2. **Pattern** — what kind of work?
-3. **Risk** — any concerns?
-4. **Health**: 🟢 Healthy / 🟡 Moderate / 🔴 Needs attention"""
+Individual commit analyses (risk signals):
+{json.dumps(risk_snippets, indent=None)}
 
-    return generate_response(prompt)
+The computed health score is {score}/100 and the label is "{health_label}".
+Your Health line MUST use exactly "{health_label}" — do not invent a different label.
+
+Output:
+1. **Activity** — how active and what velocity?
+2. **Pattern** — what kind of engineering work dominates?
+Mention concrete subsystems (examples: compiler, runtime, cache, auth, UI, infra)
+3. **Risk** — mention ONLY risks explicitly marked 🟡 or 🔴 in commit analyses.
+
+STRICT SUMMARY RULES:
+- Repository summary MUST NOT assign higher risk than commit analyses
+- If commits contain 0 🔴 risks, summary cannot mention 🔴 risks
+- If commits contain 0 breaking changes, summary cannot say "breaking change"
+- Ignore all 🟢 Safe commits for risk section
+- Never invent security risks
+- Never treat refactors, renames, tests, CI, or config changes as breaking changes
+- If no meaningful risks exist, write exactly:
+  "No major risks identified."
+4. **Health**: {health_label} — brief reasoning why."""
+
+    return generate_response(prompt, max_tokens=650)
 
 
 # ─── Streaming Commit Analysis ────────────────────────────────────────────────
 def stream_commit_analysis(commit: Dict[str, Any]) -> Generator[str, None, None]:
-    files = commit.get("files", [])
-    slim_files = [
-        {
-            "filename": f.get("filename", ""),
-            "status": f.get("status", ""),
-            "additions": f.get("additions", 0),
-            "deletions": f.get("deletions", 0),
-            "patch": (f.get("patch") or "")[:300],
-        }
-        for f in files[:8]
-    ]
+    slim_files = _build_slim_files(commit)
 
-    prompt = f"""Analyze this Git commit. Max 100 words.
+    prompt = f"""Analyze this Git commit. Be concise but technically insightful — max 130 words.
 
 Message: {commit['message'][:200]}
 +{commit.get('additions', 0)} -{commit.get('deletions', 0)}
 
-Files: {json.dumps(slim_files, indent=None)[:1200]}
+Files: {json.dumps(slim_files, indent=None)[:1500]}
 
-1. What changed (1 sentence)
-2. Why it matters (1 sentence)
-3. Risk: 🟢 Safe / 🟡 Minor risk / 🔴 Bug
-4. Category: feat/fix/refactor/chore/perf/security"""
+Output EXACTLY in this format (STRICT, NO EXCEPTIONS):
 
-    yield from generate_streaming_response(prompt)
+**What changed** — <one sentence>
+
+**Impact** — <one sentence>
+
+**Risk** — 🟢 Safe OR 🟡 Minor risk OR 🔴 Risk
+
+**Category** — choose EXACTLY ONE:
+feat OR fix OR refactor OR docs OR chore OR perf OR security
+CATEGORY RULES:
+- feat = new user-facing/system capability
+- fix = bug or incorrect behavior resolved
+- perf = any explicit optimization reducing CPU, memory, IO, bundle size, binary size, task reruns, or build time
+- refactor = internal restructuring without behavior change
+- chore = CI, config, Docker, dependency/version updates
+- docs = documentation only
+- security = explicit vulnerability/security fix
+NOT feat:
+- CSS import changes
+- styling/theme updates
+- README edits
+- dependency replacements without new capability
+
+IMPORTANT:
+Do NOT choose feat for config changes, dependency bumps, renames, CI, Docker, or setup.
+Default to chore/refactor if uncertain.
+
+RULES:
+1. Insert EXACTLY one blank line between sections
+2. NEVER put two sections on same line
+3. Output plain markdown only
+4. Do NOT write paragraphs like:
+   "Impact ...
+
+    Risk ...
+
+    Category ..."
+5. Category must be ONE word only
+6. Avoid generic phrases like:
+   - improves performance
+   - affects behavior
+   - bug fix
+   Prefer technical specificity:
+   mention subsystem, mechanism, or concrete effect"""
+
+    # FIX: buffer full response then strip think blocks atomically
+    # Previous chunk-by-chunk approach missed blocks split across chunk boundaries
+    full_response = "".join(generate_streaming_response(prompt, max_tokens=650))
+    clean = _strip_think_blocks(full_response)
+    clean = _normalize_commit_output(clean)
+
+    if clean:
+        yield clean
