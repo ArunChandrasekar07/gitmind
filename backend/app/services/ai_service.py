@@ -27,8 +27,8 @@ SYSTEM_INSTRUCTION = """You are a Git commit analyzer. Analyze code diffs and ex
 # ─── Model Lists — fastest/cheapest first ─────────────────────────────────────
 GEMINI_MODELS = [
     "gemini-2.5-flash",
-    "gemini-2.0-flash",
     "gemini-3.5-flash",
+    "gemini-2.0-flash",
     "gemini-2.5-pro",
 ]
 
