@@ -8,6 +8,7 @@ import {
   Brain, GitBranch, RefreshCw, Filter, BookmarkPlus,
   Check,
 } from "lucide-react";
+import { Logo } from "@/components/layout/Logo";
 import { Wordmark } from "@/components/layout/Logo";
 import { TopLoader } from "@/components/layout/TopLoader";
 import { analyzeAPI, BatchAnalysisResponse, pingBackend } from "@/lib/api";
@@ -37,9 +38,9 @@ const ANALYSIS_STAGES = [
 ];
 
 const EXAMPLE_REPOS = [
-  "https://github.com/tiangolo/fastapi",
-  "https://github.com/vercel/next.js",
-  "https://github.com/ArunChandrasekar07/devmind",
+  "https://github.com/tensorflow/tensorflow.git",
+  "https://github.com/pytorch/pytorch.git",
+  "https://github.com/microsoft/TypeScript.git",
 ];
 
 function AnalyzeContent() {
@@ -58,9 +59,38 @@ function AnalyzeContent() {
   const [sessionId, setSessionId] = useState<string | null>(null);
   const [sessionRestored, setSessionRestored] = useState(false);
   const [savedSuccess, setSavedSuccess] = useState(false);
+  const [proAnimState, setProAnimState] = useState<
+    "hidden" | "visible" | "flying" | "done"
+  >("hidden");
+  const [selectorGlow, setSelectorGlow] = useState(false);
+  const [upsellTooltip, setUpsellTooltip] = useState<number | null>(null);
   const hasRestoredRef = useRef(false);
+  /* ── Navbar hide on scroll ── */
+  const [navVisible, setNavVisible] = useState(true);
+  const navTickRef = useRef(false);
   const handleAnalyzeRef = useRef<((url?: string, limit?: number, sessionId?: string | null) => Promise<void>) | null>(null);
 
+  // ── Guest limit enforcement ────────────────────────────────
+  const GUEST_KEY      = "gitmind_guest_count";
+  const GUEST_DATE_KEY = "gitmind_guest_date";
+  const GUEST_TOTAL    = 5;
+
+  const getGuestCount = (): number => {
+    if (typeof window === "undefined") return 0;
+    const today = new Date().toDateString();
+    if (localStorage.getItem(GUEST_DATE_KEY) !== today) {
+      localStorage.setItem(GUEST_DATE_KEY, today);
+      localStorage.setItem(GUEST_KEY, "0");
+      return 0;
+    }
+    return parseInt(localStorage.getItem(GUEST_KEY) || "0", 10);
+  };
+
+  const incrementGuestCount = () => {
+    if (typeof window === "undefined") return;
+    const count = getGuestCount() + 1;
+    localStorage.setItem(GUEST_KEY, String(count));
+  };
   
   // ── Compute risk counts ────────────────────────────────────
   const riskCounts = result
@@ -113,6 +143,24 @@ function AnalyzeContent() {
         toast.error("Please enter a GitHub repository URL");
         return;
       }
+
+      // ── Enforce guest limit ──────────────────────────────
+const forceLoggedIn =
+  isAuthenticated ||
+  !!user?.id ||
+  !!localStorage.getItem("gitmind-auth");
+
+if (!forceLoggedIn) {
+  const used = getGuestCount();
+
+  if (used >= GUEST_TOTAL) {
+    setError("guest_limit");
+    setIsLoading(false);
+    return;
+  }
+
+  incrementGuestCount();
+}
 
       setIsLoading(true);
       setResult(null);
@@ -240,8 +288,36 @@ function AnalyzeContent() {
   }, [user?.id]);
 
   useEffect(() => {
-    handleAnalyzeRef.current = handleAnalyze;
-  }, [handleAnalyze]);
+  handleAnalyzeRef.current = handleAnalyze;
+}, [handleAnalyze]);
+
+useEffect(() => {
+  if (isAuthenticated) return;
+  if (sessionStorage.getItem("gitmind_pro_anim")) return;
+  sessionStorage.setItem("gitmind_pro_anim", "1");
+  const t1 = setTimeout(() => setProAnimState("visible"), 300);
+  const t2 = setTimeout(() => setProAnimState("flying"), 1100);
+  const t3 = setTimeout(() => setSelectorGlow(true), 1400);
+  const t4 = setTimeout(() => { setProAnimState("done"); setSelectorGlow(false); }, 2400);
+  return () => { clearTimeout(t1); clearTimeout(t2); clearTimeout(t3); clearTimeout(t4); };
+}, [isAuthenticated]);
+  useEffect(() => {
+    const onScroll = () => {
+      if (navTickRef.current) return;
+      navTickRef.current = true;
+      requestAnimationFrame(() => {
+        const y = window.scrollY;
+        if (y <= 60) {
+  setNavVisible(true);   // only at top
+} else {
+  setNavVisible(false);  // hidden everywhere else
+}
+        navTickRef.current = false;
+      });
+    };
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
 
   // ── Filtered commits ───────────────────────────────────────
   const filteredCommits = result?.analyzed_commits.filter((item) => {
@@ -271,234 +347,373 @@ function AnalyzeContent() {
       <TopLoader />
 
       {/* ── TOP NAV ──────────────────────────────────────── */}
-      <nav
+      {/* ── TOP NAV ──────────────────────────────────────── */}
+      <motion.nav
+        animate={{ y: navVisible ? 0 : -80, opacity: navVisible ? 1 : 0 }}
+        transition={{ duration: 0.25, ease: [0.21, 0.47, 0.32, 0.98] }}
         style={{
           position: "sticky",
           top: 0,
           zIndex: 40,
-          height: "52px",
-          display: "flex",
-          alignItems: "center",
-          background: "hsl(220 16% 6% / 0.92)",
+          background: "hsl(220 16% 6% / 0.95)",
           backdropFilter: "blur(16px)",
           borderBottom: "1px solid hsl(220 12% 11%)",
-          padding: "0 20px",
-          gap: "12px",
         }}
       >
-        <button
-          onClick={() => router.push("/")}
-          style={{
-            display: "flex",
-            alignItems: "center",
-            gap: "5px",
-            padding: "5px 8px",
-            background: "none",
-            border: "none",
-            borderRadius: "6px",
-            color: "hsl(220 8% 46%)",
-            fontSize: "12px",
-            cursor: "pointer",
-            fontFamily: "Inter, sans-serif",
-            flexShrink: 0,
-            transition: "color 0.15s, background 0.15s",
-          }}
-          onMouseEnter={(e) => {
-            e.currentTarget.style.color = "hsl(38 10% 80%)";
-            e.currentTarget.style.background = "hsl(220 12% 12%)";
-          }}
-          onMouseLeave={(e) => {
-            e.currentTarget.style.color = "hsl(220 8% 46%)";
-            e.currentTarget.style.background = "none";
-          }}
-        >
-          <ArrowLeft size={13} />
-        </button>
-
-        <Wordmark size={22} />
-
-        {/* Restored badge */}
-        {sessionRestored && (
-          <span
-            style={{
-              display: "flex",
-              alignItems: "center",
-              gap: "4px",
-              padding: "3px 8px",
-              background: "hsl(152 60% 40% / 0.12)",
-              border: "1px solid hsl(152 60% 40% / 0.25)",
-              borderRadius: "5px",
-              fontSize: "11px",
-              color: "hsl(152 60% 48%)",
-              fontWeight: 500,
-              flexShrink: 0,
-            }}
-          >
-            <Check size={10} />
-            Restored
-          </span>
-        )}
-
-        {/* URL Search */}
+        {/* Row 1 — brand + actions */}
         <div
           style={{
-            flex: 1,
             display: "flex",
             alignItems: "center",
-            gap: "8px",
-            background: "hsl(220 14% 10%)",
-            border: "1px solid hsl(220 12% 15%)",
-            borderRadius: "8px",
-            padding: "0 10px",
-            height: "34px",
-            maxWidth: "560px",
-            transition: "border-color 0.15s, box-shadow 0.15s",
-          }}
-          onFocusCapture={(e) => {
-            (e.currentTarget as HTMLElement).style.borderColor =
-              "hsl(38 92% 54% / 0.5)";
-            (e.currentTarget as HTMLElement).style.boxShadow =
-              "0 0 0 3px hsl(38 92% 54% / 0.08)";
-          }}
-          onBlurCapture={(e) => {
-            (e.currentTarget as HTMLElement).style.borderColor =
-              "hsl(220 12% 15%)";
-            (e.currentTarget as HTMLElement).style.boxShadow = "none";
+            justifyContent: "space-between",
+            padding: "10px 20px 0",
+            gap: "12px",
           }}
         >
-          <GitBranch
-            size={13}
-            style={{ color: "hsl(220 8% 38%)", flexShrink: 0 }}
-          />
-          <input
-            value={url}
-            onChange={(e) => setUrl(e.target.value)}
-            onKeyDown={(e) => e.key === "Enter" && handleAnalyze()}
-            placeholder="github.com/owner/repository"
-            style={{
-              flex: 1,
-              background: "none",
-              border: "none",
-              outline: "none",
-              fontSize: "12px",
-              color: "hsl(38 10% 88%)",
-              fontFamily: "Inter, sans-serif",
-              minWidth: 0,
-            }}
-          />
-          <select
-            value={limit}
-            onChange={(e) => setLimit(Number(e.target.value))}
-            style={{
-              background: "none",
-              border: "none",
-              outline: "none",
-              fontSize: "11px",
-              color: "hsl(220 8% 44%)",
-              cursor: "pointer",
-              fontFamily: "Inter, sans-serif",
-              flexShrink: 0,
-            }}
-          >
-            {[5, 10, 20, 30].map((n) => (
-              <option
-                key={n}
-                value={n}
-                style={{ background: "hsl(220 14% 10%)" }}
+          <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
+            <button
+              onClick={() => router.push("/")}
+              style={{
+                display: "flex",
+                alignItems: "center",
+                gap: "5px",
+                padding: "6px 10px",
+                background: "hsl(220 12% 12%)",
+                border: "1px solid hsl(220 12% 17%)",
+                borderRadius: "7px",
+                color: "hsl(220 8% 55%)",
+                fontSize: "12px",
+                cursor: "pointer",
+                fontFamily: "Inter, sans-serif",
+                transition: "all 0.15s",
+                whiteSpace: "nowrap",
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.color = "hsl(38 10% 80%)";
+                e.currentTarget.style.borderColor = "hsl(220 12% 24%)";
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.color = "hsl(220 8% 55%)";
+                e.currentTarget.style.borderColor = "hsl(220 12% 17%)";
+              }}
+            >
+              <ArrowLeft size={13} />
+              <span>Home</span>
+            </button>
+            <Wordmark size={24} />
+          </div>
+
+          <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+            {sessionRestored && (
+              <span
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  gap: "4px",
+                  padding: "4px 9px",
+                  background: "hsl(152 60% 40% / 0.12)",
+                  border: "1px solid hsl(152 60% 40% / 0.25)",
+                  borderRadius: "5px",
+                  fontSize: "11px",
+                  color: "hsl(152 60% 48%)",
+                  fontWeight: 500,
+                }}
               >
-                {n} commits
-              </option>
-            ))}
-          </select>
+                <Check size={10} />
+                Restored
+              </span>
+            )}
+            {result && isAuthenticated && (
+              <button
+                onClick={handleSaveRepo}
+                title="Save repository"
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  gap: "5px",
+                  padding: "6px 10px",
+                  background: savedSuccess
+                    ? "hsl(152 60% 40% / 0.12)"
+                    : "hsl(220 12% 12%)",
+                  border: `1px solid ${
+                    savedSuccess
+                      ? "hsl(152 60% 40% / 0.3)"
+                      : "hsl(220 12% 17%)"
+                  }`,
+                  borderRadius: "7px",
+                  color: savedSuccess
+                    ? "hsl(152 60% 48%)"
+                    : "hsl(220 8% 52%)",
+                  fontSize: "12px",
+                  cursor: "pointer",
+                  fontFamily: "Inter, sans-serif",
+                  transition: "all 0.15s",
+                }}
+              >
+                {savedSuccess ? <Check size={13} /> : <BookmarkPlus size={13} />}
+              </button>
+            )}
+            {isAuthenticated && (
+              <button
+                onClick={() => router.push("/dashboard")}
+                style={{
+                  padding: "6px 12px",
+                  background: "hsl(220 12% 12%)",
+                  border: "1px solid hsl(220 12% 17%)",
+                  borderRadius: "7px",
+                  color: "hsl(220 8% 55%)",
+                  fontSize: "12px",
+                  cursor: "pointer",
+                  fontFamily: "Inter, sans-serif",
+                  transition: "all 0.15s",
+                  whiteSpace: "nowrap",
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.color = "hsl(38 10% 80%)";
+                  e.currentTarget.style.borderColor = "hsl(220 12% 24%)";
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.color = "hsl(220 8% 55%)";
+                  e.currentTarget.style.borderColor = "hsl(220 12% 17%)";
+                }}
+              >
+                Dashboard
+              </button>
+            )}
+          </div>
         </div>
 
-        <button
-          onClick={() => handleAnalyze()}
-          disabled={isLoading}
-          style={{
-            display: "flex",
-            alignItems: "center",
-            gap: "6px",
-            padding: "7px 14px",
-            background: isLoading
-              ? "hsl(38 92% 54% / 0.5)"
-              : "hsl(38 92% 54%)",
-            border: "none",
-            borderRadius: "7px",
-            color: "hsl(220 16% 6%)",
-            fontSize: "12px",
-            fontWeight: 700,
-            cursor: isLoading ? "not-allowed" : "pointer",
-            fontFamily: "Inter, sans-serif",
-            flexShrink: 0,
-          }}
-        >
-          {isLoading ? (
-            <Loader2
-              size={13}
-              style={{ animation: "spin 1s linear infinite" }}
-            />
-          ) : (
-            <Search size={13} />
-          )}
-          Analyze
-        </button>
-
-        {/* Save repo button */}
-        {result && isAuthenticated && (
-          <button
-            onClick={handleSaveRepo}
+        {/* Row 2 — search bar full width */}
+        <div style={{ padding: "10px 20px 12px" }}>
+          <div
             style={{
               display: "flex",
               alignItems: "center",
-              gap: "5px",
-              padding: "6px 10px",
-              background: savedSuccess
-                ? "hsl(152 60% 40% / 0.12)"
-                : "hsl(220 12% 12%)",
-              border: `1px solid ${
-                savedSuccess
-                  ? "hsl(152 60% 40% / 0.3)"
-                  : "hsl(220 12% 18%)"
-              }`,
-              borderRadius: "7px",
-              color: savedSuccess
-                ? "hsl(152 60% 48%)"
-                : "hsl(220 8% 52%)",
-              fontSize: "12px",
-              cursor: "pointer",
-              fontFamily: "Inter, sans-serif",
-              flexShrink: 0,
-              transition: "all 0.15s",
+              gap: "8px",
+              width: "100%",
+              maxWidth: "860px",
+              margin: "0 auto",
             }}
           >
-            {savedSuccess ? (
-              <Check size={13} />
-            ) : (
-              <BookmarkPlus size={13} />
-            )}
-          </button>
-        )}
+            {/* URL input */}
+            <div
+              style={{
+                flex: 1,
+                display: "flex",
+                alignItems: "center",
+                gap: "8px",
+                height: "40px",
+                padding: "0 12px",
+                background: "hsl(220 14% 10%)",
+                border: "1px solid hsl(220 12% 16%)",
+                borderRadius: "9px",
+                transition: "border-color 0.15s, box-shadow 0.15s",
+              }}
+              onFocusCapture={(e) => {
+                (e.currentTarget as HTMLElement).style.borderColor =
+                  "hsl(38 92% 54% / 0.5)";
+                (e.currentTarget as HTMLElement).style.boxShadow =
+                  "0 0 0 3px hsl(38 92% 54% / 0.08)";
+              }}
+              onBlurCapture={(e) => {
+                (e.currentTarget as HTMLElement).style.borderColor =
+                  "hsl(220 12% 16%)";
+                (e.currentTarget as HTMLElement).style.boxShadow = "none";
+              }}
+            >
+              <GitBranch
+                size={14}
+                style={{ color: "hsl(220 8% 38%)", flexShrink: 0 }}
+              />
+              <input
+                value={url}
+                onChange={(e) => setUrl(e.target.value)}
+                onKeyDown={(e) => e.key === "Enter" && handleAnalyze()}
+                placeholder="https://github.com/owner/repository"
+                style={{
+                  flex: 1,
+                  background: "none",
+                  border: "none",
+                  outline: "none",
+                  fontSize: "13px",
+                  color: "hsl(38 10% 88%)",
+                  fontFamily: "Inter, sans-serif",
+                  minWidth: 0,
+                }}
+              />
+            </div>
 
-        {isAuthenticated && (
-          <button
-            onClick={() => router.push("/dashboard")}
-            style={{
-              padding: "5px 10px",
-              background: "hsl(220 12% 12%)",
-              border: "1px solid hsl(220 12% 18%)",
-              borderRadius: "6px",
-              color: "hsl(220 8% 50%)",
-              fontSize: "12px",
-              cursor: "pointer",
-              fontFamily: "Inter, sans-serif",
-              flexShrink: 0,
-            }}
-          >
-            Dashboard
-          </button>
-        )}
-      </nav>
+            {/* Commit count — gated for guests */}
+            <div style={{ position: "relative", flexShrink: 0 }}>
+
+              {/* PRO pill — appears once, flies into selector */}
+              {!isAuthenticated && proAnimState !== "done" && (
+                <motion.div
+                  initial={{ opacity: 0, y: 0, scale: 0.8 }}
+                  animate={
+                    proAnimState === "visible"
+                      ? { opacity: 1, y: -26, scale: 1 }
+                      : proAnimState === "flying"
+                      ? { opacity: 0, y: 0, scale: 0.5 }
+                      : { opacity: 0, y: 0, scale: 0.8 }
+                  }
+                  transition={{ duration: proAnimState === "flying" ? 0.35 : 0.25, ease: [0.21,0.47,0.32,0.98] }}
+                  style={{
+                    position: "absolute",
+                    top: 0,
+                    right: 0,
+                    background: "hsl(38 92% 54%)",
+                    borderRadius: "5px",
+                    padding: "2px 7px",
+                    fontSize: "10px",
+                    fontWeight: 700,
+                    color: "hsl(220 16% 6%)",
+                    fontFamily: "Inter, sans-serif",
+                    letterSpacing: "0.04em",
+                    pointerEvents: "none",
+                    zIndex: 10,
+                  }}
+                >
+                  PRO
+                </motion.div>
+              )}
+
+              <select
+                value={isAuthenticated ? limit : Math.min(limit, 10)}
+                onChange={(e) => {
+                  const val = Number(e.target.value);
+                  if (!isAuthenticated && val > 10) {
+                    router.push("/signup");
+                    return;
+                  }
+                  setLimit(val);
+                }}
+                onMouseEnter={(e) => {
+                  if (!isAuthenticated) {
+                    const val = Number((e.target as HTMLSelectElement).value);
+                    setUpsellTooltip(val);
+                  }
+                }}
+                onMouseLeave={() => setUpsellTooltip(null)}
+                onFocus={() => { if (!isAuthenticated) setUpsellTooltip(0); }}
+                onBlur={() => setUpsellTooltip(null)}
+                style={{
+                  height: "40px",
+                  padding: "0 32px 0 10px",
+                  background: "hsl(220 14% 10%)",
+                  border: selectorGlow ? "1px solid hsl(38 92% 54% / 0.8)" : "1px solid hsl(220 12% 16%)",
+                  boxShadow: selectorGlow ? "0 0 0 3px hsl(38 92% 54% / 0.15), 0 0 10px hsl(38 92% 54% / 0.2)" : "none",
+                  borderRadius: "9px",
+                  color: "hsl(220 8% 58%)",
+                  fontSize: "12px",
+                  cursor: "pointer",
+                  fontFamily: "Inter, sans-serif",
+                  outline: "none",
+                  appearance: "none",
+                  WebkitAppearance: "none",
+                  transition: "border 0.3s, box-shadow 0.4s",
+                }}
+              >
+                {[
+                  { value: 5,  label: "5 commits",  guestOk: true  },
+                  { value: 10, label: "10 commits", guestOk: true  },
+                  { value: 20, label: "20 commits", guestOk: false },
+                  { value: 30, label: "30 commits", guestOk: false },
+                ].map((opt) => {
+                  const locked = !isAuthenticated && !opt.guestOk;
+                  return (
+                    <option
+                      key={opt.value}
+                      value={opt.value}
+                      disabled={locked}
+                      style={{
+                        background: "hsl(220 14% 10%)",
+                        color: locked ? "hsl(220 8% 32%)" : "hsl(220 8% 70%)",
+                      }}
+                    >
+                      {locked ? `🔒 ${opt.label}` : opt.label}
+                    </option>
+                  );
+                })}
+              </select>
+
+              {/* Hover tooltip */}
+              {!isAuthenticated && upsellTooltip !== null && (
+                <div style={{
+                  position: "absolute",
+                  bottom: "calc(100% + 8px)",
+                  right: 0,
+                  background: "hsl(220 14% 12%)",
+                  border: "1px solid hsl(38 92% 54% / 0.3)",
+                  borderRadius: "7px",
+                  padding: "6px 10px",
+                  fontSize: "11px",
+                  color: "hsl(38 10% 82%)",
+                  fontFamily: "Inter, sans-serif",
+                  whiteSpace: "nowrap",
+                  zIndex: 50,
+                  pointerEvents: "none",
+                }}>
+                  Login to unlock 10+ commit analysis
+                </div>
+              )}
+
+              {/* Chevron icon */}
+              <div
+                style={{
+                  position: "absolute",
+                  right: "10px",
+                  top: "50%",
+                  transform: "translateY(-50%)",
+                  pointerEvents: "none",
+                  color: "hsl(220 8% 40%)",
+                  display: "flex",
+                }}
+              >
+                <svg width="10" height="10" viewBox="0 0 10 10" fill="currentColor">
+                  <path d="M2 3.5L5 6.5L8 3.5" stroke="currentColor" strokeWidth="1.2" fill="none" strokeLinecap="round" strokeLinejoin="round"/>
+                </svg>
+              </div>
+            </div>
+
+            {/* Analyze button */}
+            <button
+              onClick={() => handleAnalyze()}
+              disabled={isLoading}
+              style={{
+                display: "flex",
+                alignItems: "center",
+                gap: "7px",
+                height: "40px",
+                padding: "0 18px",
+                background: isLoading
+                  ? "hsl(38 92% 54% / 0.5)"
+                  : "hsl(38 92% 54%)",
+                border: "none",
+                borderRadius: "9px",
+                color: "hsl(220 16% 6%)",
+                fontSize: "13px",
+                fontWeight: 700,
+                cursor: isLoading ? "not-allowed" : "pointer",
+                fontFamily: "Inter, sans-serif",
+                flexShrink: 0,
+                transition: "opacity 0.15s",
+                whiteSpace: "nowrap",
+              }}
+            >
+              {isLoading ? (
+                <Loader2
+                  size={14}
+                  style={{ animation: "spin 1s linear infinite" }}
+                />
+              ) : (
+                <Search size={14} />
+              )}
+              Analyze
+            </button>
+          </div>
+        </div>
+      </motion.nav>
 
       {/* ── MAIN ─────────────────────────────────────────── */}
       <main
@@ -598,8 +813,138 @@ function AnalyzeContent() {
         </AnimatePresence>
 
         {/* Error */}
-        {!isLoading && error && (
+        {!isLoading && error && error !== "guest_limit" && (
           <ErrorState message={error} onRetry={() => handleAnalyze()} />
+        )}
+
+        {/* Guest limit wall */}
+        {!isLoading && error === "guest_limit" && (
+          <motion.div
+            initial={{ opacity: 0, y: 16 }}
+            animate={{ opacity: 1, y: 0 }}
+            style={{
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "center",
+              justifyContent: "center",
+              paddingTop: "80px",
+              paddingBottom: "80px",
+              textAlign: "center",
+            }}
+          >
+            <div
+              style={{
+                width: "56px",
+                height: "56px",
+                borderRadius: "14px",
+                background: "hsl(38 92% 54% / 0.1)",
+                border: "1px solid hsl(38 92% 54% / 0.22)",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                marginBottom: "20px",
+              }}
+            >
+              <Logo size={60} />
+            </div>
+
+            <h2
+              style={{
+                fontSize: "20px",
+                fontWeight: 800,
+                letterSpacing: "-0.03em",
+                color: "hsl(38 10% 94%)",
+                marginBottom: "8px",
+              }}
+            >
+              Unlock More with GitMind
+            </h2>
+
+            <p
+              style={{
+                fontSize: "13px",
+                color: "hsl(220 8% 52%)",
+                lineHeight: 1.7,
+                marginBottom: "24px",
+                maxWidth: "360px",
+              }}
+            >
+              You've used all {GUEST_TOTAL} free analyses today. Create a free
+              account to unlock unlimited analyses, history, and dashboard
+              access.
+            </p>
+
+            <div
+              style={{
+                display: "flex",
+                flexWrap: "wrap",
+                gap: "7px",
+                justifyContent: "center",
+                marginBottom: "28px",
+              }}
+            >
+              {[
+                "Unlimited analyses",
+                "Analysis history",
+                "Save repositories",
+                "Up to 30 commits",
+                "Dashboard",
+              ].map((f) => (
+                <span
+                  key={f}
+                  style={{
+                    padding: "4px 10px",
+                    background: "hsl(38 92% 54% / 0.08)",
+                    border: "1px solid hsl(38 92% 54% / 0.18)",
+                    borderRadius: "20px",
+                    fontSize: "11px",
+                    color: "hsl(38 92% 62%)",
+                    fontWeight: 500,
+                  }}
+                >
+                  {f}
+                </span>
+              ))}
+            </div>
+
+            <div style={{ display: "flex", gap: "10px", flexWrap: "wrap", justifyContent: "center" }}>
+              <button
+                onClick={() => router.push("/signup")}
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  gap: "7px",
+                  padding: "10px 22px",
+                  background: "hsl(38 92% 54%)",
+                  border: "none",
+                  borderRadius: "8px",
+                  color: "hsl(220 16% 6%)",
+                  fontSize: "13px",
+                  fontWeight: 700,
+                  cursor: "pointer",
+                  fontFamily: "Inter, sans-serif",
+                }}
+              >
+                Create free account
+              </button>
+              <button
+                onClick={() => router.push("/login")}
+                style={{
+                  padding: "10px 20px",
+                  background: "none",
+                  border: "1px solid hsl(220 12% 18%)",
+                  borderRadius: "8px",
+                  color: "hsl(220 8% 62%)",
+                  fontSize: "13px",
+                  fontWeight: 500,
+                  cursor: "pointer",
+                  fontFamily: "Inter, sans-serif",
+                }}
+              >
+                Sign in
+              </button>
+            </div>
+          </motion.div>
         )}
 
         {/* Empty state */}

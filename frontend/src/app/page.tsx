@@ -174,12 +174,140 @@ const CAT_COLORS: Record<string, { color: string; bg: string }> = {
   chore: { color: "hsl(215 12% 55%)", bg: "hsl(215 12% 50% / 0.1)" },
 };
 
+function GuestBadge({
+  guestUsed,
+  guestTotal,
+  onSignup,
+}: {
+  guestUsed: number;
+  guestTotal: number;
+  onSignup: () => void;
+}) {
+  const [visible, setVisible] = useState(true);
+  
+  const ticking = useRef(false);
+
+  useEffect(() => {
+    setVisible(window.scrollY <= 120);
+    const onScroll = () => {
+      if (ticking.current) return;
+      ticking.current = true;
+      requestAnimationFrame(() => {
+        const currentY = window.scrollY;
+
+        if (currentY <= 120) {
+          setVisible(true); // only near top/hero
+        } else {
+          setVisible(false); // hidden everywhere else
+        }
+
+        ticking.current = false;
+      });
+    };
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
+
+  return (
+    <motion.div
+      animate={{
+        y: visible ? 0 : 16,
+        opacity: visible ? 1 : 0,
+        scale: visible ? 1 : 0.97,
+      }}
+      transition={{ duration: 0.28, ease: [0.21, 0.47, 0.32, 0.98] }}
+      onClick={onSignup}
+      style={{
+        position: "fixed",
+        bottom: "24px",
+        right: "24px",
+        zIndex: 60,
+        display: "flex",
+        alignItems: "center",
+        gap: "10px",
+        padding: "9px 14px",
+        background: "hsl(220 14% 10% / 0.85)",
+        backdropFilter: "blur(14px)",
+        WebkitBackdropFilter: "blur(14px)",
+        border: "1px solid hsl(220 12% 20%)",
+        borderRadius: "12px",
+        boxShadow:
+          "0 4px 24px hsl(0 0% 0% / 0.45), 0 0 0 1px hsl(38 92% 54% / 0.08)",
+        cursor: "pointer",
+        pointerEvents: visible ? "auto" : "none",
+      }}
+      onMouseEnter={(e) => {
+        (e.currentTarget as HTMLElement).style.borderColor =
+          "hsl(38 92% 54% / 0.3)";
+        (e.currentTarget as HTMLElement).style.boxShadow =
+          "0 4px 24px hsl(0 0% 0% / 0.5), 0 0 0 1px hsl(38 92% 54% / 0.15)";
+      }}
+      onMouseLeave={(e) => {
+        (e.currentTarget as HTMLElement).style.borderColor =
+          "hsl(220 12% 20%)";
+        (e.currentTarget as HTMLElement).style.boxShadow =
+          "0 4px 24px hsl(0 0% 0% / 0.45), 0 0 0 1px hsl(38 92% 54% / 0.08)";
+      }}
+    >
+      {/* Dot progress */}
+      <div style={{ display: "flex", gap: "4px", alignItems: "center" }}>
+        {Array.from({ length: guestTotal }).map((_, i) => (
+          <motion.div
+            key={i}
+            animate={{
+              background:
+                i < guestUsed ? "hsl(38 92% 54%)" : "hsl(220 12% 22%)",
+              scale: i < guestUsed ? 1 : 0.85,
+            }}
+            transition={{ duration: 0.2, delay: i * 0.04 }}
+            style={{
+              width: "7px",
+              height: "7px",
+              borderRadius: "50%",
+            }}
+          />
+        ))}
+      </div>
+
+      {/* Text */}
+      <div style={{ display: "flex", flexDirection: "column", gap: "1px" }}>
+        <span
+          style={{
+            fontSize: "12px",
+            fontWeight: 600,
+            color: "hsl(38 10% 82%)",
+            fontFamily: "Inter, sans-serif",
+            whiteSpace: "nowrap",
+            lineHeight: 1,
+          }}
+        >
+          {guestTotal - guestUsed} of {guestTotal} free left
+        </span>
+        <span
+          style={{
+            fontSize: "10px",
+            color: "hsl(220 8% 45%)",
+            fontFamily: "Inter, sans-serif",
+            whiteSpace: "nowrap",
+            lineHeight: 1,
+          }}
+        >
+          Sign up for unlimited
+        </span>
+      </div>
+    </motion.div>
+  );
+}
+
 export default function LandingPage() {
   const router = useRouter();
   const { isAuthenticated } = useAuthStore();
   const [url, setUrl] = useState("");
   const [activeCommit, setActiveCommit] = useState(0);
   const [openFaq, setOpenFaq] = useState<number | null>(null);
+  const [showModal, setShowModal] = useState(false);
+  const [guestUsed, setGuestUsed] = useState(0);
+  const [guestTotal] = useState(5);
 
   useEffect(() => {
     pingBackend();
@@ -190,8 +318,47 @@ export default function LandingPage() {
     return () => clearInterval(t);
   }, []);
 
+  // ── Guest limit helpers ─────────────────────────────────
+  const GUEST_KEY      = "gitmind_guest_count";
+  const GUEST_DATE_KEY = "gitmind_guest_date";
+
+  const getGuestCount = (): number => {
+    if (typeof window === "undefined") return 0;
+    const today = new Date().toDateString();
+    const savedDate = localStorage.getItem(GUEST_DATE_KEY);
+    if (savedDate !== today) {
+      localStorage.setItem(GUEST_DATE_KEY, today);
+      localStorage.setItem(GUEST_KEY, "0");
+      return 0;
+    }
+    return parseInt(localStorage.getItem(GUEST_KEY) || "0", 10);
+  };
+
+  const incrementGuestCount = () => {
+    if (typeof window === "undefined") return;
+    const count = getGuestCount() + 1;
+    localStorage.setItem(GUEST_KEY, String(count));
+    setGuestUsed(count);
+  };
+
+  useEffect(() => {
+    setGuestUsed(getGuestCount());
+  }, []);
+
   const handleAnalyze = () => {
     if (!url.trim()) return;
+
+    if (!isAuthenticated) {
+      const used = getGuestCount();
+      if (used >= guestTotal) {
+        setShowModal(true);
+        return;
+      }
+      router.push(`/analyze?url=${encodeURIComponent(url)}&limit=5`);
+      // Show modal after first completed analysis via URL flag — handled below
+      return;
+    }
+
     router.push(`/analyze?url=${encodeURIComponent(url)}`);
   };
 
@@ -579,7 +746,7 @@ export default function LandingPage() {
                   </span>
                   {[
                     "vercel/next.js",
-                    "fastapi/fastapi",
+                    "torvalds/linux",
                     "microsoft/vscode",
                   ].map((r) => (
                     <button
@@ -2384,6 +2551,238 @@ export default function LandingPage() {
         </footer>
       </div>
 
+      {/* ── Guest counter badge with scroll behavior ─────── */}
+      {!isAuthenticated && (
+        <GuestBadge
+          guestUsed={guestUsed}
+          guestTotal={guestTotal}
+          onSignup={() => router.push("/signup")}
+        />
+      )}
+
+      {/* ── Premium modal ────────────────────────────────── */}
+      <AnimatePresence>
+        {showModal && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.2 }}
+            style={{
+              position: "fixed",
+              inset: 0,
+              background: "hsl(220 16% 6% / 0.8)",
+              backdropFilter: "blur(12px)",
+              WebkitBackdropFilter: "blur(12px)",
+              zIndex: 100,
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              padding: "24px",
+            }}
+            onClick={() => setShowModal(false)}
+          >
+            <motion.div
+              initial={{ opacity: 0, y: 20, scale: 0.96 }}
+              animate={{ opacity: 1, y: 0, scale: 1 }}
+              exit={{ opacity: 0, y: 12, scale: 0.97 }}
+              transition={{ duration: 0.25, ease: [0.21, 0.47, 0.32, 0.98] }}
+              onClick={(e) => e.stopPropagation()}
+              style={{
+                width: "100%",
+                maxWidth: "440px",
+                background: "hsl(220 14% 9%)",
+                border: "1px solid hsl(38 92% 54% / 0.2)",
+                borderRadius: "16px",
+                padding: "36px 32px 32px",
+                boxShadow:
+                  "0 0 0 1px hsl(38 92% 54% / 0.1), 0 32px 64px hsl(0 0% 0% / 0.6)",
+                position: "relative",
+              }}
+            >
+              {/* Close */}
+              <button
+                onClick={() => setShowModal(false)}
+                style={{
+                  position: "absolute",
+                  top: "16px",
+                  right: "16px",
+                  background: "none",
+                  border: "none",
+                  color: "hsl(220 8% 40%)",
+                  cursor: "pointer",
+                  fontSize: "18px",
+                  lineHeight: 1,
+                  padding: "4px",
+                  fontFamily: "Inter, sans-serif",
+                }}
+              >
+                ×
+              </button>
+
+              {/* Icon */}
+              <div
+                style={{
+                  width: "52px",
+                  height: "52px",
+                  borderRadius: "14px",
+                  background: "hsl(38 92% 54% / 0.1)",
+                  border: "1px solid hsl(38 92% 54% / 0.22)",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  margin: "0 auto 20px auto",
+                }}
+              >
+                <Logo size={60} />
+              </div>
+
+              {/* Title */}
+              <h2
+                style={{
+                  fontSize: "20px",
+                  fontWeight: 800,
+                  letterSpacing: "-0.03em",
+                  color: "hsl(38 10% 94%)",
+                  marginBottom: "10px",
+                  lineHeight: 1.2,
+                  textAlign: "center",
+                  width: "100%",
+                }}
+              >
+                Unlock More with GitMind
+              </h2>
+
+              <p
+                style={{
+                  fontSize: "13px",
+                  color: "hsl(220 8% 52%)",
+                  lineHeight: 1.7,
+                  marginBottom: "24px",
+                  textAlign: "center",
+                  maxWidth: "340px",
+                  margin: "0 auto 24px auto",
+                }}
+              >
+                You've used all {guestTotal} free analyses. Create an account or
+                sign in to unlock unlimited analysis, save history, access your
+                dashboard, and explore advanced AI insights.
+              </p>
+
+              {/* Feature pills */}
+              <div
+                style={{
+                  display: "flex",
+                  flexWrap: "wrap",
+                  justifyContent: "center",
+                  gap: "7px",
+                  marginBottom: "24px",
+                }}
+              >
+                {[
+                  "Unlimited analyses",
+                  "Analysis history",
+                  "Save repositories",
+                  "Up to 30 commits",
+                  "Dashboard",
+                  "Advanced AI insights",
+                ].map((f) => (
+                  <span
+                    key={f}
+                    style={{
+                      padding: "4px 10px",
+                      background: "hsl(38 92% 54% / 0.08)",
+                      border: "1px solid hsl(38 92% 54% / 0.18)",
+                      borderRadius: "20px",
+                      fontSize: "11px",
+                      color: "hsl(38 92% 62%)",
+                      fontWeight: 500,
+                    }}
+                  >
+                    {f}
+                  </span>
+                ))}
+              </div>
+
+              {/* CTAs */}
+              <div
+                style={{
+                  display: "flex",
+                  flexDirection: "column",
+                  gap: "8px",
+                }}
+              >
+                <motion.button
+                  whileHover={{ scale: 1.01 }}
+                  whileTap={{ scale: 0.99 }}
+                  onClick={() => router.push("/signup")}
+                  style={{
+                    width: "100%",
+                    padding: "12px",
+                    background: "hsl(38 92% 54%)",
+                    border: "none",
+                    borderRadius: "9px",
+                    color: "hsl(220 16% 6%)",
+                    fontSize: "13px",
+                    fontWeight: 700,
+                    cursor: "pointer",
+                    fontFamily: "Inter, sans-serif",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    gap: "8px",
+                  }}
+                >
+                  <span>Create Account</span>
+                  <ArrowRight size={14} />
+                </motion.button>
+
+                <motion.button
+                  whileHover={{ scale: 1.01 }}
+                  whileTap={{ scale: 0.99 }}
+                  onClick={() => router.push("/login")}
+                  style={{
+                    width: "100%",
+                    padding: "12px",
+                    background: "hsl(220 12% 13%)",
+                    border: "1px solid hsl(220 12% 20%)",
+                    borderRadius: "9px",
+                    color: "hsl(220 8% 72%)",
+                    fontSize: "13px",
+                    fontWeight: 500,
+                    cursor: "pointer",
+                    fontFamily: "Inter, sans-serif",
+                  }}
+                >
+                  Sign In
+                </motion.button>
+
+                <button
+                  onClick={() => setShowModal(false)}
+                  style={{
+                    background: "none",
+                    border: "none",
+                    color: "hsl(220 8% 38%)",
+                    fontSize: "12px",
+                    cursor: "pointer",
+                    fontFamily: "Inter, sans-serif",
+                    padding: "6px",
+                    transition: "color 0.15s",
+                  }}
+                  onMouseEnter={(e) =>
+                    (e.currentTarget.style.color = "hsl(220 8% 55%)")
+                  }
+                  onMouseLeave={(e) =>
+                    (e.currentTarget.style.color = "hsl(220 8% 38%)")
+                  }
+                >
+                  Maybe Later
+                </button>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
       <style>{`
         @keyframes pulse-live {
           0%, 100% { box-shadow: 0 0 0 0 hsl(152 68% 48% / 0.4); }
