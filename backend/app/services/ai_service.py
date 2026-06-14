@@ -110,7 +110,7 @@ def _normalize_commit_output(text: str) -> str:
 
 
 # ─── Health score computation — single source of truth ───────────────────────
-def _compute_health(analyses: List[str]) -> tuple[int, str]:
+def _compute_health(analyses: List[str]) -> tuple[int, str, str]:
     """
     Derive score and label from actual commit analyses.
     Returns (score: int, label: str) — used by both frontend and summary prompt
@@ -125,12 +125,15 @@ def _compute_health(analyses: List[str]) -> tuple[int, str]:
 
     if score >= 85:
         label = "Healthy"
+        emoji = "🟢"
     elif score >= 65:
         label = "Moderate"
+        emoji = "🟡"
     else:
         label = "Needs Attention"
+        emoji = "🔴"
 
-    return score, label
+    return score, label, emoji
 
 
 # ─── Clients ──────────────────────────────────────────────────────────────────
@@ -466,7 +469,7 @@ def generate_repo_summary(
 
     # Compute health from actual signal — single source of truth
     # FIX: AI summary must use this label so badge/label/summary never contradict
-    score, health_label = _compute_health(analyses)
+    score, health_label, health_emoji = _compute_health(analyses)
 
     prompt = f"""Repository health report. Max 180 words.
 
@@ -497,7 +500,7 @@ STRICT SUMMARY RULES:
 - Never treat refactors, renames, tests, CI, or config changes as breaking changes
 - If no meaningful risks exist, write exactly:
   "No major risks identified."
-4. **Health**: {health_label} — brief reasoning why."""
+4. **Health**: {health_emoji} {health_label} — brief reasoning why."""
 
     return generate_response(prompt, max_tokens=650)
 
