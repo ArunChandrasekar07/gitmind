@@ -77,14 +77,22 @@ export const analyzeAPI = {
     return response.json();
   },
 
-  analyzeBatch: async (url: string, limit = 10): Promise<BatchAnalysisResponse> => {
-    const response = await fetch(`${API_URL}/api/v1/analyze/batch`, {
+  analyzeBatch: async (
+    url: string,
+    limit = 10,
+    signal?: AbortSignal
+  ): Promise<BatchAnalysisResponse> => {
+    const res = await fetch(`${API_URL}/api/v1/analyze/batch`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ url, limit }),
+      signal,
     });
-    if (!response.ok) throw new Error("Batch analysis failed");
-    return response.json();
+    if (!res.ok) {
+      const err = await res.json().catch(() => ({}));
+      throw new Error(err.detail || "Analysis failed");
+    }
+    return res.json();
   },
 
   streamCommit: async (

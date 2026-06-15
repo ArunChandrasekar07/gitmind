@@ -406,7 +406,7 @@ export default function SettingsPage() {
           }}
         >
           <p style={{ fontSize: "11px", color: "hsl(215 12% 35%)" }}>
-            GitMind · Built by Arun C ·
+            GitMind · Built by Arun C
             <br />
             Powered by Gemini AI · Groq · GitHub API
           </p>

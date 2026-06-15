@@ -184,29 +184,28 @@ function GuestBadge({
   onSignup: () => void;
 }) {
   const [visible, setVisible] = useState(true);
+const [dismissed, setDismissed] = useState(false);
   
   const ticking = useRef(false);
 
   useEffect(() => {
-    setVisible(window.scrollY <= 120);
-    const onScroll = () => {
-      if (ticking.current) return;
-      ticking.current = true;
-      requestAnimationFrame(() => {
-        const currentY = window.scrollY;
+  const timer = setTimeout(() => setDismissed(true), 2000);
+  return () => clearTimeout(timer);
+}, []);
 
-        if (currentY <= 120) {
-          setVisible(true); // only near top/hero
-        } else {
-          setVisible(false); // hidden everywhere else
-        }
-
-        ticking.current = false;
-      });
-    };
-    window.addEventListener("scroll", onScroll, { passive: true });
-    return () => window.removeEventListener("scroll", onScroll);
-  }, []);
+useEffect(() => {
+  setVisible(window.scrollY <= 120 && !dismissed);
+  const onScroll = () => {
+    if (ticking.current) return;
+    ticking.current = true;
+    requestAnimationFrame(() => {
+      setVisible(window.scrollY <= 120 && !dismissed);
+      ticking.current = false;
+    });
+  };
+  window.addEventListener("scroll", onScroll, { passive: true });
+  return () => window.removeEventListener("scroll", onScroll);
+}, [dismissed]);
 
   return (
     <motion.div
@@ -215,7 +214,7 @@ function GuestBadge({
         opacity: visible ? 1 : 0,
         scale: visible ? 1 : 0.97,
       }}
-      transition={{ duration: 0.28, ease: [0.21, 0.47, 0.32, 0.98] }}
+      transition={{ duration: dismissed ? 0.6 : 0.28, ease: [0.21, 0.47, 0.32, 0.98] }}
       onClick={onSignup}
       style={{
         position: "fixed",

@@ -69,7 +69,7 @@ function AnalyzeContent() {
   const [navVisible, setNavVisible] = useState(true);
   const navTickRef = useRef(false);
   const handleAnalyzeRef = useRef<((url?: string, limit?: number, sessionId?: string | null) => Promise<void>) | null>(null);
-
+  const abortControllerRef = useRef<AbortController | null>(null);
   // ── Guest limit enforcement ────────────────────────────────
   const GUEST_KEY      = "gitmind_guest_count";
   const GUEST_DATE_KEY = "gitmind_guest_date";
@@ -145,22 +145,22 @@ function AnalyzeContent() {
       }
 
       // ── Enforce guest limit ──────────────────────────────
-const forceLoggedIn =
-  isAuthenticated ||
-  !!user?.id ||
-  !!localStorage.getItem("gitmind-auth");
-
-if (!forceLoggedIn) {
+if (!isAuthenticated) {
   const used = getGuestCount();
-
   if (used >= GUEST_TOTAL) {
     setError("guest_limit");
     setIsLoading(false);
     return;
   }
-
   incrementGuestCount();
 }
+
+      // Cancel any in-flight request before starting a new one
+      if (abortControllerRef.current) {
+        abortControllerRef.current.abort();
+      }
+      const controller = new AbortController();
+      abortControllerRef.current = controller;
 
       setIsLoading(true);
       setResult(null);
@@ -186,7 +186,7 @@ if (!forceLoggedIn) {
       }, 700);
 
       try {
-        const data = await analyzeAPI.analyzeBatch(repoUrl, repoLimit);
+        const data = await analyzeAPI.analyzeBatch(repoUrl, repoLimit, controller.signal);
         clearInterval(stageInterval);
         setResult(data);
 
@@ -233,6 +233,13 @@ if (!forceLoggedIn) {
         }
       } catch (err: unknown) {
         clearInterval(stageInterval);
+
+        // Ignore AbortError — user navigated away or started new analysis
+        if (err instanceof Error && err.name === "AbortError") {
+          setIsLoading(false);
+          return;
+        }
+
         const msg = err instanceof Error ? err.message : "Analysis failed";
         setError(msg);
         toast.error(msg);
@@ -285,6 +292,12 @@ if (!forceLoggedIn) {
     };
 
     restoreSession();
+    return () => {
+      // Cancel any in-flight request when component unmounts
+      if (abortControllerRef.current) {
+        abortControllerRef.current.abort();
+      }
+    };
   }, [user?.id]);
 
   useEffect(() => {
@@ -1200,8 +1213,7 @@ useEffect(() => {
                   paddingBottom: "20px",
                 }}
               >
-                GitMind · Built by Arun C · VIT Vellore · Powered by Gemini AI
-                + GitHub API
+                GitMind · Built by Arun C · Powered by Gemini · Groq · GitHub API
               </p>
             </motion.div>
           )}
