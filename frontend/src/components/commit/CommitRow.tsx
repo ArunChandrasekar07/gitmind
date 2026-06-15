@@ -426,7 +426,7 @@ export function CommitRow({
                     <ReactMarkdown
                       components={{
                         p: ({ children }) => (
-                          <p style={{ marginBottom: "8px", lastChild: { marginBottom: 0 } as React.CSSProperties }}>
+                          <p style={{ marginBottom: "8px"}}>
                             {children}
                           </p>
                         ),
