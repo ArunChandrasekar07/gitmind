@@ -563,6 +563,7 @@ export default function LandingPage() {
 
         {/* ── HERO ─────────────────────────────────────────────────── */}
         <section
+          className="lp-hero-section"
           style={{
             position: "relative",
             zIndex: 1,
@@ -574,6 +575,7 @@ export default function LandingPage() {
         >
           <div style={{ maxWidth: "1180px", margin: "0 auto" }}>
             <div
+              className="lp-hero-grid"
               style={{
                 display: "grid",
                 gridTemplateColumns: "1fr 1fr",
@@ -663,6 +665,7 @@ export default function LandingPage() {
                   style={{ marginBottom: "14px" }}
                 >
                   <div
+                    className="lp-url-row"
                     style={{
                       display: "flex",
                       gap: "8px",
@@ -1088,6 +1091,7 @@ export default function LandingPage() {
           }}
         >
           <div
+            className="lp-stats-grid"
             style={{
               maxWidth: "1180px",
               margin: "0 auto",
@@ -1164,6 +1168,7 @@ export default function LandingPage() {
         {/* ── RISK INTELLIGENCE ────────────────────────────────────── */}
         <section
           id="features"
+          className="lp-section-tall"
           style={{
             position: "relative",
             zIndex: 1,
@@ -1172,6 +1177,7 @@ export default function LandingPage() {
           }}
         >
           <div
+            className="lp-risk-grid"
             style={{
               maxWidth: "1180px",
               margin: "0 auto",
@@ -1606,6 +1612,7 @@ export default function LandingPage() {
 
         {/* ── COMMIT INTELLIGENCE ──────────────────────────────────── */}
         <section
+          className="lp-section-tall"
           style={{
             position: "relative",
             zIndex: 1,
@@ -1681,6 +1688,7 @@ export default function LandingPage() {
 
             {/* 3-column capability cards — GitMind style */}
             <div
+              className="lp-commit-grid"
               style={{
                 display: "grid",
                 gridTemplateColumns: "repeat(3, 1fr)",
@@ -1787,6 +1795,7 @@ export default function LandingPage() {
         {/* ── HOW IT WORKS ─────────────────────────────────────────── */}
         <section
           id="workflow"
+          className="lp-section-tall"
           style={{
             position: "relative",
             zIndex: 1,
@@ -2008,6 +2017,7 @@ export default function LandingPage() {
         >
           <div style={{ maxWidth: "1100px", margin: "0 auto" }}>
             <div
+              className="lp-pricing-grid"
               style={{
                 display: "grid",
                 gridTemplateColumns: "1fr 1fr",
@@ -2384,7 +2394,7 @@ export default function LandingPage() {
                 </div>
 
                 {/* Content */}
-                <div style={{ padding: "36px 40px" }}>
+                <div className="lp-cta-content" style={{ padding: "36px 40px" }}>
                   <h2
                     style={{
                       fontSize: "clamp(22px, 3vw, 30px)",
@@ -2502,6 +2512,7 @@ export default function LandingPage() {
           }}
         >
           <div
+            className="lp-footer-inner"
             style={{
               maxWidth: "1180px",
               margin: "0 auto",
@@ -2787,18 +2798,109 @@ export default function LandingPage() {
           0%, 100% { box-shadow: 0 0 0 0 hsl(152 68% 48% / 0.4); }
           50% { box-shadow: 0 0 0 5px hsl(152 68% 48% / 0); }
         }
-        @media (max-width: 900px) {
-          .hero-grid { grid-template-columns: 1fr !important; }
-          .feature-grid { grid-template-columns: 1fr 1fr !important; }
-          .workflow-grid { grid-template-columns: 1fr !important; }
-          .stats-grid { grid-template-columns: repeat(2, 1fr) !important; }
-        }
-        @media (max-width: 580px) {
-          .feature-grid { grid-template-columns: 1fr !important; }
-          .stats-grid { grid-template-columns: repeat(2, 1fr) !important; }
-        }
+
+        /* Desktop nav links */
         @media (min-width: 768px) {
           .md-show { display: block !important; }
+        }
+
+        /* ── MOBILE ONLY — landing page ── */
+        @media (max-width: 768px) {
+
+          /* Hero: single column, hide demo widget */
+          .lp-hero-grid {
+            grid-template-columns: 1fr !important;
+            gap: 32px !important;
+          }
+          .lp-hero-grid > *:last-child {
+            display: none !important;
+          }
+
+          /* Hero section: reduce top padding */
+          .lp-hero-section {
+            padding-top: 100px !important;
+            padding-bottom: 48px !important;
+            padding-left: 16px !important;
+            padding-right: 16px !important;
+          }
+
+          /* Hero URL input: stack on very small screens */
+          .lp-url-row {
+            flex-direction: column !important;
+            padding: 10px !important;
+            gap: 8px !important;
+          }
+          .lp-url-row button {
+            width: 100% !important;
+            justify-content: center !important;
+          }
+
+          /* Stats strip: 2 columns */
+          .lp-stats-grid {
+            grid-template-columns: repeat(2, 1fr) !important;
+          }
+          /* Remove right border from 2nd item (now end of row) */
+          .lp-stats-grid > *:nth-child(2) > div {
+            border-right: none !important;
+          }
+
+          /* Risk section: stack */
+          .lp-risk-grid {
+            grid-template-columns: 1fr !important;
+            gap: 36px !important;
+          }
+
+          /* Commit intelligence: 1 col */
+          .lp-commit-grid {
+            grid-template-columns: 1fr !important;
+          }
+
+          /* Pricing: stack */
+          .lp-pricing-grid {
+            grid-template-columns: 1fr !important;
+            gap: 32px !important;
+          }
+
+          /* CTA terminal: reduce padding */
+          .lp-cta-content {
+            padding: 24px 20px !important;
+          }
+
+          /* Section padding reduction across all sections */
+          section {
+            padding-left: 16px !important;
+            padding-right: 16px !important;
+          }
+
+          /* Large section top/bottom padding: reduce from 96px */
+          .lp-section-tall {
+            padding-top: 56px !important;
+            padding-bottom: 56px !important;
+          }
+
+          /* Guest badge: smaller on mobile */
+          .lp-guest-badge {
+            bottom: 12px !important;
+            right: 12px !important;
+            padding: 7px 10px !important;
+          }
+
+          /* Footer: center stack */
+          .lp-footer-inner {
+            flex-direction: column !important;
+            align-items: center !important;
+            text-align: center !important;
+          }
+        }
+
+        /* Very small screens — under 400px */
+        @media (max-width: 400px) {
+          .lp-stats-grid {
+            grid-template-columns: 1fr 1fr !important;
+          }
+          .lp-hero-grid h1 {
+            font-size: 30px !important;
+          }
         }
       `}</style>
     </>
