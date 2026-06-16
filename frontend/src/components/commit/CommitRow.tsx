@@ -92,6 +92,7 @@ export function CommitRow({
     >
       {/* Main row */}
       <div
+      className="commit-row-inner"
         onClick={handleToggle}
         style={{
           display: "flex",
@@ -110,6 +111,7 @@ export function CommitRow({
 
         {/* SHA */}
         <span
+        className="commit-row-meta"
           style={{
             fontFamily: "JetBrains Mono, monospace",
             fontSize: "11px",
@@ -185,6 +187,7 @@ export function CommitRow({
 
           {commit.avatar ? (
             <img
+            className="commit-row-meta"
               src={commit.avatar}
               alt={commit.author}
               style={{
@@ -196,6 +199,7 @@ export function CommitRow({
             />
           ) : (
             <div
+              className="commit-row-meta"
               style={{
                 width: "20px",
                 height: "20px",
@@ -215,6 +219,7 @@ export function CommitRow({
           )}
 
           <span
+            className="commit-row-meta"
             style={{
               fontSize: "11px",
               color: "hsl(215 12% 45%)",
@@ -482,7 +487,24 @@ export function CommitRow({
           </motion.div>
         )}
       </AnimatePresence>
-      <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
+      <style>{`
+        @media (max-width: 768px) {
+          .commit-row-inner {
+            flex-wrap: wrap !important;
+            gap: 4px !important;
+            padding: 10px 10px !important;
+          }
+          .commit-row-meta {
+            display: none !important;
+          }
+          .commit-row-sha {
+            font-size: 9px !important;
+          }
+          .commit-row-time {
+            font-size: 9px !important;
+          }
+        }
+      `}</style>
     </motion.div>
   );
 }

@@ -1272,8 +1272,15 @@ useEffect(() => {
 
           /* Select and button share second row */
           .analyze-commit-select {
-            flex: 1 !important;
+            flex: 0 0 auto !important;
             min-width: 0 !important;
+            width: auto !important;
+          }
+
+          /* Select element itself needs explicit width on mobile */
+          .analyze-commit-select select {
+            width: 120px !important;
+            padding-right: 28px !important;
           }
 
           .analyze-btn {
