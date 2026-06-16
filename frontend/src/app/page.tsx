@@ -2816,13 +2816,17 @@ export default function LandingPage() {
             display: none !important;
           }
 
-          /* Hero section: reduce top padding */
-          .lp-hero-section {
-            padding-top: 100px !important;
-            padding-bottom: 48px !important;
-            padding-left: 16px !important;
-            padding-right: 16px !important;
-          }
+          /* Hero section: full viewport height on mobile */
+.lp-hero-section {
+  min-height: 100svh !important;
+  padding-top: 80px !important;
+  padding-bottom: 32px !important;
+  padding-left: 16px !important;
+  padding-right: 16px !important;
+  display: flex !important;
+  flex-direction: column !important;
+  justify-content: center !important;
+}
 
           /* Hero URL input: stack on very small screens */
           .lp-url-row {
