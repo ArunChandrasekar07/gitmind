@@ -57,7 +57,7 @@ _model_skip_until: Dict[str, float] = {}
 _provider_skip_until: Dict[str, float] = {}
 
 MODEL_COOLDOWN = 120
-PROVIDER_COOLDOWN = 90
+PROVIDER_COOLDOWN = 30
 
 
 def _model_cooling(model: str) -> bool:
