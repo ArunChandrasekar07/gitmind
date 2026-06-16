@@ -385,6 +385,7 @@ useEffect(() => {
       >
         {/* Row 1 — brand + actions */}
         <div
+          className="analyze-nav-row1"
           style={{
             display: "flex",
             alignItems: "center",
@@ -423,7 +424,7 @@ useEffect(() => {
               <ArrowLeft size={13} />
               <span>Home</span>
             </button>
-            <Wordmark size={24} />
+            <span className="analyze-wordmark"><Wordmark size={24} /></span>
           </div>
 
           <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
@@ -507,8 +508,9 @@ useEffect(() => {
         </div>
 
         {/* Row 2 — search bar full width */}
-        <div style={{ padding: "10px 20px 12px" }}>
+        <div className="analyze-nav-row2" style={{ padding: "10px 20px 12px" }}>
           <div
+            className="analyze-search-row"
             style={{
               display: "flex",
               alignItems: "center",
@@ -520,6 +522,7 @@ useEffect(() => {
           >
             {/* URL input */}
             <div
+              className="analyze-url-input"
               style={{
                 flex: 1,
                 display: "flex",
@@ -567,7 +570,7 @@ useEffect(() => {
             </div>
 
             {/* Commit count — gated for guests */}
-            <div style={{ position: "relative", flexShrink: 0 }}>
+            <div className="analyze-commit-select" style={{ position: "relative", flexShrink: 0 }}>
 
               {/* PRO pill — appears once, flies into selector */}
               {!isAuthenticated && proAnimState !== "done" && (
@@ -701,6 +704,7 @@ useEffect(() => {
 
             {/* Analyze button */}
             <button
+              className="analyze-btn"
               onClick={() => handleAnalyze()}
               disabled={isLoading}
               style={{
@@ -740,6 +744,7 @@ useEffect(() => {
 
       {/* ── MAIN ─────────────────────────────────────────── */}
       <main
+        className="analyze-main"
         style={{
           flex: 1,
           maxWidth: "900px",
@@ -1049,6 +1054,7 @@ useEffect(() => {
 
               {/* Toolbar */}
               <div
+                className="analyze-toolbar"
                 style={{
                   display: "flex",
                   alignItems: "center",
@@ -1090,7 +1096,7 @@ useEffect(() => {
                   />
                 </div>
 
-                <div style={{ display: "flex", gap: "4px" }}>
+                <div className="analyze-filter-row" style={{ display: "flex", gap: "4px" }}>
                   {[
                     { key: "all", label: "All" },
                     { key: "safe", label: "Safe" },
@@ -1232,6 +1238,73 @@ useEffect(() => {
 
       <style>{`
         @keyframes spin { to { transform: rotate(360deg); } }
+
+        /* ── MOBILE ONLY — analyze page ── */
+        @media (max-width: 768px) {
+
+          /* Nav Row 1: tighten spacing */
+          .analyze-nav-row1 {
+            padding: 8px 12px 0 !important;
+            gap: 8px !important;
+          }
+          
+          /* Hide wordmark text on very small screens to save space */
+          .analyze-wordmark {
+            display: none !important;
+          }
+
+          /* Nav Row 2: stack input above button row */
+          .analyze-nav-row2 {
+            padding: 8px 12px 10px !important;
+          }
+          
+          .analyze-search-row {
+            flex-wrap: wrap !important;
+            gap: 6px !important;
+          }
+
+          /* URL input takes full width on mobile */
+          .analyze-url-input {
+            min-width: 0 !important;
+            width: 100% !important;
+            flex: 1 1 100% !important;
+          }
+
+          /* Select and button share second row */
+          .analyze-commit-select {
+            flex: 1 !important;
+            min-width: 0 !important;
+          }
+
+          .analyze-btn {
+            flex-shrink: 0 !important;
+          }
+
+          /* Main padding reduced on mobile */
+          .analyze-main {
+            padding: 12px !important;
+          }
+
+          /* Toolbar: search takes full width, filters wrap */
+          .analyze-toolbar {
+            flex-direction: column !important;
+            align-items: stretch !important;
+            gap: 6px !important;
+          }
+
+          .analyze-filter-row {
+            display: flex !important;
+            gap: 4px !important;
+            flex-wrap: wrap !important;
+          }
+
+          .analyze-filter-row button {
+            flex: 1 !important;
+            min-width: 48px !important;
+            font-size: 11px !important;
+            padding: 5px 6px !important;
+          }
+        }
       `}</style>
     </div>
   );
