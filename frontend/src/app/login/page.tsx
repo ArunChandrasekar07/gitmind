@@ -187,7 +187,7 @@ export default function LoginPage() {
         />
 
         {/* Left panel */}
-        <div style={{ ...S.left, zIndex: 1 }}>
+        <div style={{ ...S.left, zIndex: 1 }} className="login-left-panel">
           {/* Back */}
           <Link
             href="/"
@@ -636,6 +636,16 @@ export default function LoginPage() {
         }
         @media (max-width: 768px) {
           .hidden { display: none !important; }
+          
+          /* Login panel: full width on mobile, remove fixed 420px */
+          .login-left-panel {
+            flex: 1 1 100% !important;
+            min-width: 0 !important;
+            width: 100% !important;
+            padding: 24px 20px !important;
+            border-right: none !important;
+            border-bottom: 1px solid hsl(220 10% 11%) !important;
+          }
         }
       `}</style>
     </>
