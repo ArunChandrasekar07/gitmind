@@ -731,7 +731,6 @@ export default function LandingPage() {
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
                   transition={{ delay: 0.3 }}
-                  className="lp-try-chips"
                   style={{
                     display: "flex",
                     flexWrap: "wrap",
@@ -2817,100 +2816,17 @@ export default function LandingPage() {
             display: none !important;
           }
 
-/* Hero: full viewport, content fills top-to-bottom */
-          .lp-hero-section {
-            min-height: 100svh !important;
-            padding-top: 72px !important;
-            padding-bottom: 24px !important;
-            padding-left: 20px !important;
-            padding-right: 20px !important;
-            display: flex !important;
-            flex-direction: column !important;
-            justify-content: space-between !important;
-          }
-
-          /* Hero inner max-width container */
-          .lp-hero-section > div {
-            width: 100% !important;
-            max-width: 100% !important;
-          }
-
-          /* Hero grid — single column, gap tighter */
-          .lp-hero-grid {
-            grid-template-columns: 1fr !important;
-            gap: 0 !important;
-            display: flex !important;
-            flex-direction: column !important;
-            height: 100% !important;
-          }
-
-          /* Hide demo widget */
-          .lp-hero-grid > *:last-child {
-            display: none !important;
-          }
-
-          /* Hero left column fills available space */
-          .lp-hero-grid > *:first-child {
-            display: flex !important;
-            flex-direction: column !important;
-            justify-content: space-between !important;
-            height: 100% !important;
-            gap: 0 !important;
-          }
-
-          /* Badge pill — smaller margin */
-          .lp-hero-grid > *:first-child > div:first-child {
-            margin-bottom: 16px !important;
-          }
-
-          /* H1 headline */
-          .lp-hero-grid h1 {
-            font-size: clamp(34px, 9vw, 48px) !important;
-            line-height: 1.06 !important;
-            margin-bottom: 14px !important;
-            letter-spacing: -0.04em !important;
-          }
-
-          /* Subtitle paragraph */
-          .lp-hero-grid p {
-            font-size: 15px !important;
-            line-height: 1.6 !important;
-            margin-bottom: 24px !important;
-          }
-
-          /* URL input row — keep inline on mobile */
-          .lp-url-row {
-            flex-direction: row !important;
-            padding: 5px 5px 5px 14px !important;
-            gap: 6px !important;
-            margin-bottom: 14px !important;
-          }
-
-          .lp-url-row input {
-            font-size: 14px !important;
-            min-width: 0 !important;
-          }
-
-          /* Analyze button stays inline, not full width */
-          .lp-url-row button {
-            width: auto !important;
-            flex-shrink: 0 !important;
-            padding: 8px 14px !important;
-            font-size: 13px !important;
-          }
-
-          /* Try chips row */
-          .lp-try-chips {
-            display: flex !important;
-            flex-wrap: wrap !important;
-            gap: 6px !important;
-            margin-top: 0 !important;
-          }
-
-          .lp-try-chips button {
-            font-size: 11px !important;
-            padding: 4px 8px !important;
-          }
+          /* Hero section: full viewport height on mobile */
+.lp-hero-section {
+  min-height: 100svh !important;
+  padding-top: 80px !important;
+  padding-bottom: 32px !important;
+  padding-left: 16px !important;
+  padding-right: 16px !important;
+  display: flex !important;
+  flex-direction: column !important;
+  justify-content: center !important;
+}
 
           /* Hero URL input: stack on very small screens */
           .lp-url-row {
