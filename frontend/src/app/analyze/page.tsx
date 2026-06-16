@@ -424,7 +424,9 @@ useEffect(() => {
               <ArrowLeft size={13} />
               <span>Home</span>
             </button>
-            <span className="analyze-wordmark"><Wordmark size={24} /></span>
+            <span className="analyze-wordmark">
+              <Wordmark size={24} />
+            </span>
           </div>
 
           <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
@@ -460,21 +462,21 @@ useEffect(() => {
                     ? "hsl(152 60% 40% / 0.12)"
                     : "hsl(220 12% 12%)",
                   border: `1px solid ${
-                    savedSuccess
-                      ? "hsl(152 60% 40% / 0.3)"
-                      : "hsl(220 12% 17%)"
+                    savedSuccess ? "hsl(152 60% 40% / 0.3)" : "hsl(220 12% 17%)"
                   }`,
                   borderRadius: "7px",
-                  color: savedSuccess
-                    ? "hsl(152 60% 48%)"
-                    : "hsl(220 8% 52%)",
+                  color: savedSuccess ? "hsl(152 60% 48%)" : "hsl(220 8% 52%)",
                   fontSize: "12px",
                   cursor: "pointer",
                   fontFamily: "Inter, sans-serif",
                   transition: "all 0.15s",
                 }}
               >
-                {savedSuccess ? <Check size={13} /> : <BookmarkPlus size={13} />}
+                {savedSuccess ? (
+                  <Check size={13} />
+                ) : (
+                  <BookmarkPlus size={13} />
+                )}
               </button>
             )}
             {isAuthenticated && (
@@ -570,8 +572,10 @@ useEffect(() => {
             </div>
 
             {/* Commit count — gated for guests */}
-            <div className="analyze-commit-select" style={{ position: "relative", flexShrink: 0 }}>
-
+            <div
+              className="analyze-commit-select"
+              style={{ position: "relative", flexShrink: 0 }}
+            >
               {/* PRO pill — appears once, flies into selector */}
               {!isAuthenticated && proAnimState !== "done" && (
                 <motion.div
@@ -580,10 +584,13 @@ useEffect(() => {
                     proAnimState === "visible"
                       ? { opacity: 1, y: -26, scale: 1 }
                       : proAnimState === "flying"
-                      ? { opacity: 0, y: 0, scale: 0.5 }
-                      : { opacity: 0, y: 0, scale: 0.8 }
+                        ? { opacity: 0, y: 0, scale: 0.5 }
+                        : { opacity: 0, y: 0, scale: 0.8 }
                   }
-                  transition={{ duration: proAnimState === "flying" ? 0.35 : 0.25, ease: [0.21,0.47,0.32,0.98] }}
+                  transition={{
+                    duration: proAnimState === "flying" ? 0.35 : 0.25,
+                    ease: [0.21, 0.47, 0.32, 0.98],
+                  }}
                   style={{
                     position: "absolute",
                     top: 0,
@@ -621,14 +628,20 @@ useEffect(() => {
                   }
                 }}
                 onMouseLeave={() => setUpsellTooltip(null)}
-                onFocus={() => { if (!isAuthenticated) setUpsellTooltip(0); }}
+                onFocus={() => {
+                  if (!isAuthenticated) setUpsellTooltip(0);
+                }}
                 onBlur={() => setUpsellTooltip(null)}
                 style={{
                   height: "40px",
                   padding: "0 32px 0 10px",
                   background: "hsl(220 14% 10%)",
-                  border: selectorGlow ? "1px solid hsl(38 92% 54% / 0.8)" : "1px solid hsl(220 12% 16%)",
-                  boxShadow: selectorGlow ? "0 0 0 3px hsl(38 92% 54% / 0.15), 0 0 10px hsl(38 92% 54% / 0.2)" : "none",
+                  border: selectorGlow
+                    ? "1px solid hsl(38 92% 54% / 0.8)"
+                    : "1px solid hsl(220 12% 16%)",
+                  boxShadow: selectorGlow
+                    ? "0 0 0 3px hsl(38 92% 54% / 0.15), 0 0 10px hsl(38 92% 54% / 0.2)"
+                    : "none",
                   borderRadius: "9px",
                   color: "hsl(220 8% 58%)",
                   fontSize: "12px",
@@ -641,8 +654,8 @@ useEffect(() => {
                 }}
               >
                 {[
-                  { value: 5,  label: "5 commits",  guestOk: true  },
-                  { value: 10, label: "10 commits", guestOk: true  },
+                  { value: 5, label: "5 commits", guestOk: true },
+                  { value: 10, label: "10 commits", guestOk: true },
                   { value: 20, label: "20 commits", guestOk: false },
                   { value: 30, label: "30 commits", guestOk: false },
                 ].map((opt) => {
@@ -665,21 +678,24 @@ useEffect(() => {
 
               {/* Hover tooltip */}
               {!isAuthenticated && upsellTooltip !== null && (
-                <div style={{
-                  position: "absolute",
-                  bottom: "calc(100% + 8px)",
-                  right: 0,
-                  background: "hsl(220 14% 12%)",
-                  border: "1px solid hsl(38 92% 54% / 0.3)",
-                  borderRadius: "7px",
-                  padding: "6px 10px",
-                  fontSize: "11px",
-                  color: "hsl(38 10% 82%)",
-                  fontFamily: "Inter, sans-serif",
-                  whiteSpace: "nowrap",
-                  zIndex: 50,
-                  pointerEvents: "none",
-                }}>
+                <div
+                  className="commit-tooltip"
+                  style={{
+                    position: "absolute",
+                    bottom: "calc(100% + 8px)",
+                    right: 0,
+                    background: "hsl(220 14% 12%)",
+                    border: "1px solid hsl(38 92% 54% / 0.3)",
+                    borderRadius: "7px",
+                    padding: "6px 10px",
+                    fontSize: "11px",
+                    color: "hsl(38 10% 82%)",
+                    fontFamily: "Inter, sans-serif",
+                    whiteSpace: "nowrap",
+                    zIndex: 50,
+                    pointerEvents: "none",
+                  }}
+                >
                   Login to unlock 10+ commit analysis
                 </div>
               )}
@@ -696,8 +712,20 @@ useEffect(() => {
                   display: "flex",
                 }}
               >
-                <svg width="10" height="10" viewBox="0 0 10 10" fill="currentColor">
-                  <path d="M2 3.5L5 6.5L8 3.5" stroke="currentColor" strokeWidth="1.2" fill="none" strokeLinecap="round" strokeLinejoin="round"/>
+                <svg
+                  width="10"
+                  height="10"
+                  viewBox="0 0 10 10"
+                  fill="currentColor"
+                >
+                  <path
+                    d="M2 3.5L5 6.5L8 3.5"
+                    stroke="currentColor"
+                    strokeWidth="1.2"
+                    fill="none"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  />
                 </svg>
               </div>
             </div>
@@ -935,7 +963,14 @@ useEffect(() => {
               ))}
             </div>
 
-            <div style={{ display: "flex", gap: "10px", flexWrap: "wrap", justifyContent: "center" }}>
+            <div
+              style={{
+                display: "flex",
+                gap: "10px",
+                flexWrap: "wrap",
+                justifyContent: "center",
+              }}
+            >
               <button
                 onClick={() => router.push("/signup")}
                 style={{
@@ -1021,13 +1056,11 @@ useEffect(() => {
                   }}
                   onMouseEnter={(e) => {
                     e.currentTarget.style.color = "hsl(38 92% 60%)";
-                    e.currentTarget.style.borderColor =
-                      "hsl(38 92% 54% / 0.3)";
+                    e.currentTarget.style.borderColor = "hsl(38 92% 54% / 0.3)";
                   }}
                   onMouseLeave={(e) => {
                     e.currentTarget.style.color = "hsl(220 8% 50%)";
-                    e.currentTarget.style.borderColor =
-                      "hsl(220 12% 16%)";
+                    e.currentTarget.style.borderColor = "hsl(220 12% 16%)";
                   }}
                 >
                   {r.replace("https://github.com/", "")}
@@ -1096,7 +1129,10 @@ useEffect(() => {
                   />
                 </div>
 
-                <div className="analyze-filter-row" style={{ display: "flex", gap: "4px" }}>
+                <div
+                  className="analyze-filter-row"
+                  style={{ display: "flex", gap: "4px" }}
+                >
                   {[
                     { key: "all", label: "All" },
                     { key: "safe", label: "Safe" },
@@ -1134,8 +1170,8 @@ useEffect(() => {
                           {f.key === "safe"
                             ? riskCounts.safe
                             : f.key === "warn"
-                            ? riskCounts.warn
-                            : riskCounts.danger}
+                              ? riskCounts.warn
+                              : riskCounts.danger}
                         </span>
                       )}
                     </button>
@@ -1170,8 +1206,8 @@ useEffect(() => {
                   marginBottom: "8px",
                 }}
               >
-                {filteredCommits?.length ?? 0} of {result.total} commits ·
-                click any row to expand AI intelligence
+                {filteredCommits?.length ?? 0} of {result.total} commits · click
+                any row to expand AI intelligence
               </p>
 
               {filteredCommits && filteredCommits.length > 0 ? (
@@ -1229,7 +1265,8 @@ useEffect(() => {
                   paddingBottom: "20px",
                 }}
               >
-                GitMind · Built by Arun C · Powered by Gemini · Groq · GitHub API
+                GitMind · Built by Arun C · Powered by Gemini · Groq · GitHub
+                API
               </p>
             </motion.div>
           )}
@@ -1324,6 +1361,11 @@ useEffect(() => {
             font-size: 11px !important;
             padding: 5px 6px !important;
           }
+
+          .commit-tooltip {
+            right: 50% !important;
+            transform: translateX(50%) !important;
+         }
         }
       `}</style>
     </div>
