@@ -2825,7 +2825,15 @@ export default function LandingPage() {
           }
 
           /* Hero URL input: stack on very small screens */
-          
+          .lp-url-row {
+            flex-direction: column !important;
+            padding: 10px !important;
+            gap: 8px !important;
+          }
+          .lp-url-row button {
+            width: 100% !important;
+            justify-content: center !important;
+          }
 
           /* Stats strip: 2 columns */
           .lp-stats-grid {
