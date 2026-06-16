@@ -1270,17 +1270,30 @@ useEffect(() => {
             flex: 1 1 100% !important;
           }
 
-          /* Select and button share second row */
-          .analyze-commit-select {
-            flex: 0 0 auto !important;
-            min-width: 0 !important;
-            width: auto !important;
+          /* Row 3: select left, analyze right — spread full width */
+          .analyze-search-row {
+            flex-wrap: wrap !important;
+            gap: 6px !important;
           }
 
-          /* Select element itself needs explicit width on mobile */
+          .analyze-commit-select {
+            flex: 1 1 auto !important;
+            min-width: 0 !important;
+          }
+
           .analyze-commit-select select {
-            width: 120px !important;
+            width: 100% !important;
             padding-right: 28px !important;
+          }
+
+          /* Chevron stays inside its wrapper */
+          .analyze-commit-select > div[style] {
+            right: 10px !important;
+          }
+
+          .analyze-btn {
+            flex: 1 1 auto !important;
+            justify-content: center !important;
           }
 
           .analyze-btn {
