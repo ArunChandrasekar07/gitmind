@@ -2825,7 +2825,7 @@ export default function LandingPage() {
   padding-right: 16px !important;
   display: flex !important;
   flex-direction: column !important;
-  justify-content: space-between !important;
+  justify-content: center !important;
 }
 
           /* Hero URL input: stack on very small screens */
