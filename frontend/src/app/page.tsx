@@ -2844,6 +2844,10 @@ export default function LandingPage() {
             border-right: none !important;
           }
 
+          .lp-risk-grid > * {
+         min-width: 0 !important;
+         }
+
           /* Risk section: stack */
           .lp-risk-grid {
             grid-template-columns: 1fr !important;
