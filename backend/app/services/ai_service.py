@@ -34,21 +34,19 @@ SYSTEM_INSTRUCTION = """You are a Git commit analyzer. Analyze code diffs and ex
 
 # ─── Model Lists ──────────────────────────────────────────────────────────────
 GEMINI_MODELS = [
-    "gemini-2.5-flash",
-    "gemini-2.5-pro",
-    "gemini-3.5-flash",
     "gemini-2.0-flash",
+    "gemini-2.5-flash",
+    "gemini-1.5-flash",
 ]
 
 GROQ_MODELS = [
     "openai/gpt-oss-120b",
+    "llama-3.1-8b-instant",
     "qwen/qwen3-32b",
     "llama-3.3-70b-versatile",
-    "llama-3.1-8b-instant",
 ]
 
 OPENROUTER_MODELS = [
-    "google/gemini-2.5-flash",
     "openai/gpt-oss-120b:free",
     "qwen/qwen3-coder:free",
     "meta-llama/llama-3.3-70b-instruct:free",

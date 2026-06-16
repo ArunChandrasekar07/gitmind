@@ -10,7 +10,7 @@ from app.services.ai_service import (
 from app.schemas.repo import BatchAnalysisRequest, CommitAnalysisRequest
 import logging
 import json
-
+from concurrent.futures import ThreadPoolExecutor, as_completed
 logger = logging.getLogger(__name__)
 router = APIRouter()
 
@@ -60,21 +60,41 @@ async def analyze_batch(request: BatchAnalysisRequest):
         repo_info = await get_repo_info(owner, repo)
         commits = await get_commits(owner, repo, request.limit)
 
-        # Analyze each commit
-        analyzed = []
+        # First fetch commit details (async)
+        commit_details = []
         for commit in commits:
             try:
                 detail = await get_commit_detail(owner, repo, commit["sha"])
-                analysis = analyze_commit(detail)
-                analyzed.append({
-                    "commit": detail,
-                    "analysis": analysis,
-                })
+                commit_details.append(detail)
             except Exception as e:
-                analyzed.append({
-                    "commit": commit,
+                logger.error(f"Failed fetching commit {commit['sha']}: {e}")
+                commit_details.append(commit)
+
+        def _analyze_one(detail):
+            try:
+                return {
+                    "commit": detail,
+                    "analysis": analyze_commit(detail),
+                }
+            except Exception as e:
+                logger.error(f"Analysis failed: {e}")
+                return {
+                    "commit": detail,
                     "analysis": "Analysis unavailable for this commit.",
-                })
+                }
+
+        # Parallel AI analysis
+        analyzed = [None] * len(commit_details)
+
+        with ThreadPoolExecutor(max_workers=3) as executor:
+            future_to_index = {
+                executor.submit(_analyze_one, detail): i
+                for i, detail in enumerate(commit_details)
+            }
+
+            for future in as_completed(future_to_index):
+                idx = future_to_index[future]
+                analyzed[idx] = future.result()
 
         # Generate overall summary
         summary = generate_repo_summary(

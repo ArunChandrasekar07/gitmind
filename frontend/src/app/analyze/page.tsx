@@ -234,8 +234,17 @@ if (!isAuthenticated) {
       } catch (err: unknown) {
         clearInterval(stageInterval);
 
-        // Ignore AbortError — user navigated away or started new analysis
-        if (err instanceof Error && err.name === "AbortError") {
+        // AbortError = user left page or started new analysis — silent exit
+        if (
+          err instanceof Error &&
+          (err.name === "AbortError" || err.message.includes("abort"))
+        ) {
+          setIsLoading(false);
+          return; // no toast, no state update, clean exit
+        }
+
+        // Check if component is still mounted before updating state
+        if (abortControllerRef.current?.signal.aborted) {
           setIsLoading(false);
           return;
         }
@@ -296,6 +305,7 @@ if (!isAuthenticated) {
       // Cancel any in-flight request when component unmounts
       if (abortControllerRef.current) {
         abortControllerRef.current.abort();
+        abortControllerRef.current = null;
       }
     };
   }, [user?.id]);
