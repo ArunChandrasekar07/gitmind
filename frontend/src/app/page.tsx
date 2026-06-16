@@ -2849,16 +2849,7 @@ export default function LandingPage() {
             grid-template-columns: 1fr !important;
             gap: 36px !important;
           }
-
-          .lp-risk-grid,
-           .lp-stats-grid {
-            width: 100% !important;
-            max-width: 100% !important;
-            min-width: 0 !important;
-            overflow-x: hidden !important;
-            box-sizing: border-box !important;
-           }
-
+            
           /* Commit intelligence: 1 col */
           .lp-commit-grid {
             grid-template-columns: 1fr !important;
