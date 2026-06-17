@@ -13,7 +13,7 @@ export const viewport: Viewport = {
 };
 
 export const metadata: Metadata = {
-  metadataBase: new URL("https://gitmindhq.vercel.app"),
+  metadataBase: new URL("https://gitmindhq.vercel.app/?v=1"),
 
   title: {
     default: "GitMind — AI Repository Intelligence",
@@ -43,7 +43,7 @@ export const metadata: Metadata = {
   openGraph: {
     type: "website",
     locale: "en_US",
-    url: "https://gitmindhq.vercel.app",
+    url: "https://gitmindhq.vercel.app/?v=1",
     siteName: "GitMind",
     title: "GitMind — AI Repository Intelligence",
     description:
@@ -98,7 +98,7 @@ export const metadata: Metadata = {
 
   // ── Canonical ─────────────────────────────────────────────────────
   alternates: {
-    canonical: "https://gitmindhq.vercel.app",
+    canonical: "https://gitmindhq.vercel.app/?v=1",
   },
 
   // ── App specific ──────────────────────────────────────────────────
@@ -121,7 +121,7 @@ export default function RootLayout({
               "@context": "https://schema.org",
               "@type": "WebApplication",
               name: "GitMind",
-              url: "https://gitmindhq.vercel.app",
+              url: "https://gitmindhq.vercel.app/?v=1",
               description:
                 "AI-powered GitHub repository intelligence. Analyze commits, detect risks, and score repository health instantly.",
               applicationCategory: "DeveloperApplication",
