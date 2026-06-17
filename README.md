@@ -1,6 +1,6 @@
 <div align="center">
 
-<img src="https://raw.githubusercontent.com/ArunChandrasekar07/gitmind/main/frontend/public/seo.png" width="10%" alt="GitMind preview"/>
+<img src="https://raw.githubusercontent.com/ArunChandrasekar07/gitmind/main/frontend/public/seo.png" width="90" alt="GitMind preview"/>
 
 # GitMind
 
