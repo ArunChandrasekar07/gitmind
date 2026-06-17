@@ -221,7 +221,6 @@ export default function DashboardPage() {
             </div>
           </div>
           <div
-          className="dashboard-new-btn"
             style={{
               display: "flex",
               alignItems: "center",
@@ -244,7 +243,6 @@ export default function DashboardPage() {
       {/* Stats */}
       {history.length > 0 && (
         <div
-        className="dashboard-stats-grid"
           style={{
             display: "grid",
             gridTemplateColumns: "repeat(3, 1fr)",
@@ -405,7 +403,6 @@ export default function DashboardPage() {
             {history.slice(0, 7).map((item, i) => (
               <motion.div
                 key={item.id}
-                className="dashboard-history-row"
                 initial={{ opacity: 0, x: -8 }}
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ delay: 0.22 + i * 0.04 }}
@@ -584,40 +581,6 @@ export default function DashboardPage() {
           </div>
         )}
       </motion.div>
-      <style>{`
-        @media (max-width: 768px) {
-
-          /* Stats: 3 cols too cramped — go 1 col on very small, keep 3 but smaller */
-          .dashboard-stats-grid {
-            grid-template-columns: repeat(3, 1fr) !important;
-            gap: 8px !important;
-          }
-
-          /* Stat card numbers smaller on mobile */
-          .dashboard-stats-grid > div {
-            padding: 12px !important;
-          }
-
-          /* History rows: hide language dot on mobile to prevent overflow */
-          .dashboard-history-row {
-            padding: 10px 12px !important;
-            gap: 8px !important;
-          }
-
-          /* Quick action: shrink New button text */
-          .dashboard-new-btn {
-            padding: 6px 10px !important;
-            font-size: 11px !important;
-          }
-        }
-
-        @media (max-width: 400px) {
-          /* Very small: stack stats 1 per row */
-          .dashboard-stats-grid {
-            grid-template-columns: 1fr !important;
-          }
-        }
-      `}</style>
     </div>
   );
 }
