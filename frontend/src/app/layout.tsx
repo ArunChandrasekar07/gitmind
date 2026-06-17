@@ -152,7 +152,7 @@ export default function RootLayout({
       <body className={inter.className}>
         <TopLoader />
         <Toaster
-          position="top-right"
+          position="bottom-right"
           toastOptions={{
             style: {
               background: "hsl(220 14% 10%)",
