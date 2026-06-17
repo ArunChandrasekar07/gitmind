@@ -2872,6 +2872,32 @@ export default function LandingPage() {
             justify-content: center !important;
           }
 
+          /* Try chips: force single line, horizontal scroll if needed */
+          .lp-hero-grid > *:first-child > div:last-child {
+            display: flex !important;
+            flex-wrap: nowrap !important;
+            overflow-x: auto !important;
+            -webkit-overflow-scrolling: touch !important;
+            scrollbar-width: none !important;
+            gap: 6px !important;
+            padding-bottom: 2px !important;
+          }
+
+          .lp-hero-grid > *:first-child > div:last-child::-webkit-scrollbar {
+            display: none !important;
+          }
+
+          .lp-hero-grid > *:first-child > div:last-child span {
+            flex-shrink: 0 !important;
+          }
+
+          .lp-hero-grid > *:first-child > div:last-child button {
+            flex-shrink: 0 !important;
+            font-size: 10px !important;
+            padding: 3px 8px !important;
+            white-space: nowrap !important;
+          }
+
           /* Stats strip: 2 columns */
           .lp-stats-grid {
             grid-template-columns: repeat(2, 1fr) !important;
