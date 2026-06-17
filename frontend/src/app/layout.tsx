@@ -3,7 +3,6 @@ import { Inter } from "next/font/google";
 import "./globals.css";
 import { Toaster } from "sonner";
 import { TopLoader } from "@/components/layout/TopLoader";
-import { ThemeProvider } from "@/components/layout/ThemeProvider";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -151,21 +150,19 @@ export default function RootLayout({
         />
       </head>
       <body className={inter.className}>
-        <ThemeProvider>
-          <TopLoader />
-          <Toaster
-            position="top-right"
-            toastOptions={{
-              style: {
-                background: "hsl(220 14% 10%)",
-                border: "1px solid hsl(220 12% 16%)",
-                color: "hsl(210 20% 88%)",
-                fontSize: "13px",
-              },
-            }}
-          />
-          {children}
-        </ThemeProvider>
+        <TopLoader />
+        <Toaster
+          position="top-right"
+          toastOptions={{
+            style: {
+              background: "hsl(220 14% 10%)",
+              border: "1px solid hsl(220 12% 16%)",
+              color: "hsl(210 20% 88%)",
+              fontSize: "13px",
+            },
+          }}
+        />
+        {children}
       </body>
     </html>
   );
