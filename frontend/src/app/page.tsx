@@ -731,7 +731,6 @@ export default function LandingPage() {
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
                   transition={{ delay: 0.3 }}
-                  className="lp-try-row"
                   style={{
                     display: "flex",
                     flexWrap: "wrap",
@@ -2919,17 +2918,6 @@ export default function LandingPage() {
             padding-top: 56px !important;
             padding-bottom: 56px !important;
           }
-
-          /* Try URLs: single swipeable row */
-.lp-try-row {
-  flex-wrap: nowrap !important;
-  overflow-x: auto !important;
-  -webkit-overflow-scrolling: touch !important;
-  scrollbar-width: none !important;
-}
-.lp-try-row::-webkit-scrollbar {
-  display: none !important;
-}
             
           /* Guest badge: smaller on mobile */
           .lp-guest-badge {
