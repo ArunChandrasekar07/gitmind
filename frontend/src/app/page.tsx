@@ -2816,17 +2816,50 @@ export default function LandingPage() {
             display: none !important;
           }
 
-          /* Hero section: full viewport height on mobile */
-.lp-hero-section {
-  min-height: 100svh !important;
-  padding-top: 80px !important;
-  padding-bottom: 32px !important;
-  padding-left: 16px !important;
-  padding-right: 16px !important;
-  display: flex !important;
-  flex-direction: column !important;
-  justify-content: center !important;
-}
+          /* Hero section: occupies full viewport, content spread top-to-bottom */
+          .lp-hero-section {
+            min-height: 100svh !important;
+            height: 100svh !important;
+            padding-top: 72px !important;
+            padding-bottom: 28px !important;
+            padding-left: 16px !important;
+            padding-right: 16px !important;
+            display: flex !important;
+            flex-direction: column !important;
+            justify-content: center !important;
+            box-sizing: border-box !important;
+          }
+
+          /* Direct child wrapper must stretch to fill section */
+          .lp-hero-section > div {
+            width: 100% !important;
+            height: 100% !important;
+            display: flex !important;
+            align-items: center !important;
+          }
+
+          /* Hero grid fills the stretched wrapper */
+          .lp-hero-grid {
+            width: 100% !important;
+            display: flex !important;
+            flex-direction: column !important;
+            justify-content: space-evenly !important;
+            height: 100% !important;
+          }
+
+          /* Left column content also spreads internally */
+          .lp-hero-grid > *:first-child {
+            display: flex !important;
+            flex-direction: column !important;
+            justify-content: space-evenly !important;
+            height: 100% !important;
+            gap: 0 !important;
+          }
+
+          /* Remove default margins so space-evenly controls spacing */
+          .lp-hero-grid > *:first-child > div {
+            margin-bottom: 0 !important;
+          }
 
           /* Hero URL input: stack on very small screens */
           .lp-url-row {
