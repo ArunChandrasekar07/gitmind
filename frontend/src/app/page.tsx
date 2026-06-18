@@ -445,7 +445,9 @@ export default function LandingPage() {
               maxWidth: "1180px",
               width: "100%",
               margin: "0 auto",
-              padding: "0 2px",
+              padding: typeof window !== "undefined" && window.innerWidth <= 768
+              ? "0 24px"
+              : "0 2px",
               display: "flex",
               alignItems: "center",
               justifyContent: "space-between",
