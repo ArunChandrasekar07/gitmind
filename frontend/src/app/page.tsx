@@ -360,6 +360,17 @@ export default function LandingPage() {
 
     router.push(`/analyze?url=${encodeURIComponent(url)}`);
   };
+  const [navPadding, setNavPadding] = useState("0 2px");
+
+useEffect(() => {
+  const updatePadding = () => {
+    setNavPadding(window.innerWidth <= 768 ? "0 24px" : "0 2px");
+  };
+
+  updatePadding();
+  window.addEventListener("resize", updatePadding);
+  return () => window.removeEventListener("resize", updatePadding);
+}, []);
   return (
     <>
       <TopLoader />
@@ -444,7 +455,7 @@ export default function LandingPage() {
               maxWidth: "1180px",
               width: "100%",
               margin: "0 auto",
-              padding: "0 24px",
+              padding: navPadding,
               display: "flex",
               alignItems: "center",
               justifyContent: "space-between",
