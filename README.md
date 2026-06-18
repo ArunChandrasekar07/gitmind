@@ -10,7 +10,7 @@
 
 <br/>
 
-[![Live](https://img.shields.io/badge/live-gitmindhq.vercel.app-FFB020?style=for-the-badge&logo=vercel&logoColor=black)](https://gitmindai.vercel.app)
+[![Live](https://img.shields.io/badge/live-gitmindai.vercel.app-FFB020?style=for-the-badge&logo=vercel&logoColor=black)](https://gitmindai.vercel.app)
 [![License](https://img.shields.io/badge/license-MIT-blue?style=for-the-badge)](LICENSE)
 [![Made with Next.js](https://img.shields.io/badge/Next.js-16-black?style=for-the-badge&logo=next.js)](https://nextjs.org)
 [![Built with FastAPI](https://img.shields.io/badge/FastAPI-Python-009688?style=for-the-badge&logo=fastapi&logoColor=white)](https://fastapi.tiangolo.com)
