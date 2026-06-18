@@ -360,8 +360,6 @@ export default function LandingPage() {
 
     router.push(`/analyze?url=${encodeURIComponent(url)}`);
   };
-  const isMobile =
-  typeof window !== "undefined" && window.innerWidth <= 768;
   return (
     <>
       <TopLoader />
@@ -446,7 +444,7 @@ export default function LandingPage() {
               maxWidth: "1180px",
               width: "100%",
               margin: "0 auto",
-              padding: isMobile ? "0 24px" : "0 2px",
+              padding: "0 24px",
               display: "flex",
               alignItems: "center",
               justifyContent: "space-between",
