@@ -13,7 +13,7 @@ export const viewport: Viewport = {
 };
 
 export const metadata: Metadata = {
-  metadataBase: new URL("https://gitmindhq.vercel.app"),
+  metadataBase: new URL("https://gitmindai.vercel.app"),
 
   title: {
     default: "GitMind — AI Repository Intelligence",
@@ -43,14 +43,14 @@ export const metadata: Metadata = {
   openGraph: {
     type: "website",
     locale: "en_US",
-    url: "https://gitmindhq.vercel.app",
+    url: "https://gitmindai.vercel.app",
     siteName: "GitMind",
     title: "GitMind — AI Repository Intelligence",
     description:
     "Paste any GitHub repo URL. Get AI-powered commit analysis, risk detection, and repository health scoring in seconds.",
     images: [
       {
-        url: "https://gitmindhq.vercel.app/seo.png",
+        url: "https://gitmindai.vercel.app/seo.png",
         width: 1200,
         height: 630,
         alt: "GitMind — AI Repository Intelligence Platform",
@@ -67,7 +67,7 @@ export const metadata: Metadata = {
     title: "GitMind — AI Repository Intelligence",
     description:
     "Paste any GitHub repo URL. Get AI-powered commit analysis, risk detection, and repository health scoring in seconds.",
-    images: ["https://gitmindhq.vercel.app/seo.png"],
+    images: ["https://gitmindai.vercel.app/seo.png"],
   },
 
   // ── Robots ────────────────────────────────────────────────────────
@@ -98,7 +98,7 @@ export const metadata: Metadata = {
 
   // ── Canonical ─────────────────────────────────────────────────────
   alternates: {
-    canonical: "https://gitmindhq.vercel.app",
+    canonical: "https://gitmindai.vercel.app",
   },
 
   // ── App specific ──────────────────────────────────────────────────
@@ -121,7 +121,7 @@ export default function RootLayout({
               "@context": "https://schema.org",
               "@type": "WebApplication",
               name: "GitMind",
-              url: "https://gitmindhq.vercel.app",
+              url: "https://gitmindai.vercel.app",
               description:
                 "AI-powered GitHub repository intelligence. Analyze commits, detect risks, and score repository health instantly.",
               applicationCategory: "DeveloperApplication",
@@ -136,7 +136,7 @@ export default function RootLayout({
                 name: "Arun C",
                 url: "https://github.com/ArunChandrasekar07",
               },
-              screenshot: "https://gitmindhq.vercel.app/seo.png",
+              screenshot: "https://gitmindai.vercel.app/seo.png",
               featureList: [
                 "AI commit analysis",
                 "Risk detection",
