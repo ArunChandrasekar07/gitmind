@@ -953,7 +953,7 @@ useEffect(() => {
                           <motion.div
                             animate={{ scale: [1, 1.3, 1], opacity: [1, 0.6, 1] }}
                             transition={{ duration: 1.1, repeat: Infinity, ease: "easeInOut" }}
-                            style={{ width: "5px", height: "5px", borderRadius: "50%", background: "hsl(38 92% 58%)" }}
+                            style={{ width: "5px", height: "5px", borderRadius: "50%", background: "hsl(38 92% 58%)" , flexShrink: 0}}
                           />
                         )}
                       </div>
