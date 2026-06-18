@@ -840,7 +840,7 @@ useEffect(() => {
                   <div
                     style={{
                       position: "absolute",
-                      top: "1px",
+                      top: "3px",
                       left: "50%",
                       width: "6px",
                       height: "6px",
