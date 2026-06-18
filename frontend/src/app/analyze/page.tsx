@@ -916,7 +916,7 @@ useEffect(() => {
               </div>
 
               {/* Stage list */}
-              <div style={{ display: "flex", flexDirection: "column", gap: "10px", marginTop: "20px", width: "fit-content",margin: "20px auto 0" }}>
+              <div style={{ display: "flex", flexDirection: "column", gap: "10px", marginTop: "20px", width: "fit-content", margin: "20px auto 0" }}>
                 {ANALYSIS_STAGES.map((stage, i) => {
                   const isDone = i < currentStage;
                   const isActive = i === currentStage;
