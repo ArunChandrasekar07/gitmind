@@ -62,7 +62,7 @@ export const metadata: Metadata = {
   // ── Twitter / X Card ──────────────────────────────────────────────
   twitter: {
     card: "summary_large_image",
-    site: "@gitmindhq",
+    site: "@gitmindai",
     creator: "@arunchandrasekar",
     title: "GitMind — AI Repository Intelligence",
     description:
