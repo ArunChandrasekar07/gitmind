@@ -445,7 +445,7 @@ export default function LandingPage() {
               maxWidth: "1180px",
               width: "100%",
               margin: "0 auto",
-              padding: "0 3px",
+              padding: "0 24px",
               display: "flex",
               alignItems: "center",
               justifyContent: "space-between",
@@ -2806,11 +2806,6 @@ export default function LandingPage() {
 
         /* ── MOBILE ONLY — landing page ── */
         @media (max-width: 768px) {
-
-         /* Nav inner: force back to original 24px padding — desktop-only 2px change must not reach mobile */
-          .lp-nav-inner {
-            padding: 0 24px !important;
-          }
 
           /* Hero: single column, hide demo widget */
           .lp-hero-grid {
