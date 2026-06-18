@@ -182,7 +182,7 @@ if (!isAuthenticated) {
       }
 
       const stageInterval = setInterval(() => {
-        setCurrentStage((p) => Math.min(p + 1, ANALYSIS_STAGES.length - 1));
+        setCurrentStage((p) => Math.min(p + 1, ANALYSIS_STAGES.length));
       }, 700);
 
       try {
@@ -826,12 +826,12 @@ useEffect(() => {
                 <motion.div
                   animate={{
                     rotate:
-                      currentStage >= ANALYSIS_STAGES.length - 1
+                      currentStage > ANALYSIS_STAGES.length - 1
                         ? [360 * Math.min(currentStage + 1, ANALYSIS_STAGES.length) / ANALYSIS_STAGES.length, 360 * Math.min(currentStage + 1, ANALYSIS_STAGES.length) / ANALYSIS_STAGES.length + 360]
                         : 360 * Math.min(currentStage + 1, ANALYSIS_STAGES.length) / ANALYSIS_STAGES.length,
                   }}
                   transition={
-                    currentStage >= ANALYSIS_STAGES.length - 1
+                    currentStage > ANALYSIS_STAGES.length - 1
                       ? { duration: 2.4, repeat: Infinity, ease: "linear" }
                       : { duration: 0.5, ease: [0.21, 0.47, 0.32, 0.98] }
                   }
