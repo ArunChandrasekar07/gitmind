@@ -788,82 +788,219 @@ useEffect(() => {
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
+              className="gm-loading"
               style={{
                 display: "flex",
                 flexDirection: "column",
                 alignItems: "center",
                 justifyContent: "center",
-                paddingTop: "80px",
-                paddingBottom: "80px",
+                paddingTop: "72px",
+                paddingBottom: "72px",
               }}
             >
-              <div style={{ position: "relative", marginBottom: "36px" }}>
+              {/* Signature element — progress ring where the moving dot IS the progress indicator,
+                  not a decorative spinner. Orbits exactly to currentStage, then settles into a
+                  slow perpetual drift once all stages are visually complete (never freezes). */}
+              <div style={{ position: "relative", width: "96px", height: "96px", marginBottom: "34px", perspective: "700px" }}>
+
+                <svg width="96" height="96" viewBox="0 0 96 96" style={{ position: "absolute", inset: 0, transform: "rotate(-90deg)" }}>
+                  <circle cx="48" cy="48" r="42" fill="none" stroke="hsl(220 12% 14%)" strokeWidth="2.5" />
+                  <motion.circle
+                    cx="48" cy="48" r="42" fill="none"
+                    stroke="hsl(38 92% 54%)"
+                    strokeWidth="2.5"
+                    strokeLinecap="round"
+                    strokeDasharray={2 * Math.PI * 42}
+                    initial={{ strokeDashoffset: 2 * Math.PI * 42 }}
+                    animate={{
+                      strokeDashoffset:
+                        2 * Math.PI * 42 * (1 - Math.min(currentStage + 1, ANALYSIS_STAGES.length) / ANALYSIS_STAGES.length),
+                    }}
+                    transition={{ duration: 0.5, ease: [0.21, 0.47, 0.32, 0.98] }}
+                  />
+                </svg>
+
+                {/* Leading dot — rides the exact tip of the progress arc.
+                    Before completion: jumps to each stage's angle.
+                    After completion: gentle perpetual orbit signals "still working", not frozen. */}
+                <motion.div
+                  animate={{
+                    rotate:
+                      currentStage >= ANALYSIS_STAGES.length - 1
+                        ? [360 * Math.min(currentStage + 1, ANALYSIS_STAGES.length) / ANALYSIS_STAGES.length, 360 * Math.min(currentStage + 1, ANALYSIS_STAGES.length) / ANALYSIS_STAGES.length + 360]
+                        : 360 * Math.min(currentStage + 1, ANALYSIS_STAGES.length) / ANALYSIS_STAGES.length,
+                  }}
+                  transition={
+                    currentStage >= ANALYSIS_STAGES.length - 1
+                      ? { duration: 2.4, repeat: Infinity, ease: "linear" }
+                      : { duration: 0.5, ease: [0.21, 0.47, 0.32, 0.98] }
+                  }
+                  style={{ position: "absolute", inset: 0, pointerEvents: "none" }}
+                >
+                  <div
+                    style={{
+                      position: "absolute",
+                      top: "1px",
+                      left: "50%",
+                      width: "6px",
+                      height: "6px",
+                      borderRadius: "50%",
+                      background: "hsl(38 92% 60%)",
+                      boxShadow: "0 0 10px hsl(38 92% 54% / 0.9), 0 0 2px hsl(38 92% 70%)",
+                      transform: "translateX(-50%)",
+                    }}
+                  />
+                </motion.div>
+
+                {/* Core — icon swaps with real 3D flip per stage */}
                 <div
                   style={{
-                    width: "64px",
-                    height: "64px",
-                    borderRadius: "16px",
-                    background: "hsl(38 92% 54% / 0.08)",
-                    border: "1px solid hsl(38 92% 54% / 0.2)",
+                    position: "absolute",
+                    inset: "14px",
+                    borderRadius: "50%",
+                    background: "hsl(220 14% 9%)",
+                    border: "1px solid hsl(220 12% 16%)",
                     display: "flex",
                     alignItems: "center",
                     justifyContent: "center",
                   }}
                 >
-                  <Brain size={28} style={{ color: "hsl(38 92% 58%)" }} />
+                  <AnimatePresence mode="wait">
+                    <motion.div
+                      key={currentStage}
+                      initial={{ opacity: 0, rotateY: -90, scale: 0.6 }}
+                      animate={{ opacity: 1, rotateY: 0, scale: 1 }}
+                      exit={{ opacity: 0, rotateY: 90, scale: 0.6 }}
+                      transition={{ duration: 0.35, ease: [0.21, 0.47, 0.32, 0.98] }}
+                      style={{ transformStyle: "preserve-3d" }}
+                    >
+                      {currentStage === 0 && <GitBranch size={24} style={{ color: "hsl(199 89% 58%)" }} />}
+                      {currentStage === 1 && <GitCommit size={24} style={{ color: "hsl(38 92% 58%)" }} />}
+                      {currentStage === 2 && <Search size={24} style={{ color: "hsl(258 80% 70%)" }} />}
+                      {currentStage === 3 && (
+                        <motion.div animate={{ rotate: 360 }} transition={{ duration: 3, repeat: Infinity, ease: "linear" }}>
+                          <Brain size={24} style={{ color: "hsl(38 92% 58%)" }} />
+                        </motion.div>
+                      )}
+                      {currentStage >= 4 && (
+                        <motion.div
+                          initial={{ scale: 0 }}
+                          animate={{ scale: 1 }}
+                          transition={{ type: "spring", stiffness: 400, damping: 14 }}
+                        >
+                          <Check size={24} style={{ color: "hsl(152 60% 50%)" }} />
+                        </motion.div>
+                      )}
+                    </motion.div>
+                  </AnimatePresence>
                 </div>
-                <motion.div
-                  animate={{ rotate: 360 }}
-                  transition={{
-                    duration: 2,
-                    repeat: Infinity,
-                    ease: "linear",
-                  }}
+
+                {/* Stage counter */}
+                <div
                   style={{
                     position: "absolute",
-                    inset: "-4px",
-                    borderRadius: "20px",
-                    border: "2px solid transparent",
-                    borderTopColor: "hsl(38 92% 54%)",
-                    borderRightColor: "hsl(38 92% 54% / 0.3)",
+                    bottom: "-26px",
+                    left: "50%",
+                    transform: "translateX(-50%)",
+                    fontSize: "10px",
+                    fontFamily: "JetBrains Mono, monospace",
+                    color: "hsl(220 8% 40%)",
+                    whiteSpace: "nowrap",
+                    letterSpacing: "0.04em",
                   }}
-                />
+                >
+                  {currentStage >= ANALYSIS_STAGES.length - 1
+                    ? "FINALIZING"
+                    : `${String(currentStage + 1).padStart(2, "0")} / ${String(ANALYSIS_STAGES.length).padStart(2, "0")}`}
+                </div>
               </div>
 
-              <LoadingStages
-                stages={ANALYSIS_STAGES}
-                currentStage={currentStage}
-              />
-
-              <div
-                style={{
-                  marginTop: "28px",
-                  width: "200px",
-                  height: "2px",
-                  background: "hsl(220 12% 13%)",
-                  borderRadius: "1px",
-                  overflow: "hidden",
-                  position: "relative",
-                }}
-              >
-                <motion.div
-                  style={{
-                    position: "absolute",
-                    top: 0,
-                    left: 0,
-                    right: 0,
-                    bottom: 0,
-                    background:
-                      "linear-gradient(90deg, transparent, hsl(38 92% 54%), transparent)",
-                  }}
-                  animate={{ x: ["-100%", "100%"] }}
-                  transition={{
-                    duration: 1.4,
-                    repeat: Infinity,
-                    ease: "easeInOut",
-                  }}
-                />
+              {/* Stage list */}
+              <div style={{ display: "flex", flexDirection: "column", gap: "10px", marginTop: "20px", width: "fit-content",margin: "20px auto 0" }}>
+                {ANALYSIS_STAGES.map((stage, i) => {
+                  const isDone = i < currentStage;
+                  const isActive = i === currentStage;
+                  return (
+                    <motion.div
+                      key={stage.id}
+                      animate={{ opacity: isDone || isActive ? 1 : 0.35 }}
+                      transition={{ duration: 0.3 }}
+                      style={{ display: "flex", alignItems: "center", gap: "10px" }}
+                    >
+                      <div
+                        style={{
+                          width: "16px",
+                          height: "16px",
+                          borderRadius: "50%",
+                          flexShrink: 0,
+                          display: "flex",
+                          alignItems: "center",
+                          justifyContent: "center",
+                          background: isDone
+                            ? "hsl(152 60% 40% / 0.15)"
+                            : isActive
+                              ? "hsl(38 92% 54% / 0.15)"
+                              : "hsl(220 12% 13%)",
+                          border: isDone
+                            ? "1px solid hsl(152 60% 40% / 0.4)"
+                            : isActive
+                              ? "1px solid hsl(38 92% 54% / 0.4)"
+                              : "1px solid hsl(220 12% 16%)",
+                        }}
+                      >
+                        {isDone && <Check size={9} style={{ color: "hsl(152 60% 50%)" }} />}
+                        {isActive && (
+                          <motion.div
+                            animate={{ scale: [1, 1.3, 1], opacity: [1, 0.6, 1] }}
+                            transition={{ duration: 1.1, repeat: Infinity, ease: "easeInOut" }}
+                            style={{ width: "5px", height: "5px", borderRadius: "50%", background: "hsl(38 92% 58%)" }}
+                          />
+                        )}
+                      </div>
+                      <span
+                        style={{
+                          fontSize: "12.5px",
+                          fontWeight: isActive ? 600 : 400,
+                          color: isActive ? "hsl(38 10% 90%)" : isDone ? "hsl(220 8% 55%)" : "hsl(220 8% 38%)",
+                          fontFamily: "Inter, sans-serif",
+                        }}
+                      >
+                        {stage.label}
+                      </span>
+                    </motion.div>
+                  );
+                })}
               </div>
+              {/* Bottom animated loading line */}
+<div
+  style={{
+    marginTop: "28px",
+    width: "200px",
+    height: "2px",
+    background: "hsl(220 12% 13%)",
+    borderRadius: "1px",
+    overflow: "hidden",
+    position: "relative",
+  }}
+>
+  <motion.div
+    style={{
+      position: "absolute",
+      top: 0,
+      left: 0,
+      right: 0,
+      bottom: 0,
+      background:
+        "linear-gradient(90deg, transparent, hsl(38 92% 54%), transparent)",
+    }}
+    animate={{ x: ["-100%", "100%"] }}
+    transition={{
+      duration: 1.4,
+      repeat: Infinity,
+      ease: "easeInOut",
+    }}
+  />
+</div>
             </motion.div>
           )}
         </AnimatePresence>
