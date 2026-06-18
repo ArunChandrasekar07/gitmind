@@ -20,7 +20,7 @@ export const metadata: Metadata = {
     template: "%s | GitMind",
   },
   description:
-    "GitMind Analyze any public GitHub repo with AI. Get commit explanations, risk detection, and repository health scores instantly.",
+    "GitMind analyzes any public GitHub repo with AI. Get commit explanations, risk detection, and repository health scores instantly.",
 
   keywords: [
     "github repository analyzer",
@@ -47,7 +47,7 @@ export const metadata: Metadata = {
     siteName: "GitMind",
     title: "GitMind — AI Repository Intelligence",
     description:
-      "Paste any GitHub URL. AI explains every commit, detects risky changes, and scores repository health. Free forever.",
+    "Paste any GitHub repo URL. Get AI-powered commit analysis, risk detection, and repository health scoring in seconds.",
     images: [
       {
         url: "https://gitmindhq.vercel.app/seo.png",
@@ -66,7 +66,7 @@ export const metadata: Metadata = {
     creator: "@arunchandrasekar",
     title: "GitMind — AI Repository Intelligence",
     description:
-      "Paste any GitHub URL. AI explains every commit, detects risky changes, and scores repository health. Free forever.",
+    "Paste any GitHub repo URL. Get AI-powered commit analysis, risk detection, and repository health scoring in seconds.",
     images: ["https://gitmindhq.vercel.app/seo.png"],
   },
 
