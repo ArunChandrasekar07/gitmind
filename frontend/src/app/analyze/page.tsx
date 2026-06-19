@@ -64,6 +64,7 @@ function AnalyzeContent() {
   >("hidden");
   const [selectorGlow, setSelectorGlow] = useState(false);
   const [upsellTooltip, setUpsellTooltip] = useState<number | null>(null);
+  const [dotAngle, setDotAngle] = useState(0);
   const hasRestoredRef = useRef(false);
   /* ── Navbar hide on scroll ── */
   const [navVisible, setNavVisible] = useState(true);
@@ -817,25 +818,36 @@ useEffect(() => {
                         2 * Math.PI * 42 * (1 - Math.min(currentStage + 1, ANALYSIS_STAGES.length) / ANALYSIS_STAGES.length),
                     }}
                     transition={{ duration: 0.5, ease: [0.21, 0.47, 0.32, 0.98] }}
+                    onUpdate={(latest) => {
+                      const offset = latest.strokeDashoffset as number;
+                      const circumference = 2 * Math.PI * 42;
+                      setDotAngle((1 - offset / circumference) * 360);
+                    }}
                   />
                 </svg>
 
-                {/* Leading dot — rides the exact tip of the progress arc.
-                    Before completion: jumps to each stage's angle.
-                    After completion: gentle perpetual orbit signals "still working", not frozen. */}
-                <motion.div
-                  animate={{
-                    rotate:
-                      currentStage >= ANALYSIS_STAGES.length - 1
-                        ? [360 * Math.min(currentStage + 1, ANALYSIS_STAGES.length) / ANALYSIS_STAGES.length, 360 * Math.min(currentStage + 1, ANALYSIS_STAGES.length) / ANALYSIS_STAGES.length + 360]
-                        : 360 * Math.min(currentStage + 1, ANALYSIS_STAGES.length) / ANALYSIS_STAGES.length,
-                  }}
-                  transition={
+                {/* Leading dot — has NO animation engine of its own during the stage phase.
+                    Its angle is read directly from the ring's live onUpdate value above —
+                    same render, same frame, mathematically impossible to drift apart. */}
+                <div
+                  style={
                     currentStage >= ANALYSIS_STAGES.length - 1
-                      ? { duration: 2.4, repeat: Infinity, ease: "linear" }
-                      : { duration: 0.5, ease: [0.21, 0.47, 0.32, 0.98] }
+                      ? {
+                          position: "absolute",
+                          inset: 0,
+                          pointerEvents: "none",
+                          transform: `rotate(${dotAngle}deg)`,
+                          animation: `gm-orbit-spin 2.4s linear infinite`,
+                          animationName: "gm-orbit-spin",
+                          ["--gm-start-angle" as any]: `${dotAngle}deg`,
+                        }
+                      : {
+                          position: "absolute",
+                          inset: 0,
+                          pointerEvents: "none",
+                          transform: `rotate(${dotAngle}deg)`,
+                        }
                   }
-                  style={{ position: "absolute", inset: 0, pointerEvents: "none" }}
                 >
                   <div
                     style={{
@@ -850,7 +862,7 @@ useEffect(() => {
                       transform: "translateX(-50%)",
                     }}
                   />
-                </motion.div>
+                </div>
 
                 {/* Core — icon swaps with real 3D flip per stage */}
                 <div
@@ -1412,6 +1424,10 @@ useEffect(() => {
 
       <style>{`
         @keyframes spin { to { transform: rotate(360deg); } }
+        @keyframes gm-orbit-spin {
+          from { transform: rotate(var(--gm-start-angle, 360deg)); }
+          to { transform: rotate(calc(var(--gm-start-angle, 360deg) + 360deg)); }
+        }
 
         /* ── MOBILE ONLY — analyze page ── */
         @media (max-width: 768px) {
