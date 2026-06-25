@@ -93,7 +93,7 @@ async def analyze_batch(request: BatchAnalysisRequest, req: Request):
         # Parallel AI analysis
         analyzed = [None] * len(commit_details)
 
-        with ThreadPoolExecutor(max_workers=2) as executor:
+        with ThreadPoolExecutor(max_workers=3) as executor:
             future_to_index = {
                 executor.submit(_analyze_one, detail): i
                 for i, detail in enumerate(commit_details)
