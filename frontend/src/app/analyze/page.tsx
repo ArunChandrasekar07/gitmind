@@ -1015,7 +1015,7 @@ useEffect(() => {
 <div
   style={{
     marginTop: "28px",
-    width: "195px",
+    width: "200px",
     height: "2px",
     background: "hsl(220 12% 13%)",
     borderRadius: "1px",
