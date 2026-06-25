@@ -1,4 +1,4 @@
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, HTTPException, Request
 from fastapi.responses import StreamingResponse
 from app.services.github_service import (
     parse_repo_url, get_repo_info, get_commits,
@@ -50,12 +50,15 @@ async def stream_single_commit(request: CommitAnalysisRequest):
 
 
 @router.post("/batch")
-async def analyze_batch(request: BatchAnalysisRequest):
+async def analyze_batch(request: BatchAnalysisRequest, req: Request):
     """
     Fetch + analyze multiple commits at once.
     Returns repo info + analyzed commits.
     """
     try:
+        if await req.is_disconnected():
+            logger.info("Client disconnected before analysis started")
+            raise HTTPException(status_code=499, detail="Client disconnected")
         owner, repo = parse_repo_url(request.url)
         repo_info = await get_repo_info(owner, repo)
         commits = await get_commits(owner, repo, request.limit)
@@ -69,6 +72,10 @@ async def analyze_batch(request: BatchAnalysisRequest):
             except Exception as e:
                 logger.error(f"Failed fetching commit {commit['sha']}: {e}")
                 commit_details.append(commit)
+
+        if await req.is_disconnected():
+            logger.info("Client disconnected before AI analysis")
+            raise HTTPException(status_code=499, detail="Client disconnected")
 
         def _analyze_one(detail):
             try:
@@ -86,7 +93,7 @@ async def analyze_batch(request: BatchAnalysisRequest):
         # Parallel AI analysis
         analyzed = [None] * len(commit_details)
 
-        with ThreadPoolExecutor(max_workers=3) as executor:
+        with ThreadPoolExecutor(max_workers=2) as executor:
             future_to_index = {
                 executor.submit(_analyze_one, detail): i
                 for i, detail in enumerate(commit_details)
