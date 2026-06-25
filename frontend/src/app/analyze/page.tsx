@@ -804,6 +804,27 @@ useEffect(() => {
                   slow perpetual drift once all stages are visually complete (never freezes). */}
               <div style={{ position: "relative", width: "96px", height: "96px", marginBottom: "34px", perspective: "700px" }}>
 
+                {/* Breathing glow halo — appears only once all stages complete, pulses softly
+                    around the ring like a calm heartbeat (matches premium SaaS reference). */}
+                {currentStage >= ANALYSIS_STAGES.length - 1 && (
+                  <motion.div
+                    animate={{
+                      boxShadow: [
+  "0 0 10px 2px hsl(38 92% 54% / 0.40)",
+  "0 0 20px 5px hsl(38 92% 54% / 0.54)",
+  "0 0 10px 2px hsl(38 92% 54% / 0.40)",
+],
+                    }}
+                    transition={{ duration: 2.6, repeat: Infinity, ease: "easeInOut" }}
+                    style={{
+                      position: "absolute",
+                      inset: "6px",
+                      borderRadius: "50%",
+                      pointerEvents: "none",
+                    }}
+                  />
+                )}
+
                 <svg width="96" height="96" viewBox="0 0 96 96" style={{ position: "absolute", inset: 0, transform: "rotate(-90deg)" }}>
                   <circle cx="48" cy="48" r="42" fill="none" stroke="hsl(220 12% 14%)" strokeWidth="2.5" />
                   <motion.circle
@@ -816,8 +837,15 @@ useEffect(() => {
                     animate={{
                       strokeDashoffset:
                         2 * Math.PI * 42 * (1 - Math.min(currentStage + 1, ANALYSIS_STAGES.length) / ANALYSIS_STAGES.length),
+                      stroke:
+                        currentStage >= ANALYSIS_STAGES.length - 1
+                          ? ["hsl(38 92% 54%)", "hsl(45 95% 65%)", "hsl(38 92% 54%)"]
+                          : "hsl(38 92% 54%)",
                     }}
-                    transition={{ duration: 0.5, ease: [0.21, 0.47, 0.32, 0.98] }}
+                    transition={{
+                      strokeDashoffset: { duration: 0.5, ease: [0.21, 0.47, 0.32, 0.98] },
+                      stroke: { duration: 2.6, repeat: Infinity, ease: "easeInOut" },
+                    }}
                     onUpdate={(latest) => {
                       const offset = latest.strokeDashoffset as number;
                       const circumference = 2 * Math.PI * 42;
@@ -987,7 +1015,7 @@ useEffect(() => {
 <div
   style={{
     marginTop: "28px",
-    width: "200px",
+    width: "195px",
     height: "2px",
     background: "hsl(220 12% 13%)",
     borderRadius: "1px",
