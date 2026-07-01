@@ -343,38 +343,26 @@ def generate_streaming_response(
         ("OpenRouter", "openrouter", _try_openrouter_stream),
     ]
 
-    # Try up to 3 times — waiting for the shortest active cooldown to expire
-    # before each retry. This guarantees eventual success instead of failing fast.
-    for attempt in range(3):
-        for name, key, fn in providers:
-            if _provider_cooling(key):
-                logger.info(f"⏭️  Skip provider {name} (cooling)")
-                continue
-            try:
-                full_response = ""
-                for text in fn(prompt, max_tokens):
-                    full_response += text
+    for name, key, fn in providers:
+        if _provider_cooling(key):
+            logger.info(f"⏭️  Skip provider {name} (cooling)")
+            continue
+        try:
+            yielded = False
+            full_response = ""
 
-                if full_response:
-                    clean = _strip_think_blocks(full_response)
-                    if clean:
-                        yield clean
-                    return
-            except Exception as e:
-                logger.warning(f"⚠️ {name} failed: {e}")
-                continue
+            for text in fn(prompt, max_tokens):
+                full_response += text
+                yielded = True
 
-        # All providers cooling — find the shortest wait and sleep until one recovers
-        if attempt < 2:
-            with _cooldown_lock:
-                now = time.time()
-                next_available = min(
-                    (v for v in list(_provider_skip_until.values()) if v > now),
-                    default=now + 5,
-                )
-            wait = max(next_available - time.time() + 1, 5)
-            logger.info(f"⏳ All providers cooling — waiting {wait:.1f}s for recovery (attempt {attempt + 1}/3)")
-            time.sleep(wait)
+            if yielded:
+                clean = _strip_think_blocks(full_response)
+                if clean:
+                    yield clean
+                return
+        except Exception as e:
+            logger.warning(f"⚠️ {name} failed: {e}")
+            continue
 
     yield "Analysis unavailable — all providers at capacity. Please try again shortly."
 
