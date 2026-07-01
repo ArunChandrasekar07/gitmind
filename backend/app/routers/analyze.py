@@ -89,14 +89,17 @@ async def analyze_batch(request: BatchAnalysisRequest, req: Request):
         # Each AI call takes ~1-2s, so providers see at most 2 req/s —
         # well within free-tier limits. 2x faster than sequential, never bursts.
         def _analyze_one(detail):
-            with _ai_semaphore:          # blocks if 2 calls already in flight
+            with _ai_semaphore:
                 try:
-                    return {
+                    result = {
                         "commit": detail,
                         "analysis": analyze_commit(detail),
                     }
+                    time.sleep(1.5)  # throttle to ~40 req/min across all providers
+                    return result
                 except Exception as e:
                     logger.error(f"Analysis failed: {e}")
+                    time.sleep(1.5)
                     return {
                         "commit": detail,
                         "analysis": "Analysis unavailable for this commit.",
