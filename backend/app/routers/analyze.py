@@ -20,7 +20,7 @@ router = APIRouter()
 # ── Semaphore: max 2 AI calls in-flight at any moment ─────────────────────────
 # This is the key difference from the broken version (which had no limit).
 # 2 concurrent calls = ~2x faster than sequential, but never bursts all quotas.
-_ai_semaphore = threading.Semaphore(2)
+_ai_semaphore = threading.Semaphore(1)
 
 
 @router.post("/commit")
@@ -114,7 +114,7 @@ async def analyze_batch(request: BatchAnalysisRequest, req: Request):
                 analyzed[idx] = future.result()
 
         # ── Phase 3: summary (after brief pause for quota recovery) ───────────
-        time.sleep(3)
+        time.sleep(6)
 
         summary = generate_repo_summary(
             repo_info,
