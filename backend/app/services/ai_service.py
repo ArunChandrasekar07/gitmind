@@ -53,29 +53,39 @@ OPENROUTER_MODELS = [
 ]
 
 # ─── Cooldown — model-level and provider-level ────────────────────────────────
+import threading
+
 _model_skip_until: Dict[str, float] = {}
 _provider_skip_until: Dict[str, float] = {}
+_cooldown_lock = threading.Lock()
 
 MODEL_COOLDOWN = 120
 PROVIDER_COOLDOWN = 30
 
 
 def _model_cooling(model: str) -> bool:
-    return _model_skip_until.get(model, 0) > time.time()
+    with _cooldown_lock:
+        return _model_skip_until.get(model, 0) > time.time()
 
 
 def _cool_model(model: str) -> None:
-    _model_skip_until[model] = time.time() + MODEL_COOLDOWN
-    logger.warning(f"⏳ Model {model} cooling for {MODEL_COOLDOWN}s")
+    with _cooldown_lock:
+        # Only set if not already cooling — prevents repeated cooldown stampede
+        if _model_skip_until.get(model, 0) <= time.time():
+            _model_skip_until[model] = time.time() + MODEL_COOLDOWN
+            logger.warning(f"⏳ Model {model} cooling for {MODEL_COOLDOWN}s")
 
 
 def _provider_cooling(provider: str) -> bool:
-    return _provider_skip_until.get(provider, 0) > time.time()
+    with _cooldown_lock:
+        return _provider_skip_until.get(provider, 0) > time.time()
 
 
 def _cool_provider(provider: str) -> None:
-    _provider_skip_until[provider] = time.time() + PROVIDER_COOLDOWN
-    logger.warning(f"⏳ Provider {provider} cooling for {PROVIDER_COOLDOWN}s")
+    with _cooldown_lock:
+        if _provider_skip_until.get(provider, 0) <= time.time():
+            _provider_skip_until[provider] = time.time() + PROVIDER_COOLDOWN
+            logger.warning(f"⏳ Provider {provider} cooling for {PROVIDER_COOLDOWN}s")
 
 
 # ─── Think-block stripping ────────────────────────────────────────────────────

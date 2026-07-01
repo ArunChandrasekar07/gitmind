@@ -93,9 +93,18 @@ async def analyze_batch(request: BatchAnalysisRequest, req: Request):
         # Parallel AI analysis
         analyzed = [None] * len(commit_details)
 
+        import time as _time
+
+        def _analyze_with_delay(detail, index):
+            # Stagger thread starts by 0.3s per slot to avoid simultaneous
+            # provider hits. With max_workers=3, slot = index % 3, so threads
+            # in the same slot stagger by 0.3s between batches of 3.
+            _time.sleep((index % 3) * 0.3)
+            return _analyze_one(detail)
+
         with ThreadPoolExecutor(max_workers=3) as executor:
             future_to_index = {
-                executor.submit(_analyze_one, detail): i
+                executor.submit(_analyze_with_delay, detail, i): i
                 for i, detail in enumerate(commit_details)
             }
 
