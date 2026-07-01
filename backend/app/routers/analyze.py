@@ -1,4 +1,4 @@
-from fastapi import APIRouter, HTTPException, Request
+from fastapi import APIRouter, HTTPException
 from fastapi.responses import StreamingResponse
 from app.services.github_service import (
     parse_repo_url, get_repo_info, get_commits,
@@ -10,7 +10,7 @@ from app.services.ai_service import (
 from app.schemas.repo import BatchAnalysisRequest, CommitAnalysisRequest
 import logging
 import json
-from concurrent.futures import ThreadPoolExecutor, as_completed
+
 logger = logging.getLogger(__name__)
 router = APIRouter()
 
@@ -50,67 +50,31 @@ async def stream_single_commit(request: CommitAnalysisRequest):
 
 
 @router.post("/batch")
-async def analyze_batch(request: BatchAnalysisRequest, req: Request):
+async def analyze_batch(request: BatchAnalysisRequest):
     """
     Fetch + analyze multiple commits at once.
     Returns repo info + analyzed commits.
     """
     try:
-        if await req.is_disconnected():
-            logger.info("Client disconnected before analysis started")
-            raise HTTPException(status_code=499, detail="Client disconnected")
         owner, repo = parse_repo_url(request.url)
         repo_info = await get_repo_info(owner, repo)
         commits = await get_commits(owner, repo, request.limit)
 
-        # First fetch commit details (async)
-        commit_details = []
+        # Analyze each commit
+        analyzed = []
         for commit in commits:
             try:
                 detail = await get_commit_detail(owner, repo, commit["sha"])
-                commit_details.append(detail)
-            except Exception as e:
-                logger.error(f"Failed fetching commit {commit['sha']}: {e}")
-                commit_details.append(commit)
-
-        if await req.is_disconnected():
-            logger.info("Client disconnected before AI analysis")
-            raise HTTPException(status_code=499, detail="Client disconnected")
-
-        def _analyze_one(detail):
-            try:
-                return {
+                analysis = analyze_commit(detail)
+                analyzed.append({
                     "commit": detail,
-                    "analysis": analyze_commit(detail),
-                }
+                    "analysis": analysis,
+                })
             except Exception as e:
-                logger.error(f"Analysis failed: {e}")
-                return {
-                    "commit": detail,
+                analyzed.append({
+                    "commit": commit,
                     "analysis": "Analysis unavailable for this commit.",
-                }
-
-        # Parallel AI analysis
-        analyzed = [None] * len(commit_details)
-
-        import time as _time
-
-        def _analyze_with_delay(detail, index):
-            # Stagger thread starts by 0.3s per slot to avoid simultaneous
-            # provider hits. With max_workers=3, slot = index % 3, so threads
-            # in the same slot stagger by 0.3s between batches of 3.
-            _time.sleep((index % 3) * 0.3)
-            return _analyze_one(detail)
-
-        with ThreadPoolExecutor(max_workers=3) as executor:
-            future_to_index = {
-                executor.submit(_analyze_with_delay, detail, i): i
-                for i, detail in enumerate(commit_details)
-            }
-
-            for future in as_completed(future_to_index):
-                idx = future_to_index[future]
-                analyzed[idx] = future.result()
+                })
 
         # Generate overall summary
         summary = generate_repo_summary(
